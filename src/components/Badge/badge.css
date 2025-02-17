@@ -1,0 +1,25 @@
+.badge-container {
+  position: relative;
+  padding: 10px;
+}
+.badge {
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  top: 0;
+  z-index: 10;
+  border: 1px solid #fff;
+  background-color: grey;
+  border-radius: 100%;
+}
+.badge:hover {
+  cursor: pointer;
+}
+
+.left {
+  left: 0;
+}
+
+.right {
+  right: 0;
+}
