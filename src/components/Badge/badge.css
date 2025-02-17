@@ -3,14 +3,18 @@
   padding: 10px;
 }
 .badge {
-  width: 25px;
-  height: 25px;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
   position: absolute;
   top: 0;
   z-index: 10;
   border: 1px solid #fff;
   background-color: grey;
   border-radius: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .badge:hover {
   cursor: pointer;

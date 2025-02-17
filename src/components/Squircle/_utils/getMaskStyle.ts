@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import { getSquirclePathAsDataUri } from "./path";
+import { getSquircleBorderAsDataUri, getSquircleMaskAsDataUri } from "./path";
 export const iOSPreset = {
   r1: 0.0586,
   r2: 0.332,
@@ -34,9 +34,10 @@ interface GetMaskStyleInput {
   height: number;
   radius?: number | "auto";
   roundness?: number;
+  enableBorder?: boolean;
 }
 export function getMaskStyle(input: GetMaskStyleInput): CSSProperties {
-  const { width, height } = input;
+  const { width, height, enableBorder } = input;
 
   const maxBorderRadius = Math.min(width, height) / 2;
   const { radius = maxBorderRadius, roundness = DEFAULT_RATIO } = input;
@@ -44,21 +45,21 @@ export function getMaskStyle(input: GetMaskStyleInput): CSSProperties {
   const numberRadius = typeof radius === "string" ? maxBorderRadius : radius;
 
   const finalBorderRadius = Math.min(numberRadius, maxBorderRadius);
-
-  const dataUri = getSquirclePathAsDataUri(
-    width,
-    height,
-    finalBorderRadius * roundness,
-    finalBorderRadius
-  );
+  const r1 = finalBorderRadius * roundness;
+  const r2 = finalBorderRadius;
+  const maskDataUri = getSquircleMaskAsDataUri(width, height, r1, r2);
+  const borderDataUri = getSquircleBorderAsDataUri(width, height, r1, r2, 2);
 
   return {
-    maskImage: `url("${dataUri}")`,
+    maskImage: `url("${maskDataUri}")`,
     maskPosition: "center",
     maskRepeat: "no-repeat",
-    WebkitMaskImage: `url("${dataUri}")`,
+    maskSize: "100% 100%",
+    WebkitMaskImage: `url("${maskDataUri}")`,
     WebkitMaskPosition: "center",
     WebkitMaskRepeat: "no-repeat",
+    WebkitMaskSize: "100% 100%",
+    ...(enableBorder && { backgroundImage: `url("${borderDataUri}")` }),
   };
 }
 export const cachedGetMaskStyle = createCache(getMaskStyle, (input) => {

@@ -32,13 +32,14 @@ const Waggle: React.FC<WaggleProps> = ({
     repeatType: "mirror",
     delay: -delay,
   };
+
   return (
     <>
       <motion.div
         className="waggle-item"
         initial={initialConfig}
         animate={isActive ? animationConfig : {}}
-        transition={transitionConfig}
+        transition={isActive ? transitionConfig : undefined}
         style={{
           width: 100,
           height: 100,

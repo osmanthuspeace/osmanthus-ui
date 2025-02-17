@@ -5,22 +5,44 @@ import Badge from "./components/Badge/badge";
 import Squircle from "./components/Squircle/squircle";
 
 function App() {
-  const [isActive, setIsActive] = useState(false);
+  const [isEditing, setIsActive] = useState(false);
 
   const handleClick = () => {
-    setIsActive(!isActive);
+    setIsActive(!isEditing);
   };
   return (
     <>
       <section className="main-container">
         <button onClick={handleClick}>添加</button>
         <button onClick={handleClick}>编辑</button>
-        <Waggle isActive={isActive}>
-          <Badge>
-            <Squircle width={100} height={100} radius={"auto"} roundness={0}>
-              1
-            </Squircle>
-          </Badge>
+        <Waggle isActive={isEditing}>
+          {isEditing ? (
+            <>
+              <Badge>
+                <Squircle
+                  width={100}
+                  height={100}
+                  radius={"auto"}
+                  roundness={0}
+                  enableBorder={true}
+                >
+                  1
+                </Squircle>
+              </Badge>
+            </>
+          ) : (
+            <>
+              <Squircle
+                width={100}
+                height={100}
+                radius={"auto"}
+                roundness={0}
+                enableBorder={true}
+              >
+                1
+              </Squircle>
+            </>
+          )}
         </Waggle>
       </section>
     </>

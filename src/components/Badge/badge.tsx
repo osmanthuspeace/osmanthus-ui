@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import "./badge.css";
+import { Minus } from "lucide-react";
 
 interface BadgeProps extends React.HTMLAttributes<HTMLElement> {
   placement?: "left" | "right";
@@ -14,7 +15,7 @@ const Badge: React.FC<BadgeProps> = ({ placement = "left", children }) => {
           right: placement === "right",
         })}
       >
-        -
+        <Minus />
       </sup>
       {children}
     </div>
