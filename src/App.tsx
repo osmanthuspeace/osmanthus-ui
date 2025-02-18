@@ -3,6 +3,7 @@ import "./App.css";
 import Waggle from "./components/Waggle/waggle";
 import Badge from "./components/Badge/badge";
 import Squircle from "./components/Squircle/squircle";
+import DraggableItem from "./components/Drag/draggableItem";
 
 function App() {
   const [isEditing, setIsActive] = useState(false);
@@ -17,7 +18,7 @@ function App() {
         <button onClick={handleClick}>编辑</button>
         <Waggle isActive={isEditing}>
           {isEditing ? (
-            <>
+            <DraggableItem>
               <Badge>
                 <Squircle
                   width={100}
@@ -29,7 +30,7 @@ function App() {
                   1
                 </Squircle>
               </Badge>
-            </>
+            </DraggableItem>
           ) : (
             <>
               <Squircle
