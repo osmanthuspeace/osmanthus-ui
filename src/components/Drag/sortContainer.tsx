@@ -5,19 +5,19 @@ interface DragContainerProps
     React.HTMLAttributes<HTMLDivElement>,
     "onDrag" | "onDragStart" | "onDragEnd" | "onAnimationStart"
   > {
-  width: number;
-  height: number;
-  gridTemplateRows: number;
-  gridTemplateColumns: number;
-  gridGap: number;
+  width?: number;
+  height?: number;
+  gridTemplateRows?: number;
+  gridTemplateColumns?: number;
+  gridGap?: number;
 }
-const DragContainerInternal = ({
+const SortContainerInternal = ({
   children,
-  width,
-  height,
-  gridTemplateRows,
-  gridTemplateColumns,
-  gridGap,
+  width = 250,
+  height = 550,
+  gridTemplateRows = 4,
+  gridTemplateColumns = 2,
+  gridGap = 50,
   ...rest
 }: DragContainerProps) => {
   return (
@@ -25,6 +25,7 @@ const DragContainerInternal = ({
       <div
         {...rest}
         style={{
+          display: "grid",
           width: `${width}px`,
           height: `${height}px`,
           gridTemplateRows: `repeat(${gridTemplateRows}, 1fr)`,
@@ -39,7 +40,7 @@ const DragContainerInternal = ({
     </>
   );
 };
-const DragContainer = forwardRef<HTMLDivElement, DragContainerProps>(
-  DragContainerInternal
+const SortContainer = forwardRef<HTMLDivElement, DragContainerProps>(
+  SortContainerInternal
 );
-export default DragContainer;
+export default SortContainer;

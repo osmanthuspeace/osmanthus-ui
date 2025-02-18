@@ -4,9 +4,14 @@ import { Minus } from "lucide-react";
 
 interface BadgeProps extends React.HTMLAttributes<HTMLElement> {
   placement?: "left" | "right";
+  visible?: boolean;
 }
 
-const Badge: React.FC<BadgeProps> = ({ placement = "left", children }) => {
+const Badge: React.FC<BadgeProps> = ({
+  placement = "left",
+  visible = false,
+  children,
+}) => {
   return (
     <div className="badge-container">
       <sup
@@ -14,6 +19,7 @@ const Badge: React.FC<BadgeProps> = ({ placement = "left", children }) => {
           left: placement === "left",
           right: placement === "right",
         })}
+        style={{ display: visible ? "flex" : "none" }}
       >
         <Minus />
       </sup>

@@ -1,7 +1,8 @@
 import { forwardRef } from "react";
 import { cachedGetMaskStyle } from "./_utils/getMaskStyle";
 import clsx from "clsx";
-interface SquircleProps extends React.HTMLAttributes<HTMLDivElement> {
+import Badge from "../Badge/badge";
+interface SquircleInternalProps extends React.HTMLAttributes<HTMLDivElement> {
   width: number;
   height: number;
   ref?: React.Ref<HTMLDivElement>;
@@ -10,51 +11,74 @@ interface SquircleProps extends React.HTMLAttributes<HTMLDivElement> {
   enableBorder?: boolean;
 }
 
-const Squircle = forwardRef<HTMLDivElement, SquircleProps>(
-  (
-    {
-      children,
-      width,
-      height,
-      className,
-      radius,
-      roundness,
-      style,
-      enableBorder = true,
-      ...restProps
-    },
-    ref
-  ) => {
-    return (
-      <>
-        <div
-          className={clsx(className, "squircle-container")}
-          ref={ref}
-          {...restProps}
-          style={{
-            ...cachedGetMaskStyle({
-              width,
-              height,
-              radius,
-              roundness,
-              enableBorder,
-            }),
-            maskPosition: "center",
-            maskSize: "contain",
-            maskRepeat: "no-repeat",
-            ...(style || {}),
-            width: `${width}px`,
-            height: `${height}px`,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "aliceblue",
-          }}
-        >
-          {children}
-        </div>
-      </>
-    );
-  }
+const SquircleRefRenderFunction: React.ForwardRefRenderFunction<
+  HTMLDivElement,
+  SquircleInternalProps
+> = (props, ref) => {
+  const {
+    children,
+    width,
+    height,
+    className,
+    radius,
+    roundness,
+    style,
+    enableBorder = true,
+    ...restProps
+  } = props;
+
+  return (
+    <div
+      className={clsx(className, "squircle-container")}
+      ref={ref}
+      {...restProps}
+      style={{
+        ...cachedGetMaskStyle({
+          width,
+          height,
+          radius,
+          roundness,
+          enableBorder,
+        }),
+        maskPosition: "center",
+        maskSize: "contain",
+        maskRepeat: "no-repeat",
+        ...(style || {}),
+        width: `${width}px`,
+        height: `${height}px`,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "aliceblue",
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+const SquircleInternal = forwardRef<HTMLDivElement, SquircleInternalProps>(
+  SquircleRefRenderFunction
 );
+
+export interface SquircleProps extends React.HTMLAttributes<HTMLDivElement> {
+  isActive: boolean;
+}
+
+const Squircle = ({ isActive, children }: SquircleProps) => {
+  return (
+    <Badge visible={isActive}>
+      <SquircleInternal
+        width={100}
+        height={100}
+        radius="auto"
+        roundness={0}
+        enableBorder={true}
+      >
+        {children}
+      </SquircleInternal>
+    </Badge>
+  );
+};
+
 export default Squircle;
