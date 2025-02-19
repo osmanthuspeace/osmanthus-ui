@@ -25,7 +25,7 @@ const SortContainerInternal = ({
   const [itemIds, setItemIds] = useState<string[]>([]);
 
   useEffect(() => {
-    const ids = React.Children.map(children, () => uuidv4());
+    const ids = React.Children.map(children, () => uuidv4())!;
     setItemIds(ids);
   }, [children]);
 

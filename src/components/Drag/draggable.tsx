@@ -14,8 +14,6 @@ interface DragItemProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "id" | "translate"> {
   id: Id;
   translate?: Translate | undefined;
-  width: number;
-  height: number;
   // index: number;
   // scope: React.RefObject<HTMLDivElement>;
   // containerRect: DOMRect | undefined;
@@ -30,6 +28,8 @@ const DraggableInternal = (
 
   const handleDragStart = (e: MouseEvent, info: any) => {
     console.log("handleDragStart");
+    console.log("id", id);
+
     setActiveId(id);
 
     //通知父组件，
