@@ -1,4 +1,6 @@
-import { forwardRef } from "react";
+import React, { useState } from "react";
+import { forwardRef, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 interface DragContainerProps
   extends Omit<
@@ -20,6 +22,13 @@ const SortContainerInternal = ({
   gridGap = 50,
   ...rest
 }: DragContainerProps) => {
+  const [itemIds, setItemIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    const ids = React.Children.map(children, () => uuidv4());
+    setItemIds(ids);
+  }, [children]);
+
   return (
     <>
       <div
@@ -35,7 +44,15 @@ const SortContainerInternal = ({
         }}
         className="drag-container"
       >
-        {children}
+        {React.Children.map(children, (child, index) => {
+          if (React.isValidElement(child)) {
+            return React.cloneElement(child, {
+              ...child.props,
+              id: itemIds[index],
+            });
+          }
+          return child;
+        })}
       </div>
     </>
   );

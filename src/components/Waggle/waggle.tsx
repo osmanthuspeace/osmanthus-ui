@@ -1,8 +1,8 @@
 import { motion, Transition } from "motion/react";
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
+import SortableContext from "../Sortable/sortableContext";
 
 interface WaggleProps extends React.HTMLAttributes<HTMLDivElement> {
-  isActive?: boolean;
   rotateAngle?: number;
   offsetX?: number;
   offsetY?: number;
@@ -10,12 +10,13 @@ interface WaggleProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const Waggle: React.FC<WaggleProps> = ({
   children,
-  isActive = false,
   rotateAngle = 2,
   offsetX = 1,
   offsetY = 0.5,
 }) => {
   const delay = useMemo(() => Math.random() * 2, []);
+  const { isActive, width, height } = useContext(SortableContext);
+
   const initialConfig = {
     rotate: 0,
     translateX: 0,
@@ -41,12 +42,11 @@ const Waggle: React.FC<WaggleProps> = ({
         animate={isActive ? animationConfig : {}}
         transition={isActive ? transitionConfig : undefined}
         style={{
-          width: 100,
-          height: 100,
+          width: width,
+          height: height,
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          //   borderRadius: 20,
         }}
       >
         {children}
