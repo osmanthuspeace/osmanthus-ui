@@ -8,16 +8,17 @@ import SortableContext from "./sortableContext";
 interface SortableItemProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "id"> {
   id: Id;
+  index: number;
   isActive: boolean;
   width?: number;
   height?: number;
 }
 
 const SortableItemInternal = (props: SortableItemProps) => {
-  const { id, children, isActive, width = 100, height = 100 } = props;
+  const { id, index, children, isActive, width = 100, height = 100 } = props;
   return (
     <SortableContext.Provider value={{ width, height, isActive }}>
-      <Draggable id={id} className="drag-item">
+      <Draggable id={id} index={index} className="drag-item">
         <Waggle className="waggle-item">
           <Squircle className="squircle">{children}</Squircle>
         </Waggle>

@@ -49,6 +49,7 @@ const SortContainerInternal = ({
             return React.cloneElement(child, {
               ...child.props,
               id: itemIds[index],
+              index,
             });
           }
           return child;

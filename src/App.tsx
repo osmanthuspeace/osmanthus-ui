@@ -17,9 +17,9 @@ function App() {
       <section className="main-container">
         <button onClick={handleClick}>编辑</button>
         <SortContainer className="drag-container">
-          <SortableItem isActive={isEditing}>1</SortableItem>
-          <SortableItem isActive={isEditing}>2</SortableItem>
-          <SortableItem isActive={isEditing}>3</SortableItem>
+          <SortableItem isActive={isEditing}>app1</SortableItem>
+          <SortableItem isActive={isEditing}>app2</SortableItem>
+          <SortableItem isActive={isEditing}>component3</SortableItem>
         </SortContainer>
       </section>
     </>
