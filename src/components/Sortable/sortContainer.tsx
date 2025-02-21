@@ -1,7 +1,8 @@
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { forwardRef, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import SortableContext from "./sortableContext";
+import { s } from "motion/react-client";
 
 interface DragContainerProps
   extends Omit<
@@ -32,7 +33,7 @@ const SortContainerInternal = ({
   isActive = false,
   ...rest
 }: DragContainerProps) => {
-  const [itemIds, setItemIds] = useState<string[]>([]);
+  const [childIds, setChildIds] = useState<string[]>([]);
   const [sortedChildren, setSortedChildren] = useState<React.ReactNode[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const containerPadding = gridGap;
@@ -43,22 +44,56 @@ const SortContainerInternal = ({
   });
   useEffect(() => {
     const childrenArray = React.Children.toArray(children);
-    const ids = childrenArray.map(() => uuidv4());
-    setItemIds(ids);
+    console.log("childrenArray", childrenArray);
+
+    //仅在长度变化时生成新key
+    if (childIds.length !== childrenArray.length) {
+      const ids = childrenArray.map(() => uuidv4());
+      setChildIds(ids);
+    }
     setSortedChildren(childrenArray);
-  }, [children]);
+  }, [children, childIds.length]);
 
   const handleReorder = (oldIndex: number, newIndex: number) => {
-    console.log("oldIndex", oldIndex);
-    console.log("newIndex", newIndex);
+    console.log("handleReorder");
+
+    console.log("Reordering from", oldIndex, "to", newIndex);
 
     setSortedChildren((prev) => {
       const newArray = [...prev];
       const [removed] = newArray.splice(oldIndex, 1);
       newArray.splice(newIndex, 0, removed);
+
       return newArray;
     });
+    //同步更新key
+    setChildIds((prev) => {
+      console.log("prev", prev);
+
+      const newIds = [...prev];
+      const [movedId] = newIds.splice(oldIndex, 1);
+      newIds.splice(newIndex, 0, movedId);
+      console.log("newIds", newIds);
+      return newIds;
+    });
   };
+
+  const renderedChildren = () => {
+    console.log("renderedChildren", sortedChildren);
+
+    return sortedChildren.map((child, index) => {
+      if (React.isValidElement(child)) {
+        return React.cloneElement(child, {
+          ...child.props,
+          key: childIds[index],
+          id: childIds[index],
+          index,
+        });
+      }
+      return child;
+    });
+  };
+
   return (
     <>
       <SortableContext.Provider
@@ -92,16 +127,7 @@ const SortContainerInternal = ({
           }}
           className="drag-container"
         >
-          {sortedChildren.map((child, index) => {
-            if (React.isValidElement(child)) {
-              return React.cloneElement(child, {
-                ...child.props,
-                id: itemIds[index],
-                index,
-              });
-            }
-            return child;
-          })}
+          {renderedChildren()}
         </div>
       </SortableContext.Provider>
     </>

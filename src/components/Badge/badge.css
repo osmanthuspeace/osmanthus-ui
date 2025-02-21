@@ -10,7 +10,9 @@
   top: 0;
   z-index: 10;
   border: 1px solid #fff;
-  background-color: grey;
+  background-color: rgb(162, 161, 161);
+  opacity: 0.9;
+  backdrop-filter: blur(10px);
   border-radius: 100%;
   display: flex;
   justify-content: center;

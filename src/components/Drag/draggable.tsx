@@ -27,18 +27,21 @@ const DraggableInternal = (
   ref: Ref<HTMLDivElement> | undefined
 ) => {
   const { id, thisIndex, children, style, translate } = props;
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const { setActiveId } = useSortableStore();
-  const { onReorder, unitSize, gridLayout, draggingState, setDraggingState } =
-    useContext(SortableContext);
+  const {
+    isActive,
+    onReorder,
+    unitSize,
+    gridLayout,
+    draggingState,
+    setDraggingState,
+  } = useContext(SortableContext);
 
   // const [originCoordinate, setOriginCoordinate] = useState({
   //   x: 0,
   //   y: 0,
   // });
   const [_transform, setTransform] = useState<Translate | undefined>(undefined);
-
+  const [isDragEnd, setIsDragEnd] = useState(false);
   const thisRef = useRef<HTMLDivElement>(null);
 
   const [shouldSnapToOrigin, setShouldSnapToOrigin] = useState(false);
@@ -46,21 +49,11 @@ const DraggableInternal = (
 
   const handleDragStart = (e: MouseEvent, info: any) => {
     console.log("handleDragStart");
-    console.log("id", id);
     setShouldSnapToOrigin(false);
     setDraggingState((prev) => ({
       ...prev,
       activeIndex: thisIndex,
     }));
-
-    // const { x, y } = getCoordinate(thisRef.current as HTMLElement);
-    // setOriginCoordinate({
-    //   x,
-    //   y,
-    // });
-    setActiveId(id);
-
-    //通知父组件
   };
   const handleOnDrag = (e: MouseEvent, info: PanInfo) => {
     // console.log("info", info);
@@ -93,7 +86,6 @@ const DraggableInternal = (
         }));
       }
     }
-    console.log("handleOnDrag");
   };
   const handleDragEnd = (e: MouseEvent, info: any) => {
     console.log("handleDragEnd");
@@ -116,20 +108,26 @@ const DraggableInternal = (
 
       if (index !== thisIndex) {
         console.log("enter other cell");
+        setDraggingState((prev) => ({
+          ...prev,
+          activeIndex: null,
+          overIndex: null,
+        }));
         //只能在最后的时候调用
         onReorder(thisIndex, index);
+
+        setIsDragEnd(true);
+        console.log(thisRef.current.style.transform);
+
+        console.log("draggingState.activeIndex", draggingState.activeIndex);
+
+        thisRef.current.style.transform = null;
       }
       setShouldSnapToOrigin(false);
     }
     //恢复状态
-    setActiveId(null);
-    setDraggingState((prev) => ({
-      ...prev,
-      activeIndex: null,
-      overIndex: null,
-    }));
   };
-  const throttledHandleOnDrag = throttle(handleOnDrag, 1000);
+  const throttledHandleOnDrag = throttle(handleOnDrag, 500);
 
   const getTransform = () => {
     let transform = { x: 0, y: 0 };
@@ -187,7 +185,7 @@ const DraggableInternal = (
         }
       }
     }
-    console.log("transform", thisIndex, transform);
+    // console.log("transform", thisIndex, transform);
     return transform;
   };
 
@@ -208,14 +206,14 @@ const DraggableInternal = (
         onDrag={(e, info) => throttledHandleOnDrag(e, info)}
         onDragEnd={(e, info) => handleDragEnd(e as MouseEvent, info)}
         animate={
-          draggingState.activeIndex !== null ? getTransform() : { x: 0, y: 0 }
+          draggingState.activeIndex !== null && !isDragEnd
+            ? getTransform()
+            : { x: 0, y: 0 }
         }
         style={
           {
             width: `${unitSize}px`,
             height: `${unitSize}px`,
-            x,
-            y,
             ...style,
             "--translate-x": `${translate?.x ?? 0}px`,
             "--translate-y": `${translate?.y ?? 0}px`,

@@ -3,12 +3,10 @@ import "./App.css";
 
 import SortableItem from "./components/Sortable/sortableItem";
 import SortContainer from "./components/Sortable/sortContainer";
-import useSortableStore from "./temp-store/useSortableStore";
 
 function App() {
   const [isEditing, setIsActive] = useState(false);
 
-  const { items, addItem, removeItem, setActiveId } = useSortableStore();
   const handleClick = () => {
     setIsActive(!isEditing);
   };
@@ -20,6 +18,8 @@ function App() {
           <SortableItem>app1</SortableItem>
           <SortableItem>app2</SortableItem>
           <SortableItem>component3</SortableItem>
+          <SortableItem>test4</SortableItem>
+          <SortableItem>test5</SortableItem>
         </SortContainer>
       </section>
     </>
