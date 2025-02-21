@@ -2,7 +2,6 @@ import React, { useMemo, useRef, useState } from "react";
 import { forwardRef, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import SortableContext from "./sortableContext";
-import { s } from "motion/react-client";
 
 interface DragContainerProps
   extends Omit<
@@ -44,7 +43,7 @@ const SortContainerInternal = ({
   });
   useEffect(() => {
     const childrenArray = React.Children.toArray(children);
-    console.log("childrenArray", childrenArray);
+    // console.log("childrenArray", childrenArray);
 
     //仅在长度变化时生成新key
     if (childIds.length !== childrenArray.length) {
@@ -57,7 +56,7 @@ const SortContainerInternal = ({
   const handleReorder = (oldIndex: number, newIndex: number) => {
     console.log("handleReorder");
 
-    console.log("Reordering from", oldIndex, "to", newIndex);
+    // console.log("Reordering from", oldIndex, "to", newIndex);
 
     setSortedChildren((prev) => {
       const newArray = [...prev];
@@ -68,18 +67,18 @@ const SortContainerInternal = ({
     });
     //同步更新key
     setChildIds((prev) => {
-      console.log("prev", prev);
+      // console.log("prev", prev);
 
       const newIds = [...prev];
       const [movedId] = newIds.splice(oldIndex, 1);
       newIds.splice(newIndex, 0, movedId);
-      console.log("newIds", newIds);
+      // console.log("newIds", newIds);
       return newIds;
     });
   };
 
   const renderedChildren = () => {
-    console.log("renderedChildren", sortedChildren);
+    // console.log("renderedChildren", sortedChildren);
 
     return sortedChildren.map((child, index) => {
       if (React.isValidElement(child)) {

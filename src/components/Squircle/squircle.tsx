@@ -66,7 +66,7 @@ export interface SquircleProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 const Squircle = (props: SquircleProps) => {
   const { children } = props;
-  const { isActive, width, height,unitSize } = useContext(SortableContext);
+  const { isActive, unitSize } = useContext(SortableContext);
 
   return (
     <Badge visible={isActive}>

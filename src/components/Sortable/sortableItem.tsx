@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import Squircle from "../Squircle/squircle";
 import Waggle from "../Waggle/waggle";
 import Draggable from "../Drag/draggable";
-import { Id } from "../../temp-store/useSortableStore";
+import { Id } from "../../type";
 
 interface SortableItemProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "id"> {

@@ -18,3 +18,4 @@ export interface ClientRectangle {
   x: number; //x与y和left与top是一样的
   y: number;
 }
+export type Id = number | string;

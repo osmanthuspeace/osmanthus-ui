@@ -15,7 +15,7 @@ const Waggle: React.FC<WaggleProps> = ({
   offsetY = 0.5,
 }) => {
   const delay = useMemo(() => Math.random() * 2, []);
-  const { isActive, width, height, unitSize } = useContext(SortableContext);
+  const { isActive, unitSize } = useContext(SortableContext);
 
   const initialConfig = {
     rotate: 0,
