@@ -62,18 +62,17 @@ const SquircleInternal = forwardRef<HTMLDivElement, SquircleInternalProps>(
   SquircleRefRenderFunction
 );
 
-export interface SquircleProps extends React.HTMLAttributes<HTMLDivElement> {
-}
+export interface SquircleProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 const Squircle = (props: SquircleProps) => {
   const { children } = props;
-  const { isActive, width, height } = useContext(SortableContext);
+  const { isActive, width, height,unitSize } = useContext(SortableContext);
 
   return (
     <Badge visible={isActive}>
       <SquircleInternal
-        width={width}
-        height={height}
+        width={unitSize}
+        height={unitSize}
         radius="auto"
         roundness={0}
         enableBorder={true}
