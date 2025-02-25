@@ -6,16 +6,17 @@ import { Id } from "../../type";
 
 interface SortableItemProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "id"> {
-  id: Id;
-  index: number;
+  id?: Id;
+  index?: number;
   width?: number;
   height?: number;
 }
 
 const SortableItemInternal = (props: SortableItemProps) => {
   const { id, index, children } = props;
+
   return (
-    <Draggable id={id} thisIndex={index} className="drag-item">
+    <Draggable className="drag-item" id={id!} thisIndex={index!}>
       <Waggle className="waggle-item">
         <Squircle className="squircle">{children}</Squircle>
       </Waggle>

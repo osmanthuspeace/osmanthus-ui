@@ -35,6 +35,7 @@ const SortContainerInternal = ({
   const [childIds, setChildIds] = useState<string[]>([]);
   const [sortedChildren, setSortedChildren] = useState<React.ReactNode[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isMoved, setIsMoved] = useState(false);
   const containerPadding = gridGap;
   const [draggingState, setDraggingState] = useState<DraggingState>({
     activeIndex: null,
@@ -78,15 +79,14 @@ const SortContainerInternal = ({
   };
 
   const renderedChildren = () => {
-    // console.log("renderedChildren", sortedChildren);
-
     return sortedChildren.map((child, index) => {
       if (React.isValidElement(child)) {
+        //这些属性会添加到SortableItem的props中
         return React.cloneElement(child, {
           ...child.props,
           key: childIds[index],
           id: childIds[index],
-          index,
+          index: index,
         });
       }
       return child;
@@ -100,6 +100,8 @@ const SortContainerInternal = ({
           width,
           height,
           isActive,
+          isMoved,
+          setIsMoved,
           unitSize: unitSize,
           gridLayout: {
             columns: gridTemplateColumns,

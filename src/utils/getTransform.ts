@@ -13,6 +13,16 @@ const getTransform = (
 ) => {
   let transform = { x: 0, y: 0 };
 
+  
+  console.log(
+    "thisIndex",
+    thisIndex,
+    "activeIndex",
+    draggingState.activeIndex,
+    "overIndex",
+    draggingState.overIndex
+  );
+
   if (
     draggingState.activeIndex === null ||
     draggingState.overIndex === null ||
@@ -45,7 +55,7 @@ const getTransform = (
   }
 
   //当拖动元素向左移动时
-  if (draggingState.overIndex < draggingState.activeIndex) {
+  else if (draggingState.overIndex < draggingState.activeIndex) {
     if (
       thisIndex >= draggingState.overIndex &&
       thisIndex < draggingState.activeIndex
@@ -65,8 +75,11 @@ const getTransform = (
         };
       }
     }
+  } else if (draggingState.overIndex === draggingState.activeIndex) {
+    console.log(thisIndex, "回到原位");
+    //拖动元素回到原位
+    transform = { x: 0, y: 0 };
   }
-  // console.log("transform", thisIndex, transform);
   return transform;
 };
 export default getTransform;
