@@ -21,21 +21,25 @@ export interface DraggingState {
   overIndex: number | null;
   itemCount: number;
 }
-const SortContainerInternal = ({
-  children,
-  width = 250,
-  height = 550,
-  unitSize = 100,
-  gridTemplateRows = 4,
-  gridTemplateColumns = 2,
-  gridGap = 50,
-  isActive = false,
-  ...rest
-}: DragContainerProps) => {
+const SortContainerInternal = (
+  {
+    children,
+    width = 250,
+    height = 550,
+    unitSize = 100,
+    gridTemplateRows = 4,
+    gridTemplateColumns = 2,
+    gridGap = 50,
+    isActive = false,
+    ...rest
+  }: DragContainerProps,
+  ref: React.Ref<HTMLDivElement>
+) => {
   const [childIds, setChildIds] = useState<string[]>([]);
   const [sortedChildren, setSortedChildren] = useState<React.ReactNode[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMoved, setIsMoved] = useState(false);
+  const [shouldClearTransform, setShouldClearTransform] = useState(false);
   const containerPadding = gridGap;
   const [draggingState, setDraggingState] = useState<DraggingState>({
     activeIndex: null,
@@ -102,6 +106,8 @@ const SortContainerInternal = ({
           isActive,
           isMoved,
           setIsMoved,
+          shouldClearTransform,
+          setShouldClearTransform,
           unitSize: unitSize,
           gridLayout: {
             columns: gridTemplateColumns,
@@ -126,6 +132,7 @@ const SortContainerInternal = ({
             gridGap: `${gridGap}px`,
             padding: `${gridGap}px`,
           }}
+          ref={ref}
           className="drag-container"
         >
           {renderedChildren()}

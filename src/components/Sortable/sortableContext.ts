@@ -6,6 +6,8 @@ interface SortableContextProps {
   height: number;
   isActive: boolean;
   isMoved: boolean;
+  shouldClearTransform: boolean;
+  setShouldClearTransform: React.Dispatch<React.SetStateAction<boolean>>;
   setIsMoved: React.Dispatch<React.SetStateAction<boolean>>;
   onReorder: (oldIndex: number, newIndex: number) => void;
   unitSize: number;
@@ -28,6 +30,8 @@ const defaultContext: SortableContextProps = {
   setIsMoved: () => {},
   onReorder: () => {},
   unitSize: 100,
+  shouldClearTransform: false,
+  setShouldClearTransform: () => {},
   gridLayout: {
     columns: 2,
     rows: 4,

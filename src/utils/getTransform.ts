@@ -13,15 +13,14 @@ const getTransform = (
 ) => {
   let transform = { x: 0, y: 0 };
 
-  
-  console.log(
-    "thisIndex",
-    thisIndex,
-    "activeIndex",
-    draggingState.activeIndex,
-    "overIndex",
-    draggingState.overIndex
-  );
+  // console.log(
+  //   "thisIndex",
+  //   thisIndex,
+  //   "activeIndex",
+  //   draggingState.activeIndex,
+  //   "overIndex",
+  //   draggingState.overIndex
+  // );
 
   if (
     draggingState.activeIndex === null ||
@@ -76,7 +75,6 @@ const getTransform = (
       }
     }
   } else if (draggingState.overIndex === draggingState.activeIndex) {
-    console.log(thisIndex, "回到原位");
     //拖动元素回到原位
     transform = { x: 0, y: 0 };
   }

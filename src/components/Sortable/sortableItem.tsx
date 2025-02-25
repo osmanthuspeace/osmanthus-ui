@@ -12,11 +12,14 @@ interface SortableItemProps
   height?: number;
 }
 
-const SortableItemInternal = (props: SortableItemProps) => {
+const SortableItemInternal = (
+  props: SortableItemProps,
+  ref: React.Ref<HTMLDivElement>
+) => {
   const { id, index, children } = props;
 
   return (
-    <Draggable className="drag-item" id={id!} thisIndex={index!}>
+    <Draggable className="drag-item" id={id!} thisIndex={index!} ref={ref}>
       <Waggle className="waggle-item">
         <Squircle className="squircle">{children}</Squircle>
       </Waggle>

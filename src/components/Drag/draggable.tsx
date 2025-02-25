@@ -3,6 +3,7 @@ import {
   PanInfo,
   useAnimate,
   useAnimationControls,
+  useDragControls,
 } from "motion/react";
 import { act, forwardRef, Ref, useContext, useEffect, useState } from "react";
 import { throttle } from "../../utils/throttle";
@@ -14,7 +15,11 @@ import { calculateIndexByCooridnate } from "../../utils/calculate";
 import { useComposeRef } from "../../utils/ref";
 import { Id } from "../../type";
 import getTransform from "../../utils/getTransform";
-import { useThrottle, useThrottleWithRuturnValue } from "../../hooks/useThrottle";
+import {
+  useThrottle,
+  useThrottleWithRuturnValue,
+} from "../../hooks/useThrottle";
+import { parseTransform } from "../../utils/parseTransform";
 interface Translate {
   x: number;
   y: number;
@@ -32,6 +37,8 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
     onReorder,
     isMoved,
     setIsMoved,
+    shouldClearTransform,
+    setShouldClearTransform,
     unitSize,
     gridLayout,
     draggingState,
@@ -54,7 +61,15 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
 
   const thisTransform = useThrottleWithRuturnValue(getTransform);
 
-  const controls = useAnimationControls();
+  const animateControls = useAnimationControls();
+
+  useEffect(() => {
+    if (shouldClearTransform) {
+      animateControls.set({ x: 0, y: 0 });
+      animateControls.stop();
+      setShouldClearTransform(false);
+    }
+  }, [animateControls, setShouldClearTransform, shouldClearTransform]);
 
   const handleDragStart = () => {
     console.log("handleDragStart");
@@ -115,22 +130,25 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         gridLayout,
         unitSize
       );
+      if (!transform) {
+        throw new Error("transform is null");
+      }
 
       if (transform.x !== 0 || transform.y !== 0) {
-        controls.start({
+        animateControls.start({
           x: transform.x,
           y: transform.y,
           transition: { type: "spring", stiffness: 300, damping: 30 },
         });
       } else {
         // controls.stop();
-        controls.set({ x: 0, y: 0 });
+        animateControls.set({ x: 0, y: 0 });
       }
     } catch (e) {
       console.error("error", e);
     }
   }, [
-    controls,
+    animateControls,
     draggingState,
     gridLayout,
     isDragEnd,
@@ -144,20 +162,17 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
     console.log("handleDragEnd");
 
     if (!thisRef.current) return;
-    const transform = thisRef.current.style.transform;
-    const regex = /translateX\(([-\d.]+)px\)\s*translateY\(([-\d.]+)px\)/;
-    const matrix = transform.match(regex);
-    if (!matrix) return;
-    const translateX = parseFloat(matrix[1]);
-    const translateY = parseFloat(matrix[2]);
+    const [translateX, translateY] = parseTransform(
+      thisRef.current.style.transform
+    );
 
     // 重置样式
     if (Math.abs(translateX) < 100 && Math.abs(translateY) < 100) {
-      console.log("back");
-      await controls.start({
+      console.log("still in own cell");
+      animateControls.set({
         x: 0,
         y: 0,
-        transition: { duration: 0.1 },
+        transition: { type: "spring", stiffness: 300, damping: 30 },
       });
     } else {
       console.log("in other cell");
@@ -165,42 +180,42 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       const { x, y } = getCoordinate(e.target as HTMLElement);
 
       const newIndex = calculateIndexByCooridnate(x, y, 50, 50, 100, 0, 0, 2);
-      if (newIndex !== thisIndex) {
-        console.log("enter other cell");
 
-        setDraggingState((prev) => ({
-          ...prev,
-          activeIndex: null,
-          overIndex: null,
-        }));
-        onReorder(thisIndex, newIndex);
-        console.log("settimeout");
-        await controls.start({
-          x: 0,
-          y: 0,
-          transition: { duration: 1 },
-        });
-        // thisRef.current.style.transform = "none";
+      console.log("enter other cell");
 
-        setIsDragEnd(true);
-      } else {
-        await controls.start({
-          x: 0,
-          y: 0,
-          transition: { type: "spring", stiffness: 300, damping: 20 },
-        });
-      }
+      setDraggingState((prev) => ({
+        ...prev,
+        activeIndex: null,
+        overIndex: null,
+      }));
+      onReorder(thisIndex, newIndex);
+      animateControls.set({
+        x: 0,
+        y: 0,
+      });
+
+      setShouldClearTransform(true);
+      setIsMoved(false);
+      setIsDragEnd(true);
     }
   };
-  const throttledHandleOnDrag = throttle(handleOnDrag, 1000);
+  const temp_handleClick = () => {
+    thisRef.current.style.transform = "none";
+    // controls.set({
+    //   x: 0,
+    //   y: 0,
+    // });
+  };
+
+  const throttledHandleOnDrag = throttle(handleOnDrag, 100);
 
   return (
     <>
       <motion.div
         className="drag-item"
         ref={composedRef}
-        // layout
-        // layoutId={id.toString()}
+        layout
+        layoutId={id.toString()}
         drag
         dragMomentum={false} //拖动惯性
         dragElastic={0.1}
@@ -210,21 +225,12 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         onDragStart={() => handleDragStart()}
         onDrag={(e, info) => throttledHandleOnDrag(e, info)}
         onDragEnd={(e) => handleDragEnd(e as MouseEvent)}
-        // variants={{
-        //   movement: thisTransform(
-        //     thisIndex,
-        //     draggingState,
-        //     gridLayout,
-        //     unitSize
-        //   ),
-        //   noMove: { x: 0, y: 0 },
-        // }}
-        animate={controls}
+        onDragTransitionEnd={() => console.log("Drag transition complete")}
+        animate={animateControls}
         style={
           {
             width: `${unitSize}px`,
             height: `${unitSize}px`,
-
             ...style,
             "--translate-x": `${_transform?.x ?? 0}px`,
             "--translate-y": `${_transform?.y ?? 0}px`,
@@ -232,6 +238,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         }
       >
         {children}
+        <button onClick={temp_handleClick}>重制测试</button>
       </motion.div>
     </>
   );
