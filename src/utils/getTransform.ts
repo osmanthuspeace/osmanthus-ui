@@ -13,15 +13,6 @@ const getTransform = (
 ) => {
   let transform = { x: 0, y: 0 };
 
-  // console.log(
-  //   "thisIndex",
-  //   thisIndex,
-  //   "activeIndex",
-  //   draggingState.activeIndex,
-  //   "overIndex",
-  //   draggingState.overIndex
-  // );
-
   if (
     draggingState.activeIndex === null ||
     draggingState.overIndex === null ||
@@ -33,7 +24,7 @@ const getTransform = (
   if (draggingState.overIndex > draggingState.activeIndex) {
     //如果当前元素在拖动元素的路径上，则需要移动
     if (
-      thisIndex > draggingState.activeIndex &&
+      thisIndex >= draggingState.activeIndex &&
       thisIndex <= draggingState.overIndex
     ) {
       if (thisIndex % gridLayout.columns === 0) {
@@ -57,7 +48,7 @@ const getTransform = (
   else if (draggingState.overIndex < draggingState.activeIndex) {
     if (
       thisIndex >= draggingState.overIndex &&
-      thisIndex < draggingState.activeIndex
+      thisIndex <= draggingState.activeIndex
     ) {
       if (thisIndex % gridLayout.columns === gridLayout.columns - 1) {
         transform = {
@@ -78,6 +69,17 @@ const getTransform = (
     //拖动元素回到原位
     transform = { x: 0, y: 0 };
   }
+  console.log(
+    "thisIndex",
+    thisIndex,
+    "activeIndex",
+    draggingState.activeIndex,
+    "overIndex",
+    draggingState.overIndex,
+    "transform",
+    transform
+  );
+
   return transform;
 };
 export default getTransform;

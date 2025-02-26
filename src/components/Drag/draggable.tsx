@@ -1,11 +1,12 @@
+import { motion, useAnimate } from "motion/react";
 import {
-  motion,
-  PanInfo,
-  useAnimate,
-  useAnimationControls,
-  useDragControls,
-} from "motion/react";
-import { act, forwardRef, Ref, useContext, useEffect, useState } from "react";
+  forwardRef,
+  Ref,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { throttle } from "../../utils/throttle";
 import "./draggable.css";
 import SortableContext from "../Sortable/sortableContext";
@@ -15,10 +16,7 @@ import { calculateIndexByCooridnate } from "../../utils/calculate";
 import { useComposeRef } from "../../utils/ref";
 import { Id } from "../../type";
 import getTransform from "../../utils/getTransform";
-import {
-  useThrottle,
-  useThrottleWithRuturnValue,
-} from "../../hooks/useThrottle";
+import { useThrottleWithRuturnValue } from "../../hooks/useThrottle";
 import { parseTransform } from "../../utils/parseTransform";
 interface Translate {
   x: number;
@@ -39,92 +37,47 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
     setIsMoved,
     shouldClearTransform,
     setShouldClearTransform,
+    isStart,
+    setIsStart,
+    containerCooridnate,
     unitSize,
     gridLayout,
     draggingState,
     setDraggingState,
   } = useContext(SortableContext);
 
-  // const [originCoordinate, setOriginCoordinate] = useState({
-  //   x: 0,
-  //   y: 0,
-  // });
   const [_transform, setTransform] = useState<Translate | undefined>(undefined);
   const [isDragEnd, setIsDragEnd] = useState(false);
-  //追踪activeIndex的元素是否时拖动之后回到原位
-  // const [isMoved, setIsMoved] = useState(false);
+
   //追踪是否进入过其他的cell
   const [isOuted, setIsOuted] = useState(false);
   const thisRef = useRef<HTMLDivElement>(null);
 
-  const composedRef = useComposeRef(thisRef, ref);
-
   const thisTransform = useThrottleWithRuturnValue(getTransform);
 
-  const animateControls = useAnimationControls();
+  const [scope, animate] = useAnimate<HTMLDivElement>();
+  const composedRef = useComposeRef(scope, thisRef, ref);
 
+  //在拖拽结束后，每一个组件都要将transform清除
   useEffect(() => {
     if (shouldClearTransform) {
-      animateControls.set({ x: 0, y: 0 });
-      animateControls.stop();
+      // thisRef.current.style.transform = "none";
+      animate(scope.current, { x: 0, y: 0 }, { duration: 0 });
       setShouldClearTransform(false);
     }
-  }, [animateControls, setShouldClearTransform, shouldClearTransform]);
+  }, [animate, scope, setShouldClearTransform, shouldClearTransform]);
 
-  const handleDragStart = () => {
-    console.log("handleDragStart");
-    setIsMoved(false);
-    setDraggingState((prev) => ({
-      ...prev,
-      activeIndex: thisIndex,
-    }));
-  };
-  const handleOnDrag = (e: MouseEvent) => {
-    if (!thisRef.current) return;
-    const transform = thisRef.current.style.transform;
-    const matrix = transform.match(/^translate\(([^,]+)px, ([^,]+)px\)$/);
-    if (matrix) {
-      setTransform({
-        x: parseFloat(matrix[1]),
-        y: parseFloat(matrix[2]),
-      });
-    }
-    console.log("handleOnDrag");
-
-    const { x, y } = getCoordinate(e.target as HTMLElement);
-
-    //检测状态，是否进入了其他的cell
-    const newIndex = calculateIndexByCooridnate(x, y, 50, 50, 100, 0, 0, 2);
-
-    if (newIndex !== thisIndex) {
-      console.log("enter other cell");
-      //此时不应该调用onReorder，因为会导致重新渲染
-      //此时应该让这个index之后的元素都往前/后移动
-      if (newIndex !== draggingState.overIndex) {
-        setDraggingState((prev) => ({
-          ...prev,
-          overIndex: newIndex,
-        }));
-      }
-      setIsOuted(true);
-    } else {
-      if (isOuted) {
-        setIsMoved(true);
-        setDraggingState((prev) => ({
-          ...prev,
-          overIndex: newIndex,
-        }));
-      }
-
-      //...
-    }
-  };
-
+  //拖拽过程中，实时更新transform
   useEffect(() => {
-    if (draggingState.activeIndex === null || isDragEnd) return;
-
+    if (
+      draggingState.activeIndex === null ||
+      draggingState.overIndex === null ||
+      thisIndex === draggingState.activeIndex ||
+      isDragEnd
+    )
+      return;
     try {
-      const transform = thisTransform(
+      const transform = getTransform(
         thisIndex,
         draggingState,
         gridLayout,
@@ -133,82 +86,132 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       if (!transform) {
         throw new Error("transform is null");
       }
-
-      if (transform.x !== 0 || transform.y !== 0) {
-        animateControls.start({
-          x: transform.x,
-          y: transform.y,
-          transition: { type: "spring", stiffness: 300, damping: 30 },
-        });
-      } else {
-        // controls.stop();
-        animateControls.set({ x: 0, y: 0 });
-      }
+      animate(scope.current, transform, { duration: 0.3 });
     } catch (e) {
       console.error("error", e);
     }
-  }, [
-    animateControls,
-    draggingState,
-    gridLayout,
-    isDragEnd,
-    thisIndex,
-    thisTransform,
-    unitSize,
-    isMoved,
-  ]);
+  }, [draggingState.overIndex]);
 
-  const handleDragEnd = async (e: MouseEvent) => {
-    console.log("handleDragEnd");
+  //开始拖拽
+  const handleDragStart = () => {
+    console.log("handleDragStart");
+    setIsMoved(false);
+    setIsStart(true);
+    setDraggingState((prev) => ({
+      ...prev,
+      activeIndex: thisIndex,
+    }));
+  };
+  //拖拽过程中
+  const handleOnDrag = useCallback(
+    (e: MouseEvent) => {
+      console.log("handleOnDrag");
 
-    if (!thisRef.current) return;
-    const [translateX, translateY] = parseTransform(
-      thisRef.current.style.transform
-    );
-
-    // 重置样式
-    if (Math.abs(translateX) < 100 && Math.abs(translateY) < 100) {
-      console.log("still in own cell");
-      animateControls.set({
-        x: 0,
-        y: 0,
-        transition: { type: "spring", stiffness: 300, damping: 30 },
-      });
-    } else {
-      console.log("in other cell");
+      if (!thisRef.current) return;
+      const transform = thisRef.current.style.transform;
+      const matrix = transform.match(/^translate\(([^,]+)px, ([^,]+)px\)$/);
+      if (matrix) {
+        setTransform({
+          x: parseFloat(matrix[1]),
+          y: parseFloat(matrix[2]),
+        });
+      }
 
       const { x, y } = getCoordinate(e.target as HTMLElement);
 
-      const newIndex = calculateIndexByCooridnate(x, y, 50, 50, 100, 0, 0, 2);
+      const newIndex = calculateIndexByCooridnate(
+        x,
+        y,
+        50,
+        50,
+        100,
+        containerCooridnate.x,
+        containerCooridnate.y,
+        2
+      );
+      //检测状态，是否进入了其他的cell
+      if (newIndex !== thisIndex) {
+        console.log("enter other cell", newIndex);
+        //此时不应该调用onReorder，因为会导致重新渲染，而应该让这个index之后的元素都往前/后移动
+        if (newIndex !== draggingState.overIndex) {
+          setDraggingState((prev) => ({
+            ...prev,
+            overIndex: newIndex,
+          }));
+        }
+        setIsOuted(true);
+      } else {
+        if (isOuted) {
+          setIsMoved(true);
+          setDraggingState((prev) => ({
+            ...prev,
+            overIndex: newIndex,
+          }));
+        }
 
-      console.log("enter other cell");
+        //...
+      }
+    },
+    [
+      containerCooridnate.x,
+      containerCooridnate.y,
+      draggingState.overIndex,
+      isOuted,
+      setDraggingState,
+      setIsMoved,
+      thisIndex,
+    ]
+  );
 
+  //结束拖拽
+  const handleDragEnd = async (e: MouseEvent) => {
+    console.log("handleDragEnd");
+    if (!scope.current) return;
+    try {
+      if (!thisRef.current) return;
+      const [translateX, translateY] = parseTransform(
+        thisRef.current.style.transform
+      );
+
+      if (Math.abs(translateX) > 100 || Math.abs(translateY) > 100) {
+        const { x, y } = getCoordinate(e.target as HTMLElement);
+
+        const newIndex = calculateIndexByCooridnate(
+          x,
+          y,
+          50,
+          50,
+          100,
+          containerCooridnate.x,
+          containerCooridnate.y,
+          2
+        );
+        onReorder(thisIndex, newIndex);
+        // 重置样式
+      }
       setDraggingState((prev) => ({
         ...prev,
         activeIndex: null,
         overIndex: null,
       }));
-      onReorder(thisIndex, newIndex);
-      animateControls.set({
-        x: 0,
-        y: 0,
-      });
-
       setShouldClearTransform(true);
+    } catch (error) {
+      console.error("拖拽结束处理出错:", error);
+    } finally {
       setIsMoved(false);
       setIsDragEnd(true);
+      setIsStart(false);
     }
   };
+
+  //将handleOnDrag函数节流
+  useEffect(() => {
+    throttledHandleOnDragRef.current = throttle(handleOnDrag, 100);
+  }, [handleOnDrag]);
+  const throttledHandleOnDragRef = useRef(throttle(handleOnDrag, 100));
   const temp_handleClick = () => {
-    thisRef.current.style.transform = "none";
-    // controls.set({
-    //   x: 0,
-    //   y: 0,
-    // });
+    thisRef.current!.style.transform = "none";
   };
-
-  const throttledHandleOnDrag = throttle(handleOnDrag, 100);
-
   return (
     <>
       <motion.div
@@ -223,10 +226,9 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         dragTransition={{ bounceStiffness: 100, bounceDamping: 10 }} //回弹效果
         transition={{ type: "spring", stiffness: 300, damping: 30 }} //速度，减速度
         onDragStart={() => handleDragStart()}
-        onDrag={(e, info) => throttledHandleOnDrag(e, info)}
+        onDrag={(e) => throttledHandleOnDragRef.current(e as MouseEvent)}
         onDragEnd={(e) => handleDragEnd(e as MouseEvent)}
         onDragTransitionEnd={() => console.log("Drag transition complete")}
-        animate={animateControls}
         style={
           {
             width: `${unitSize}px`,
@@ -236,6 +238,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
             "--translate-y": `${_transform?.y ?? 0}px`,
           } as React.CSSProperties
         }
+        exit={{ opacity: 0 }}
       >
         {children}
         <button onClick={temp_handleClick}>重制测试</button>

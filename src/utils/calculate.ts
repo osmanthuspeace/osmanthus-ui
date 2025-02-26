@@ -23,8 +23,28 @@ export const calculateIndexByCooridnate = (
   containerY: number,
   column: number
 ) => {
-  const row = Math.floor((y - containerY - padding) / (itemUnit + gap));
-  const col = Math.floor((x - containerX - padding) / (itemUnit + gap));
+  // console.log(
+  //   "x",
+  //   x,
+  //   "y",
+  //   y,
+  //   "padding",
+  //   padding,
+  //   "gap",
+  //   gap,
+  //   "itemUnit",
+  //   itemUnit,
+  //   "containerX",
+  //   containerX,
+  //   "containerY",
+  //   containerY,
+  //   "column",
+  //   column
+  // );
+
+  const row = Math.round((y - containerY - padding) / (itemUnit + gap));
+  const col = Math.round((x - containerX - padding) / (itemUnit + gap));
+  // console.log("row", row, "col", col);
   const index = row * column + col;
   return index;
 };

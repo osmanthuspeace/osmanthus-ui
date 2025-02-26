@@ -2,8 +2,9 @@ import React, { useMemo, useRef, useState } from "react";
 import { forwardRef, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import SortableContext from "./sortableContext";
+import { useComposeRef } from "../../utils/ref";
 
-interface DragContainerProps
+interface SortContainerProps
   extends Omit<
     React.HTMLAttributes<HTMLDivElement>,
     "onDrag" | "onDragStart" | "onDragEnd" | "onAnimationStart"
@@ -21,6 +22,11 @@ export interface DraggingState {
   overIndex: number | null;
   itemCount: number;
 }
+export interface SortableItemState {
+  id: string;
+  index: number;
+  content: React.ReactNode;
+}
 const SortContainerInternal = (
   {
     children,
@@ -32,20 +38,29 @@ const SortContainerInternal = (
     gridGap = 50,
     isActive = false,
     ...rest
-  }: DragContainerProps,
+  }: SortContainerProps,
   ref: React.Ref<HTMLDivElement>
 ) => {
   const [childIds, setChildIds] = useState<string[]>([]);
   const [sortedChildren, setSortedChildren] = useState<React.ReactNode[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
+  const composedRef = useComposeRef(
+    containerRef,
+    ref
+  ) as React.RefObject<HTMLDivElement>;
   const [isMoved, setIsMoved] = useState(false);
   const [shouldClearTransform, setShouldClearTransform] = useState(false);
+  const [containerCooridnate, setContainerCooridnate] = useState({
+    x: 0,
+    y: 0,
+  });
   const containerPadding = gridGap;
   const [draggingState, setDraggingState] = useState<DraggingState>({
     activeIndex: null,
     overIndex: null,
     itemCount: 0,
   });
+  const [isStart, setIsStart] = useState(false);
   useEffect(() => {
     const childrenArray = React.Children.toArray(children);
     // console.log("childrenArray", childrenArray);
@@ -58,11 +73,25 @@ const SortContainerInternal = (
     setSortedChildren(childrenArray);
   }, [children, childIds.length]);
 
+  useEffect(() => {
+    if (!composedRef) {
+      throw new Error("containerRef is null");
+    }
+    const observer = new ResizeObserver(() => {
+      if (composedRef.current) {
+        const { x, y } = composedRef.current.getBoundingClientRect();
+        setContainerCooridnate({ x, y });
+      }
+    });
+    if (composedRef.current) {
+      observer.observe(composedRef.current);
+    }
+    return () => observer.disconnect();
+  }, [composedRef]);
+
   const handleReorder = (oldIndex: number, newIndex: number) => {
-    console.log("handleReorder");
-
+    console.log("!!!!!!!handleReorder");
     // console.log("Reordering from", oldIndex, "to", newIndex);
-
     setSortedChildren((prev) => {
       const newArray = [...prev];
       const [removed] = newArray.splice(oldIndex, 1);
@@ -82,7 +111,7 @@ const SortContainerInternal = (
     });
   };
 
-  const renderedChildren = () => {
+  const renderedChildren = useMemo(() => {
     return sortedChildren.map((child, index) => {
       if (React.isValidElement(child)) {
         //这些属性会添加到SortableItem的props中
@@ -95,7 +124,7 @@ const SortContainerInternal = (
       }
       return child;
     });
-  };
+  }, [childIds, sortedChildren]);
 
   return (
     <>
@@ -106,9 +135,12 @@ const SortContainerInternal = (
           isActive,
           isMoved,
           setIsMoved,
+          isStart,
+          setIsStart,
           shouldClearTransform,
           setShouldClearTransform,
           unitSize: unitSize,
+          containerCooridnate,
           gridLayout: {
             columns: gridTemplateColumns,
             rows: gridTemplateRows,
@@ -131,17 +163,18 @@ const SortContainerInternal = (
             gridTemplateColumns: `repeat(${gridTemplateColumns}, 1fr)`,
             gridGap: `${gridGap}px`,
             padding: `${gridGap}px`,
+            margin: "0 auto",
           }}
-          ref={ref}
+          ref={composedRef}
           className="drag-container"
         >
-          {renderedChildren()}
+          {renderedChildren}
         </div>
       </SortableContext.Provider>
     </>
   );
 };
-const SortContainer = forwardRef<HTMLDivElement, DragContainerProps>(
+const SortContainer = forwardRef<HTMLDivElement, SortContainerProps>(
   SortContainerInternal
 );
 export default SortContainer;
