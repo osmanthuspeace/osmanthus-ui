@@ -177,4 +177,4 @@ const SortContainerInternal = (
 const SortContainer = forwardRef<HTMLDivElement, SortContainerProps>(
   SortContainerInternal
 );
-export default SortContainer;
+export { SortContainer };

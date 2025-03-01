@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import Squircle from "../Squircle/squircle";
 import Waggle from "../Waggle/waggle";
-import Draggable from "../Drag/draggable";
+import { Draggable } from "../Drag/draggable";
 import { Id } from "../../type";
 
 interface SortableItemProps
@@ -29,4 +29,4 @@ const SortableItemInternal = (
 const SortableItem = forwardRef<HTMLDivElement, SortableItemProps>(
   SortableItemInternal
 );
-export default SortableItem;
+export { SortableItem };

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import "./App.css";
 
-import SortableItem from "./components/Sortable/sortableItem";
-import SortContainer from "./components/Sortable/sortContainer";
+import { SortableItem } from "./components/Sortable/sortableItem";
+import { SortContainer } from "./components/Sortable/sortContainer";
 
 function App() {
   const [isEditing, setIsActive] = useState(false);
