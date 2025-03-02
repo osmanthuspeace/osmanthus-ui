@@ -1,1 +1,1 @@
-export * from "./waggle"
+export { Waggle } from "./waggle";

@@ -1,4 +1,4 @@
-import { motion, useAnimate } from "motion/react";
+import { motion } from "motion/react";
 import {
   forwardRef,
   Ref,
@@ -8,17 +8,13 @@ import {
   useState,
 } from "react";
 import { throttle } from "../../utils/throttle";
-import "./draggable.css";
 import SortableContext from "../Sortable/sortableContext";
-import { getCoordinate } from "../../utils/getCoordinate";
 import { useRef } from "react";
-import { calculateIndexByCooridnate } from "../../utils/calculate";
-import { useComposeRef } from "../../utils/ref";
+import { useComposeRef } from "../../hooks/useComposeRef";
 import { Id } from "../../type";
-import getTransform from "../../utils/getTransform";
-import { useThrottleWithRuturnValue } from "../../hooks/useThrottle";
-import { parseTransform } from "../../utils/parseTransform";
-
+import { parseTransform } from "./_utils/parseTransform";
+import { usePositionCalculator } from "./hooks/usePositionCalculator";
+import { useTransformControl } from "./hooks/useTransformControl";
 interface DragItemProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "id" | "translate"> {
   id: Id;
@@ -30,70 +26,32 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
     onReorder,
     shouldClearTransform,
     setShouldClearTransform,
-    containerCooridnate,
+    containerCoordinate,
     unitSize,
     gridLayout,
     draggingState,
     setDraggingState,
   } = useContext(SortableContext);
 
-  const [isDragEnd, setIsDragEnd] = useState(false);
+  const { calculateNewIndex } = usePositionCalculator(
+    gridLayout,
+    unitSize,
+    containerCoordinate
+  );
 
   //追踪是否进入过其他的cell
   const [isOuted, setIsOuted] = useState(false);
   const thisRef = useRef<HTMLDivElement>(null);
 
-  const [shouldBack, setShouldBack] = useState(false);
-
-  const thisTransform = useThrottleWithRuturnValue(getTransform);
-
-  const [scope, animate] = useAnimate<HTMLDivElement>();
-  const composedRef = useComposeRef(scope, thisRef, ref);
-
-  //在拖拽结束后，每一个组件都要将transform清除
-  useEffect(() => {
-    if (shouldClearTransform) {
-      if (shouldBack) {
-        //这里有问题，TODO：通过index计算出transform，再回到0
-        animate(scope.current, { x: 0, y: 0 }, { duration: 0 });
-        setShouldBack(false);
-      } else {
-        animate(scope.current, { x: 0, y: 0 }, { duration: 0 });
-      }
-      setShouldClearTransform(false);
-    }
-  }, [
-    animate,
-    scope,
-    setShouldClearTransform,
-    shouldBack,
+  const [scope, animate, setShouldBack] = useTransformControl(
+    thisIndex,
+    draggingState,
+    gridLayout,
+    unitSize,
     shouldClearTransform,
-  ]);
-
-  //拖拽过程中，实时更新transform
-  useEffect(() => {
-    if (
-      draggingState.activeIndex === null ||
-      draggingState.overIndex === null ||
-      thisIndex === draggingState.activeIndex ||
-      isDragEnd
-    )
-      return;
-    try {
-      const transform = thisTransform(
-        thisIndex,
-        draggingState,
-        gridLayout,
-        unitSize
-      );
-      if (!transform) {
-        throw new Error("transform is null");
-      }
-      animate(scope.current, transform, { duration: 0.3 });
-    } catch (e) {
-      console.error("error", e);
-    }
-  }, [draggingState.overIndex]);
+    setShouldClearTransform
+  );
+  const composedRef = useComposeRef(scope, thisRef, ref);
 
   //开始拖拽
   const handleDragStart = () => {
@@ -108,18 +66,9 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   const handleOnDrag = useCallback(
     (e: MouseEvent) => {
       console.log("handleOnDrag");
-      const { x, y } = getCoordinate(e.target as HTMLElement);
 
-      const newIndex = calculateIndexByCooridnate(
-        x,
-        y,
-        50,
-        50,
-        100,
-        containerCooridnate.x,
-        containerCooridnate.y,
-        2
-      );
+      const newIndex = calculateNewIndex(e.target as HTMLElement);
+
       //检测状态，是否进入了其他的cell
       if (newIndex !== thisIndex) {
         // console.log("enter other cell", newIndex);
@@ -142,8 +91,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       }
     },
     [
-      containerCooridnate.x,
-      containerCooridnate.y,
+      calculateNewIndex,
       draggingState.overIndex,
       isOuted,
       setDraggingState,
@@ -163,18 +111,8 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       // console.log("translateX, translateY", translateX, translateY);
 
       if (Math.abs(translateX) > 85 || Math.abs(translateY) > 85) {
-        const { x, y } = getCoordinate(e.target as HTMLElement);
+        const newIndex = calculateNewIndex(e.target as HTMLElement);
 
-        const newIndex = calculateIndexByCooridnate(
-          x,
-          y,
-          50,
-          50,
-          100,
-          containerCooridnate.x,
-          containerCooridnate.y,
-          2
-        );
         onReorder(thisIndex, newIndex);
         // 重置样式
       } else {
@@ -188,8 +126,6 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       }));
     } catch (error) {
       console.error("拖拽结束处理出错:", error);
-    } finally {
-      setIsDragEnd(true);
     }
   };
 
@@ -207,21 +143,17 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         dragMomentum={false}
         dragElastic={0.1}
         whileDrag={{ scale: 1.05, zIndex: 100 }}
-        dragTransition={{ bounceStiffness: 100, bounceDamping: 10 }} //回弹效果
+        // dragTransition={{ bounceStiffness: 100, bounceDamping: 10 }} //回弹效果
         transition={{ type: "spring", stiffness: 300, damping: 30 }} //速度，减速度
         onDragStart={() => handleDragStart()}
         onDrag={(e) => throttledHandleOnDragRef.current(e as MouseEvent)}
         onDragEnd={(e) => handleDragEnd(e as MouseEvent)}
-        onDragTransitionEnd={() => {
-          console.log("Drag transition complete");
-        }}
+        onDragTransitionEnd={() => {}}
         style={
           {
             width: `${unitSize}px`,
             height: `${unitSize}px`,
             ...style,
-            // "--translate-x": `${_transform?.x ?? 0}px`,
-            // "--translate-y": `${_transform?.y ?? 0}px`,
           } as React.CSSProperties
         }
         exit={{ opacity: 0 }}

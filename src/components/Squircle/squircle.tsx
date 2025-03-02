@@ -62,10 +62,12 @@ const SquircleInternal = forwardRef<HTMLDivElement, SquircleInternalProps>(
   SquircleRefRenderFunction
 );
 
-export interface SquircleProps extends React.HTMLAttributes<HTMLDivElement> {}
+export interface SquircleProps extends React.HTMLAttributes<HTMLDivElement> {
+  enableBorder?: boolean;
+}
 
 const Squircle = (props: SquircleProps) => {
-  const { children } = props;
+  const { children, enableBorder } = props;
   const { isActive, unitSize } = useContext(SortableContext);
 
   return (
@@ -75,7 +77,7 @@ const Squircle = (props: SquircleProps) => {
         height={unitSize}
         radius="auto"
         roundness={0}
-        enableBorder={true}
+        enableBorder={enableBorder}
       >
         {children}
       </SquircleInternal>
@@ -83,4 +85,4 @@ const Squircle = (props: SquircleProps) => {
   );
 };
 
-export default Squircle;
+export { Squircle };

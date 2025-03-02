@@ -18,33 +18,22 @@ export const calculateIndexByCooridnate = (
   y: number,
   padding: number,
   gap: number,
-  itemUnit: number,
+  unitSize: number,
   containerX: number,
   containerY: number,
-  column: number
+  gridCol: number,
+  gridRow: number
 ) => {
-  // console.log(
-  //   "x",
-  //   x,
-  //   "y",
-  //   y,
-  //   "padding",
-  //   padding,
-  //   "gap",
-  //   gap,
-  //   "itemUnit",
-  //   itemUnit,
-  //   "containerX",
-  //   containerX,
-  //   "containerY",
-  //   containerY,
-  //   "column",
-  //   column
-  // );
-
-  const row = Math.round((y - containerY - padding) / (itemUnit + gap));
-  const col = Math.round((x - containerX - padding) / (itemUnit + gap));
+  // const centerOffset = unitSize / 2;
+  const maxRowIndex = gridRow - 1;
+  const maxColIndex = gridCol - 1;
+  let row = Math.round((y - containerY - padding) / (unitSize + gap));
+  row = row < 0 ? 0 : row;
+  row = row > maxRowIndex ? maxRowIndex : row;
+  let col = Math.round((x - containerX - padding) / (unitSize + gap));
+  col = col < 0 ? 0 : col;
+  col = col > maxColIndex ? maxColIndex : col;
   // console.log("row", row, "col", col);
-  const index = row * column + col;
+  const index = row * gridCol + col;
   return index;
 };

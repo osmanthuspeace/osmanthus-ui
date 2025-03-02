@@ -1,1 +1,1 @@
-export * from "./squircle"
+export { Squircle } from "./squircle";

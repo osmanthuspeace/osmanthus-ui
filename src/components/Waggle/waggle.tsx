@@ -54,4 +54,4 @@ const Waggle: React.FC<WaggleProps> = ({
     </>
   );
 };
-export default Waggle;
+export { Waggle };
