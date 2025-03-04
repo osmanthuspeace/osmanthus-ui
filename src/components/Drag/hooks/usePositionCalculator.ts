@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import { getCoordinate } from "../_utils/getCoordinate";
 import { calculateIndexByCooridnate } from "../_utils/calculate";
-import { GridLayout } from "../../Sortable/sortableContext";
 import { Coordinate } from "../../../type";
+import { GridLayout } from "../../Sortable/interface";
 
 export function usePositionCalculator(
   gridLayout: GridLayout,

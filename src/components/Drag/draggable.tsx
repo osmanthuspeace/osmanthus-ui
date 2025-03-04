@@ -11,15 +11,11 @@ import { throttle } from "../../utils/throttle";
 import SortableContext from "../Sortable/sortableContext";
 import { useRef } from "react";
 import { useComposeRef } from "../../hooks/useComposeRef";
-import { Id } from "../../type";
 import { parseTransform } from "./_utils/parseTransform";
 import { usePositionCalculator } from "./hooks/usePositionCalculator";
 import { useTransformControl } from "./hooks/useTransformControl";
-interface DragItemProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "id" | "translate"> {
-  id: Id;
-  thisIndex: number;
-}
+import { ComposedEvent, DragItemProps } from "./interface";
+
 const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   const { thisIndex, children, style } = props;
   const {
@@ -31,6 +27,9 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
     gridLayout,
     draggingState,
     setDraggingState,
+    onDragStart,
+    onDrag,
+    onDragEnd,
   } = useContext(SortableContext);
 
   const { calculateNewIndex } = usePositionCalculator(
@@ -54,8 +53,8 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   const composedRef = useComposeRef(scope, thisRef, ref);
 
   //开始拖拽
-  const handleDragStart = () => {
-    console.log("handleDragStart");
+  const handleDragStart = (e: ComposedEvent) => {
+    onDragStart?.(e);
     setShouldBack(true);
     setDraggingState((prev) => ({
       ...prev,
@@ -64,9 +63,8 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   };
   //拖拽过程中
   const handleOnDrag = useCallback(
-    (e: MouseEvent) => {
-      console.log("handleOnDrag");
-
+    (e: ComposedEvent) => {
+      onDrag?.(e);
       const newIndex = calculateNewIndex(e.target as HTMLElement);
 
       //检测状态，是否进入了其他的cell
@@ -94,14 +92,15 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       calculateNewIndex,
       draggingState.overIndex,
       isOuted,
+      onDrag,
       setDraggingState,
       thisIndex,
     ]
   );
 
   //结束拖拽
-  const handleDragEnd = async (e: MouseEvent) => {
-    console.log("handleDragEnd");
+  const handleDragEnd = async (e: ComposedEvent) => {
+    onDragEnd?.(e);
     if (!scope.current) return;
     try {
       if (!thisRef.current) return;
@@ -145,9 +144,9 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         whileDrag={{ scale: 1.05, zIndex: 100 }}
         // dragTransition={{ bounceStiffness: 100, bounceDamping: 10 }} //回弹效果
         transition={{ type: "spring", stiffness: 300, damping: 30 }} //速度，减速度
-        onDragStart={() => handleDragStart()}
-        onDrag={(e) => throttledHandleOnDragRef.current(e as MouseEvent)}
-        onDragEnd={(e) => handleDragEnd(e as MouseEvent)}
+        onDragStart={(e) => handleDragStart(e)}
+        onDrag={(e) => throttledHandleOnDragRef.current(e)}
+        onDragEnd={(e) => handleDragEnd(e)}
         onDragTransitionEnd={() => {}}
         style={
           {

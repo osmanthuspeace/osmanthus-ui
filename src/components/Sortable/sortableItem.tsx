@@ -2,17 +2,9 @@ import { forwardRef, useContext } from "react";
 import { Squircle } from "../Squircle/squircle";
 import { Waggle } from "../Waggle/waggle";
 import { Draggable } from "../Drag/draggable";
-import { Id } from "../../type";
 import SortableContext from "./sortableContext";
+import { SortableItemProps } from "./interface";
 
-interface SortableItemProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "id"> {
-  id?: Id;
-  index?: number;
-  width?: number;
-  height?: number;
-  enableBorder?: boolean;
-}
 
 const SortableItemInternal = (
   props: SortableItemProps,

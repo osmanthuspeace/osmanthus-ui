@@ -1,28 +1,6 @@
 import { createContext } from "react";
-import { DraggingState } from "./sortContainer";
+import { SortableContextProps } from "./interface";
 
-export interface GridLayout {
-  columns: number;
-  rows: number;
-  gap: number;
-  padding: number;
-}
-
-interface SortableContextProps {
-  width: number;
-  height: number;
-  isActive: boolean;
-  shouldClearTransform: boolean;
-  setShouldClearTransform: React.Dispatch<React.SetStateAction<boolean>>;
-  onReorder: (oldIndex: number, newIndex: number) => void;
-  containerCoordinate: { x: number; y: number };
-  unitSize: number;
-  gridLayout: GridLayout;
-  draggingState: DraggingState;
-  setDraggingState: React.Dispatch<React.SetStateAction<DraggingState>>;
-  containerRef: React.RefObject<HTMLDivElement> | null;
-  enableBorder?: boolean;
-}
 
 const defaultContext: SortableContextProps = {
   width: 100,
@@ -47,6 +25,9 @@ const defaultContext: SortableContextProps = {
   setDraggingState: () => {},
   containerRef: null,
   enableBorder: true,
+  onDragStart: () => {},
+  onDrag: () => {},
+  onDragEnd: () => {},
 };
 
 const SortableContext = createContext(defaultContext);

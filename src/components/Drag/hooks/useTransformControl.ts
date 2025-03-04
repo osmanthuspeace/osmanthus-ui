@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { DraggingState } from "../../Sortable/sortContainer";
 import getTransform from "../_utils/getTransform";
-import { GridLayout } from "../../Sortable/sortableContext";
 import { AnimationScope, useAnimate } from "motion/react";
+import { GridLayout } from "../../Sortable/interface";
+import { DraggingState } from "../interface";
 
 export const useTransformControl = (
   thisIndex: number,

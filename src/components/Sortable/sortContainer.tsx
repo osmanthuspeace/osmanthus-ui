@@ -5,31 +5,9 @@ import { useChildrenArray } from "./hooks/useChildrenArray";
 import { useGridLayout } from "./hooks/useGridLayout";
 import { useRenderedChildren } from "./hooks/useRenderedChildren";
 import { forwardRef, useRef, useState } from "react";
+import { SortContainerProps } from "./interface";
+import { DraggingState } from "../Drag/interface";
 
-interface SortContainerProps
-  extends Omit<
-    React.HTMLAttributes<HTMLDivElement>,
-    "onDrag" | "onDragStart" | "onDragEnd" | "onAnimationStart"
-  > {
-  width?: number;
-  height?: number;
-  unitSize?: number;
-  gridTemplateRows?: number;
-  gridTemplateColumns?: number;
-  gridGap?: number;
-  isActive?: boolean;
-  enableBorder?: boolean;
-}
-export interface DraggingState {
-  activeIndex: number | null;
-  overIndex: number | null;
-  itemCount: number;
-}
-export interface SortableItemState {
-  id: string;
-  index: number;
-  content: React.ReactNode;
-}
 const SortContainerInternal = (
   {
     children,
@@ -39,11 +17,18 @@ const SortContainerInternal = (
     gridTemplateColumns = 2,
     isActive = false,
     enableBorder = true,
+    onOrderChange,
+    onDragStart,
+    onDrag,
+    onDragEnd,
     ...rest
   }: SortContainerProps,
   ref: React.Ref<HTMLDivElement>
 ) => {
-  const [childIds, sortedChildren, handleReorder] = useChildrenArray(children);
+  const [sortedChildren, handleReorder] = useChildrenArray(
+    children,
+    onOrderChange
+  );
   const containerRef = useRef<HTMLDivElement>(null);
   const composedRef = useComposeRef(
     containerRef,
@@ -59,7 +44,7 @@ const SortContainerInternal = (
     overIndex: null,
     itemCount: 0,
   });
-  const renderedChildren = useRenderedChildren(sortedChildren, childIds);
+  const renderedChildren = useRenderedChildren(sortedChildren);
 
   return (
     <>
@@ -82,7 +67,10 @@ const SortContainerInternal = (
           draggingState,
           setDraggingState,
           containerRef,
-          enableBorder
+          enableBorder,
+          onDragStart,
+          onDrag,
+          onDragEnd,
         }}
       >
         <div
