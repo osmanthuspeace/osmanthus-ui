@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { SortableContextProps } from "./interface";
+import { SortableContextProps } from "../interface";
 
 
 const defaultContext: SortableContextProps = {

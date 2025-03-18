@@ -1,15 +1,18 @@
-import SortableContext from "./sortableContext";
+import SortableContext from "./context/sortableContext";
 import { useComposeRef } from "../../hooks/useComposeRef";
 import { useObserveContainer } from "./hooks/useObserveContainer";
 import { useChildrenArray } from "./hooks/useChildrenArray";
 import { useGridLayout } from "./hooks/useGridLayout";
-import { useRenderedChildren } from "./hooks/useRenderedChildren";
 import { forwardRef, useRef, useState } from "react";
 import { SortContainerProps } from "./interface";
 import { DraggingState } from "../Drag/interface";
+import { useRenderedChildren } from "./hooks/useRenderedChildren";
 
 const SortContainerInternal = (
-  {
+  props: SortContainerProps,
+  ref: React.Ref<HTMLDivElement>
+) => {
+  const {
     children,
     width = 250,
     height = 550,
@@ -22,9 +25,8 @@ const SortContainerInternal = (
     onDrag,
     onDragEnd,
     ...rest
-  }: SortContainerProps,
-  ref: React.Ref<HTMLDivElement>
-) => {
+  } = props;
+
   const [sortedChildren, handleReorder] = useChildrenArray(
     children,
     onOrderChange
@@ -39,6 +41,7 @@ const SortContainerInternal = (
 
   const { computedGap, computedGridTemplateRows, containerPadding } =
     useGridLayout(width, height, unitSize, gridTemplateColumns);
+
   const [draggingState, setDraggingState] = useState<DraggingState>({
     activeIndex: null,
     overIndex: null,
@@ -83,6 +86,7 @@ const SortContainerInternal = (
             gridGap: `${computedGap}px`,
             padding: `${computedGap}px`,
             margin: "0 auto",
+            border: "1px solid red",
           }}
           {...rest}
           ref={composedRef}

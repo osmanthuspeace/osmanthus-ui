@@ -8,6 +8,7 @@ export const useChildrenArray = (
   const [sortedChildren, setSortedChildren] = React.useState<React.ReactNode[]>(
     []
   );
+  
   const getChildIds = (children: React.ReactNode[]): string[] => {
     return children
       .map((child) =>
@@ -15,6 +16,7 @@ export const useChildrenArray = (
       )
       .filter(Boolean);
   };
+
   const handleReorder = useCallback(
     (oldIndex: number, newIndex: number) => {
       setSortedChildren((prev) => {

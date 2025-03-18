@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import { throttle } from "../../utils/throttle";
-import SortableContext from "../Sortable/sortableContext";
+import SortableContext from "../Sortable/context/sortableContext";
 import { useRef } from "react";
 import { useComposeRef } from "../../hooks/useComposeRef";
 import { parseTransform } from "./_utils/parseTransform";

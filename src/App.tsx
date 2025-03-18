@@ -4,6 +4,7 @@ import "./App.css";
 import { SortableItem } from "./components/Sortable/sortableItem";
 import { SortContainer } from "./components/Sortable/sortContainer";
 import { SortableItems } from "./components/Sortable/interface";
+import { FilpCard } from "./components/FlipCard/filpCard";
 
 function App() {
   const [isEditing, setIsActive] = useState(false);
@@ -19,11 +20,18 @@ function App() {
     { id: "4", children: "test4" },
     { id: "5", children: "test5" },
   ]);
+
+  const [storedItems, setStoredItems] = useState<SortableItems>(
+    Array.from({ length: 10 }).map((_, index) => {
+      return { id: index.toString(), children: "test" + index };
+    })
+  );
+
   const handleOrderChange = (newOrderIds: string[]) => {
     const orderedItems = newOrderIds.map(
-      (id) => sortableItems.find((item) => item.id === id)!
+      (id) => storedItems.find((item) => item.id === id)!
     );
-    setSortableItems(orderedItems);
+    setStoredItems(orderedItems);
   };
   return (
     <>
@@ -33,11 +41,14 @@ function App() {
           isActive={isEditing}
           className="drag-container"
           onOrderChange={handleOrderChange}
-          onDragStart={() => console.log("drag start")}
-          onDrag={() => console.log("drag")}
-          onDragEnd={() => console.log("drag end")}
+          width={600}
+          height={1200}
+          gridTemplateColumns={4}
+          // onDragStart={() => console.log("drag start")}
+          // onDrag={() => console.log("drag")}
+          // onDragEnd={() => console.log("drag end")}
         >
-          {sortableItems.map((item) => {
+          {storedItems.map((item) => {
             return (
               <SortableItem key={item.id} id={item.id}>
                 {item.children}
@@ -45,6 +56,9 @@ function App() {
             );
           })}
         </SortContainer>
+        <FilpCard back={<>背面</>}>
+          <SortableItem></SortableItem>
+        </FilpCard>
       </section>
     </>
   );

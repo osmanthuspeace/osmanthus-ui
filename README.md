@@ -1,9 +1,9 @@
 # Osmanthus-UI
-## A iOS-like Desktop Layout Simulation Component Library
+## A drag & drop & sort component library for React with better animation
 
 ### Introduction
 
-This component library simulates an ios-like desktop layout, allowing components (such as app icons) to be dragged, sorted, added, and deleted. It offers a flexible, drag-and-drop user interface ideal for building dynamic desktop-style applications.
+This component library simulates an ios-like desktop layout, allowing components to be dragged, sorted, added, and deleted. It offers a flexible, drag-and-drop user interface ideal for building dynamic desktop-style applications.
 
 ### Features
 
@@ -16,7 +16,7 @@ This component library simulates an ios-like desktop layout, allowing components
 
 ### 简介
 
-这个组件库模拟了 ios 风格的桌面布局，支持组件（如应用图标）的拖动、排序、添加和删除功能。它提供了一个灵活的拖拽界面，适用于构建动态的桌面风格应用。
+这个拖拽排序组件库模拟了 ios 风格的桌面布局，支持组件的拖动、排序、添加和删除功能。它提供了一个灵活的拖拽界面，适用于构建动态的桌面风格应用。
 
 ### 特性
 

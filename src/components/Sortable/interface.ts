@@ -35,6 +35,7 @@ export interface SortableItemProps
   width?: number;
   height?: number;
   enableBorder?: boolean;
+  flipBack?: React.ReactNode;
 }
 export interface ISortableItem {
   id: Id;
@@ -61,4 +62,3 @@ export interface SortContainerProps
   onDragEnd?: (e: ComposedEvent) => void;
   onDrag?: (e: ComposedEvent) => void;
 }
-
