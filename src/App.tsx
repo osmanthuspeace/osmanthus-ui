@@ -4,7 +4,7 @@ import "./App.css";
 import { SortableItem } from "./components/Sortable/sortableItem";
 import { SortContainer } from "./components/Sortable/sortContainer";
 import { SortableItems } from "./components/Sortable/interface";
-import { FilpCard } from "./components/FlipCard/filpCard";
+import { CrossContainer } from "./components/CrossContainer/CrossContainer";
 
 function App() {
   const [isEditing, setIsActive] = useState(false);
@@ -22,7 +22,7 @@ function App() {
   ]);
 
   const [storedItems, setStoredItems] = useState<SortableItems>(
-    Array.from({ length: 10 }).map((_, index) => {
+    Array.from({ length: 80 }).map((_, index) => {
       return { id: index.toString(), children: "test" + index };
     })
   );
@@ -37,28 +37,29 @@ function App() {
     <>
       <section className="main-container">
         <button onClick={handleClick}>编辑</button>
-        <SortContainer
-          isActive={isEditing}
-          className="drag-container"
-          onOrderChange={handleOrderChange}
-          width={600}
-          height={1200}
-          gridTemplateColumns={4}
-          // onDragStart={() => console.log("drag start")}
-          // onDrag={() => console.log("drag")}
-          // onDragEnd={() => console.log("drag end")}
-        >
-          {storedItems.map((item) => {
-            return (
-              <SortableItem key={item.id} id={item.id}>
-                {item.children}
-              </SortableItem>
-            );
-          })}
-        </SortContainer>
-        <FilpCard back={<>背面</>}>
-          <SortableItem></SortableItem>
-        </FilpCard>
+        <CrossContainer>
+          <SortContainer
+            id="sort-container111"
+            isActive={isEditing}
+            className="drag-container"
+            onOrderChange={handleOrderChange}
+            width={600}
+            height={1300}
+            gridTemplateColumns={4}
+            // onDragStart={() => console.log("drag start")}
+            // onDrag={() => console.log("drag")}
+            // onDragEnd={() => console.log("drag end")}
+          >
+            {storedItems.map((item) => {
+              return (
+                <SortableItem key={item.id} id={item.id}>
+                  {item.children}
+                </SortableItem>
+              );
+            })}
+          </SortContainer>
+          <SortContainer id="222" width={600} height={300}></SortContainer>
+        </CrossContainer>
       </section>
     </>
   );

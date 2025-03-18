@@ -49,6 +49,7 @@ export interface SortContainerProps
     React.HTMLAttributes<HTMLDivElement>,
     "onDrag" | "onDragStart" | "onDragEnd" | "onAnimationStart"
   > {
+  id: string;
   width?: number;
   height?: number;
   unitSize?: number;

@@ -6,7 +6,7 @@ export interface FilpCardProps {
   className?: string;
   style?: React.CSSProperties;
 }
-const FilpCard = (props: FilpCardProps) => {
+const FlipCard = (props: FilpCardProps) => {
   const { back, children, className, style } = props;
   return (
     <div className="flipper-container">
@@ -19,4 +19,4 @@ const FilpCard = (props: FilpCardProps) => {
     </div>
   );
 };
-export { FilpCard };
+export { FlipCard };

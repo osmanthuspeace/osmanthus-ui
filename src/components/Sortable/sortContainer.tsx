@@ -7,12 +7,14 @@ import { forwardRef, useRef, useState } from "react";
 import { SortContainerProps } from "./interface";
 import { DraggingState } from "../Drag/interface";
 import { useRenderedChildren } from "./hooks/useRenderedChildren";
+import { useContainerRegister } from "../CrossContainer/util";
 
 const SortContainerInternal = (
   props: SortContainerProps,
   ref: React.Ref<HTMLDivElement>
 ) => {
   const {
+    id,
     children,
     width = 250,
     height = 550,
@@ -32,7 +34,9 @@ const SortContainerInternal = (
     onOrderChange
   );
   const containerRef = useRef<HTMLDivElement>(null);
+  const refInContext = useContainerRegister(id);
   const composedRef = useComposeRef(
+    refInContext,
     containerRef,
     ref
   ) as React.RefObject<HTMLDivElement>;

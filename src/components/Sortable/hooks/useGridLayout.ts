@@ -17,7 +17,7 @@ export const useGridLayout = (
       (width - gridTemplateColumns * unitSize) / (gridTemplateColumns - 1)
     );
     // console.log("gap", gap);
-    const rows = Math.floor((height + gap) / (unitSize + gap));
+    const rows = Math.ceil((height + gap) / (unitSize + gap));
     // console.log("rows", rows);
     return {
       computedGap: gap,
