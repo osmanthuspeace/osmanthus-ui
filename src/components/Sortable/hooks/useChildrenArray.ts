@@ -23,10 +23,9 @@ export const useChildrenArray = (
         const newArray = [...prev];
         const [removed] = newArray.splice(oldIndex, 1);
         newArray.splice(newIndex, 0, removed);
-        if (onOrderChange) {
-          const currentIds = getChildIds(newArray);
-          onOrderChange(currentIds);
-        }
+        requestAnimationFrame(() => {
+          onOrderChange?.(getChildIds(newArray));
+        });
         return newArray;
       });
     },

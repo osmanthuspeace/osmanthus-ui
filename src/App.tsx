@@ -22,7 +22,7 @@ function App() {
   ]);
 
   const [storedItems, setStoredItems] = useState<SortableItems>(
-    Array.from({ length: 80 }).map((_, index) => {
+    Array.from({ length: 5 }).map((_, index) => {
       return { id: index.toString(), children: "test" + index };
     })
   );
@@ -58,7 +58,12 @@ function App() {
               );
             })}
           </SortContainer>
-          <SortContainer id="222" width={600} height={300}></SortContainer>
+          <SortContainer
+            className="drag-container"
+            id="222"
+            width={600}
+            height={300}
+          >1</SortContainer>
         </CrossContainer>
       </section>
     </>

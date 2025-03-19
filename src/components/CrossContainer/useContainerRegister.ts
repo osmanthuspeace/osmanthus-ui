@@ -1,10 +1,11 @@
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useRef } from "react";
 import CrossContainerContext from "./CrossContainerContext";
+import { useLayoutUpdateEffect } from "../../hooks/useLayoutUpdateEffect";
 
 export const useContainerRegister = (containerId: string) => {
   const { updateContainerRect } = useContext(CrossContainerContext);
   const containerRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
+  useLayoutUpdateEffect(() => {
     const container = containerRef.current;
     if (!container) return;
     const observer = new ResizeObserver(() => {

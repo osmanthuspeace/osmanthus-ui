@@ -18,9 +18,7 @@ const defaultContext: CrossContainerContextProps = {
   sourceContainerId: null,
   targetContainerId: null,
   containerRegister: new Map(),
-  updateContainerRect: () => {
-    console.warn("没有找到 CrossContainerProvider");
-  },
+  updateContainerRect: () => {},
 };
 const CrossContainerContext =
   createContext<CrossContainerContextProps>(defaultContext);
