@@ -7,7 +7,7 @@ export interface FilpCardProps {
   style?: React.CSSProperties;
 }
 const FlipCard = (props: FilpCardProps) => {
-  const { back, children, className, style } = props;
+  const { back, children } = props;
   return (
     <div className="flipper-container">
       <div className="modal-overlay"></div>

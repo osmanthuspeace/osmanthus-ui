@@ -25,7 +25,7 @@ function App() {
   ]);
 
   const [storedItems, setStoredItems] = useState<SortableItems>(
-    Array.from({ length: 6 }).map((_, index) => {
+    Array.from({ length: 116 }).map((_, index) => {
       return { id: `store-${index}`, children: "test" + index };
     })
   );

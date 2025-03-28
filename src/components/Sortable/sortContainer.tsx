@@ -3,7 +3,7 @@ import { useComposeRef } from "../../hooks/useComposeRef";
 import { useObserveContainer } from "./hooks/useObserveContainer";
 import { useChildrenArray } from "./hooks/useChildrenArray";
 import { useGridLayout } from "./hooks/useGridLayout";
-import { forwardRef, useEffect, useRef, useState } from "react";
+import { forwardRef, useRef, useState } from "react";
 import { SortContainerProps } from "./interface";
 import { DraggingState } from "../Drag/interface";
 import { useRenderedChildren } from "./hooks/useRenderedChildren";
@@ -52,7 +52,7 @@ const SortContainerInternal = (
     overContainerId: null,
   });
   const renderedChildren = useRenderedChildren(sortedChildren);
-  const renderCount = useRef(0);
+  // const renderCount = useRef(0);
 
   // useEffect(() => {
   //   console.log(`Context更新次数: ${++renderCount.current}`);

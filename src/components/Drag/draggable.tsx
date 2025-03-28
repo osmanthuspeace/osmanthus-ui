@@ -9,6 +9,7 @@ import { ComposedEvent, DragItemProps } from "./interface";
 import { useWhichContainer } from "./hooks/useWhichContainer";
 import { useThrottle } from "../../hooks/useThrottle";
 import CrossContainerContext from "../CrossContainer/CrossContainerContext";
+import { flushSync } from "react-dom";
 
 const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   const { thisIndex, children, style } = props;
@@ -99,7 +100,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       const newContainerId = inWhichContainer(e.clientX, e.clientY);
       // console.log("inThisContainerId", inThisContainerId);
       if (newContainerId === null) {
-        await animate(scope.current, { x: 0, y: 0 }, { duration: 0.3 });
+        animate(scope.current, { x: 0, y: 0 }, { duration: 0.3 });
         return;
       }
       const newIndex = calculateNewIndex(
@@ -132,13 +133,31 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
           await animate(scope.current, { x: 0, y: 0 }, { duration: 0.3 });
         }
       }
+      // flushSync(() => {
+        setShouldClearTransform(true);
+        setDraggingState((prev) => ({
+          ...prev,
+          activeIndex: null,
+          overIndex: null,
+        }));
+      // });
 
-      setShouldClearTransform(true);
-      setDraggingState((prev) => ({
-        ...prev,
-        activeIndex: null,
-        overIndex: null,
-      }));
+      // await new Promise((resolve) => requestAnimationFrame(resolve));
+      // await animate(
+      //   scope.current,
+      //   { x: 0, y: 0 },
+      //   {
+      //     duration: 0.3,
+      //     // 添加过渡完成后的强制重绘
+      //     onComplete: () => {
+      //       console.log("动画完成，强制重绘");
+
+      //       if (scope.current) {
+      //         scope.current.style.transform = "none";
+      //       }
+      //     },
+      //   }
+      // );
     } catch (error) {
       console.error("拖拽结束处理出错:", error);
     }
