@@ -1,8 +1,24 @@
 {
   "name": "osmanthus-ui",
-  "private": true,
+  "private": false,
   "version": "0.1.0",
   "type": "module",
+  "keywords": [
+    "react",
+    "drag",
+    "drop",
+    "sortable",
+    "component"
+  ],
+  "author": "Osmanthuspeace",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -10,8 +26,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "clsx": "^2.1.1",
-    "lucide-react": "^0.475.0",
     "motion": "^12.4.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

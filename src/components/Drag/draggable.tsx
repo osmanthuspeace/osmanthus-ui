@@ -8,14 +8,15 @@ import { useTransformControl } from "./hooks/useTransformControl";
 import { ComposedEvent, DragItemProps } from "./interface";
 import { useWhichContainer } from "./hooks/useWhichContainer";
 import { useThrottle } from "../../hooks/useThrottle";
+import CrossContainerContext from "../CrossContainer/CrossContainerContext";
 
 const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   const { thisIndex, children, style } = props;
   const {
+    id,
     onReorder,
     shouldClearTransform,
     setShouldClearTransform,
-    containerCoordinate,
     unitSize,
     gridLayout,
     draggingState,
@@ -25,11 +26,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
     onDragEnd,
   } = useContext(SortableContext);
 
-  const { calculateNewIndex } = usePositionCalculator(
-    gridLayout,
-    unitSize,
-    containerCoordinate
-  );
+  const { calculateNewIndex } = usePositionCalculator(gridLayout, unitSize);
 
   const thisRef = useRef<HTMLDivElement>(null);
 
@@ -45,6 +42,8 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
 
   const { inWhichContainer } = useWhichContainer();
 
+  const { onCross } = useContext(CrossContainerContext);
+
   //开始拖拽
   const handleDragStart = (e: ComposedEvent) => {
     onDragStart?.(e);
@@ -56,24 +55,36 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   };
   //拖拽过程中
   const handleOnDrag = useCallback(
-    (e: ComposedEvent) => {
+    async (e: ComposedEvent) => {
       console.log("handleOnDrag");
 
       onDrag?.(e);
-      const newIndex = calculateNewIndex(e.target as HTMLElement);
-      setDraggingState((prev) => ({
-        ...prev,
-        overIndex: newIndex,
-      }));
-
       //暂时不支持移动端
       if (e instanceof TouchEvent) {
         return;
       }
-      const inThisContainerId = inWhichContainer(e.clientX, e.clientY);
-      // console.log("inThisContainerId", inThisContainerId);
+      const newContainerId = inWhichContainer(e.clientX, e.clientY);
+      if (newContainerId === null) {
+        await animate(scope.current, { x: 0, y: 0 }, { duration: 0.3 });
+        return;
+      }
+      const newIndex = calculateNewIndex(
+        e.target as HTMLElement,
+        newContainerId
+      );
+      setDraggingState((prev) => ({
+        ...prev,
+        overIndex: newIndex,
+      }));
     },
-    [calculateNewIndex, inWhichContainer, onDrag, setDraggingState]
+    [
+      animate,
+      calculateNewIndex,
+      inWhichContainer,
+      onDrag,
+      scope,
+      setDraggingState,
+    ]
   );
 
   //结束拖拽
@@ -82,12 +93,44 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
     if (!scope.current) return;
     try {
       if (!thisRef.current) return;
-      const newIndex = calculateNewIndex(e.target as HTMLElement);
-
-      if (newIndex !== thisIndex) {
-        onReorder(thisIndex, newIndex);
-      } else {
+      if (e instanceof TouchEvent) {
+        return;
+      }
+      const newContainerId = inWhichContainer(e.clientX, e.clientY);
+      // console.log("inThisContainerId", inThisContainerId);
+      if (newContainerId === null) {
         await animate(scope.current, { x: 0, y: 0 }, { duration: 0.3 });
+        return;
+      }
+      const newIndex = calculateNewIndex(
+        e.target as HTMLElement,
+        newContainerId
+      );
+
+      // console.log(
+      //   "[DEBUG]",
+      //   "source",
+      //   id,
+      //   thisIndex,
+      //   "target",
+      //   newContainerId,
+      //   newIndex
+      // );
+
+      if (newContainerId !== id) {
+        onCross?.(
+          { containerId: id, index: thisIndex },
+          {
+            containerId: newContainerId,
+            index: newIndex,
+          }
+        );
+      } else {
+        if (newIndex !== thisIndex) {
+          onReorder(thisIndex, newIndex);
+        } else {
+          await animate(scope.current, { x: 0, y: 0 }, { duration: 0.3 });
+        }
       }
 
       setShouldClearTransform(true);

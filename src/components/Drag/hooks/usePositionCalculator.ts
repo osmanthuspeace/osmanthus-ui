@@ -1,30 +1,40 @@
-import { useCallback } from "react";
+import { useCallback, useContext } from "react";
 import { getCoordinate } from "../_utils/getCoordinate";
 import { calculateIndexByCooridnate } from "../_utils/calculate";
-import { Coordinate } from "../../../type";
 import { GridLayout } from "../../Sortable/interface";
+import CrossContainerContext from "../../CrossContainer/CrossContainerContext";
 
 export function usePositionCalculator(
   gridLayout: GridLayout,
-  unitSize: number,
-  containerCoordinate: Coordinate
+  unitSize: number
 ) {
+  const { getContainerCoordinateById } = useContext(CrossContainerContext);
+
   const calculateNewIndex = useCallback(
-    (element: HTMLElement) => {
+    (element: HTMLElement, containerId: string) => {
       const { x, y } = getCoordinate(element);
+      const { containerX, containerY } =
+        getContainerCoordinateById(containerId);
       return calculateIndexByCooridnate(
         x,
         y,
         gridLayout.padding,
         gridLayout.gap,
         unitSize,
-        containerCoordinate.x,
-        containerCoordinate.y,
+        containerX,
+        containerY,
         gridLayout.columns,
         gridLayout.rows
       );
     },
-    [gridLayout, unitSize, containerCoordinate]
+    [
+      getContainerCoordinateById,
+      gridLayout.columns,
+      gridLayout.gap,
+      gridLayout.padding,
+      gridLayout.rows,
+      unitSize,
+    ]
   );
 
   return { calculateNewIndex };

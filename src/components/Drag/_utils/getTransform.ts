@@ -69,16 +69,16 @@ const getTransform = (
     //拖动元素回到原位
     transform = { x: 0, y: 0 };
   }
-  // console.log(
-  //   "thisIndex",
-  //   thisIndex,
-  //   "activeIndex",
-  //   draggingState.activeIndex,
-  //   "overIndex",
-  //   draggingState.overIndex,
-  //   "transform",
-  //   transform
-  // );
+  console.log(
+    "thisIndex",
+    thisIndex,
+    "activeIndex",
+    draggingState.activeIndex,
+    "overIndex",
+    draggingState.overIndex,
+    "transform",
+    transform
+  );
 
   return transform;
 };

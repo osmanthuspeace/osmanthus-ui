@@ -3,9 +3,10 @@ import { SortableContextProps } from "../interface";
 
 
 const defaultContext: SortableContextProps = {
+  id: "",
   width: 100,
   height: 100,
-  isActive: false,
+  enableDnd: false,
   onReorder: () => {},
   unitSize: 100,
   shouldClearTransform: false,
@@ -19,12 +20,12 @@ const defaultContext: SortableContextProps = {
   },
   draggingState: {
     activeIndex: null,
+    activeContainerId: null,
     overIndex: null,
-    itemCount: 0,
+    overContainerId: null,
   },
   setDraggingState: () => {},
   containerRef: null,
-  enableBorder: true,
   onDragStart: () => {},
   onDrag: () => {},
   onDragEnd: () => {},

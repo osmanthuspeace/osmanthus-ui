@@ -17,7 +17,7 @@ const useInternalLayoutEffect = (
 };
 export const useLayoutUpdateEffect: typeof useEffect = (callback, deps) => {
   useInternalLayoutEffect((firstMount) => {
-    if (!firstMount) {
+    if (firstMount) {
       return callback();
     }
   }, deps);

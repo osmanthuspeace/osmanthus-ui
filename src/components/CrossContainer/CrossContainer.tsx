@@ -1,12 +1,21 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useCallback, useMemo, useState } from "react";
 import CrossContainerContext, { ContainerRect } from "./CrossContainerContext";
 import { Id } from "../../type";
+import { CrossInfo } from "./interface";
 
-export const CrossContainer = ({ children }: { children: ReactNode }) => {
+export const CrossContainer = ({
+  children,
+  onCross,
+}: {
+  children: ReactNode;
+  onCross: (source: CrossInfo, target: CrossInfo) => void;
+}) => {
   const [containerMap, setContainerMap] = useState<Map<Id, ContainerRect>>(
     new Map()
   );
-  const updateContainerRect = (id: Id, rect: DOMRectReadOnly) => {
+  const updateContainerMap = useCallback((id: Id, rect: DOMRectReadOnly) => {
+    // console.warn("[DEBUG] enter updateContainerMap");
+
     setContainerMap((prev) => {
       const existing = prev.get(id);
       if (
@@ -27,16 +36,36 @@ export const CrossContainer = ({ children }: { children: ReactNode }) => {
       });
       return newMap;
     });
-  };
+  }, []);
+
+  const getContainerCoordinateById = useCallback(
+    (id: Id) => {
+      const rect = containerMap.get(id)!;
+      if (rect) {
+        return {
+          containerX: rect.left,
+          containerY: rect.top,
+        };
+      } else {
+        throw new Error(`Container with id ${id} not found`);
+      }
+    },
+    [containerMap]
+  );
+
+  const value = useMemo(
+    () => ({
+      onCross,
+      sourceContainerId: null,
+      targetContainerId: null,
+      containerRegister: containerMap,
+      updateContainerMap,
+      getContainerCoordinateById,
+    }),
+    [containerMap, getContainerCoordinateById, onCross, updateContainerMap]
+  );
   return (
-    <CrossContainerContext.Provider
-      value={{
-        sourceContainerId: null,
-        targetContainerId: null,
-        containerRegister: containerMap,
-        updateContainerRect,
-      }}
-    >
+    <CrossContainerContext.Provider value={value}>
       {children}
     </CrossContainerContext.Provider>
   );

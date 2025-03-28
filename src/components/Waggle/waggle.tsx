@@ -15,7 +15,7 @@ const Waggle: React.FC<WaggleProps> = ({
   offsetY = 0.5,
 }) => {
   const delay = useMemo(() => Math.random() * 3, []);
-  const { isActive, unitSize } = useContext(SortableContext);
+  const { enableDnd, unitSize } = useContext(SortableContext);
 
   const initialConfig = {
     rotate: 0,
@@ -39,8 +39,8 @@ const Waggle: React.FC<WaggleProps> = ({
       <motion.div
         className="waggle-item"
         initial={initialConfig}
-        animate={isActive ? animationConfig : {}}
-        transition={isActive ? transitionConfig : undefined}
+        animate={enableDnd ? animationConfig : {}}
+        transition={enableDnd ? transitionConfig : undefined}
         style={{
           width: unitSize,
           height: unitSize,

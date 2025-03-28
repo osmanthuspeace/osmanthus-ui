@@ -9,9 +9,10 @@ export interface GridLayout {
   padding: number;
 }
 export interface SortableContextProps {
+  id: string;
   width: number;
   height: number;
-  isActive: boolean;
+  enableDnd: boolean;
   shouldClearTransform: boolean;
   setShouldClearTransform: React.Dispatch<React.SetStateAction<boolean>>;
   onReorder: (oldIndex: number, newIndex: number) => void;
@@ -56,10 +57,9 @@ export interface SortContainerProps
   gridTemplateRows?: number;
   gridTemplateColumns?: number;
   gridGap?: number;
-  isActive?: boolean;
-  enableBorder?: boolean;
+  enableDnd?: boolean;
   onOrderChange?: (newOrderIds: string[]) => void;
   onDragStart?: (e: ComposedEvent) => void;
   onDragEnd?: (e: ComposedEvent) => void;
-  onDrag?: (e: ComposedEvent) => void;
+  onAnyDrag?: (e: ComposedEvent) => void;
 }

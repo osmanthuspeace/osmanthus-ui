@@ -9,6 +9,7 @@ export type ComposedEvent = MouseEvent | TouchEvent | PointerEvent;
 
 export interface DraggingState {
   activeIndex: number | null;
+  activeContainerId: string | null;
   overIndex: number | null;
-  itemCount: number;
+  overContainerId: string | null;
 }

@@ -3,11 +3,11 @@ import { useComposeRef } from "../../hooks/useComposeRef";
 import { useObserveContainer } from "./hooks/useObserveContainer";
 import { useChildrenArray } from "./hooks/useChildrenArray";
 import { useGridLayout } from "./hooks/useGridLayout";
-import { forwardRef, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { SortContainerProps } from "./interface";
 import { DraggingState } from "../Drag/interface";
 import { useRenderedChildren } from "./hooks/useRenderedChildren";
-import { useContainerRegister } from "../CrossContainer/useContainerRegister";
+import { useContainerRegister } from "../CrossContainer/hooks/useContainerRegister";
 
 const SortContainerInternal = (
   props: SortContainerProps,
@@ -20,11 +20,10 @@ const SortContainerInternal = (
     height = 550,
     unitSize = 100,
     gridTemplateColumns = 2,
-    isActive = false,
-    enableBorder = true,
+    enableDnd = false,
     onOrderChange,
     onDragStart,
-    onDrag,
+    onAnyDrag: onDrag,
     onDragEnd,
     ...rest
   } = props;
@@ -48,18 +47,25 @@ const SortContainerInternal = (
 
   const [draggingState, setDraggingState] = useState<DraggingState>({
     activeIndex: null,
+    activeContainerId: id,
     overIndex: null,
-    itemCount: 0,
+    overContainerId: null,
   });
   const renderedChildren = useRenderedChildren(sortedChildren);
+  const renderCount = useRef(0);
 
+  // useEffect(() => {
+  //   console.log(`Context更新次数: ${++renderCount.current}`);
+  //   performance.mark("contextUpdate");
+  // });
   return (
     <>
       <SortableContext.Provider
         value={{
+          id,
           width,
           height,
-          isActive,
+          enableDnd,
           shouldClearTransform,
           setShouldClearTransform,
           unitSize: unitSize,
@@ -74,7 +80,6 @@ const SortContainerInternal = (
           draggingState,
           setDraggingState,
           containerRef,
-          enableBorder,
           onDragStart,
           onDrag,
           onDragEnd,
