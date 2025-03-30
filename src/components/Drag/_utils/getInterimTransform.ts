@@ -1,5 +1,5 @@
 //在拖动时，根据当前元素的索引和正在拖动元素的索引，计算当前元素的位移
-const getTransform = (
+const getInterimTransform = (
   thisIndex: number,
   draggingState: {
     activeIndex: number | null;
@@ -69,17 +69,17 @@ const getTransform = (
     //拖动元素回到原位
     transform = { x: 0, y: 0 };
   }
-  console.log(
-    "thisIndex",
-    thisIndex,
-    "activeIndex",
-    draggingState.activeIndex,
-    "overIndex",
-    draggingState.overIndex,
-    "transform",
-    transform
-  );
+  // console.log(
+  //   "thisIndex",
+  //   thisIndex,
+  //   "activeIndex",
+  //   draggingState.activeIndex,
+  //   "overIndex",
+  //   draggingState.overIndex,
+  //   "transform",
+  //   transform
+  // );
 
   return transform;
 };
-export default getTransform;
+export default getInterimTransform;

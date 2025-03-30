@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { forwardRef, Ref, useCallback, useContext } from "react";
+import { forwardRef, Ref, useCallback, useContext, useState } from "react";
 import SortableContext from "../Sortable/context/sortableContext";
 import { useRef } from "react";
 import { useComposeRef } from "../../hooks/useComposeRef";
@@ -10,6 +10,9 @@ import { useWhichContainer } from "./hooks/useWhichContainer";
 import { useThrottle } from "../../hooks/useThrottle";
 import CrossContainerContext from "../CrossContainer/CrossContainerContext";
 import { flushSync } from "react-dom";
+import { getFinalTransform } from "./_utils/getFinalTransform";
+import { getCoordinate } from "./_utils/getCoordinate";
+import { Coordinate } from "../../type";
 
 const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   const { thisIndex, children, style } = props;
@@ -30,25 +33,28 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   const { calculateNewIndex } = usePositionCalculator(gridLayout, unitSize);
 
   const thisRef = useRef<HTMLDivElement>(null);
+  const [final, setFinal] = useState<Coordinate | null>(null);
 
-  const [scope, animate, setShouldBack] = useTransformControl(
+  const [scope, animate] = useTransformControl(
     thisIndex,
     draggingState,
     gridLayout,
     unitSize,
     shouldClearTransform,
-    setShouldClearTransform
+    setShouldClearTransform,
+    final
   );
   const composedRef = useComposeRef(scope, thisRef, ref);
 
   const { inWhichContainer } = useWhichContainer();
 
-  const { onCross } = useContext(CrossContainerContext);
+  const { onCross, getContainerCoordinateById } = useContext(
+    CrossContainerContext
+  );
 
   //开始拖拽
   const handleDragStart = (e: ComposedEvent) => {
     onDragStart?.(e);
-    setShouldBack(true);
     setDraggingState((prev) => ({
       ...prev,
       activeIndex: thisIndex,
@@ -94,6 +100,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
     if (!scope.current) return;
     try {
       if (!thisRef.current) return;
+
       if (e instanceof TouchEvent) {
         return;
       }
@@ -107,17 +114,14 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         e.target as HTMLElement,
         newContainerId
       );
-
-      // console.log(
-      //   "[DEBUG]",
-      //   "source",
-      //   id,
-      //   thisIndex,
-      //   "target",
-      //   newContainerId,
-      //   newIndex
-      // );
-
+      const { x, y } = getFinalTransform(
+        newIndex,
+        getCoordinate(thisRef.current),
+        getContainerCoordinateById(newContainerId),
+        gridLayout,
+        unitSize
+      );
+      setFinal({ x, y });
       if (newContainerId !== id) {
         onCross?.(
           { containerId: id, index: thisIndex },
@@ -143,28 +147,11 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
           overIndex: null,
         }));
       });
-
-      // await new Promise((resolve) => requestAnimationFrame(resolve));
-      // await animate(
-      //   scope.current,
-      //   { x: 0, y: 0 },
-      //   {
-      //     duration: 0.3,
-      //     // 添加过渡完成后的强制重绘
-      //     onComplete: () => {
-      //       console.log("动画完成，强制重绘");
-
-      //       if (scope.current) {
-      //         scope.current.style.transform = "none";
-      //       }
-      //     },
-      //   }
-      // );
+      
     } catch (error) {
       console.error("拖拽结束处理出错:", error);
     }
   };
-
   //将handleOnDrag函数节流
   const throttledHandleOnDrag = useThrottle(handleOnDrag, 100);
   return (
@@ -181,7 +168,6 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         onDragStart={(e) => handleDragStart(e)}
         onDrag={(e) => throttledHandleOnDrag(e)}
         onDragEnd={(e) => handleDragEnd(e)}
-        onDragTransitionEnd={() => {}}
         style={
           {
             width: `${unitSize}px`,
