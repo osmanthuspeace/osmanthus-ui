@@ -16,6 +16,7 @@ export interface SortableContextProps {
   shouldClearTransform: boolean;
   setShouldClearTransform: React.Dispatch<React.SetStateAction<boolean>>;
   onReorder: (oldIndex: number, newIndex: number) => void;
+  registerItemRef: (index: number, ref: HTMLElement | null) => void;
   containerCoordinate: { x: number; y: number };
   unitSize: number;
   gridLayout: GridLayout;

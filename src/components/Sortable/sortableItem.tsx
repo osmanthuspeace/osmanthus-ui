@@ -4,6 +4,7 @@ import { Waggle } from "../Waggle/waggle";
 import { Draggable } from "../Drag/draggable";
 import { SortableItemProps } from "./interface";
 import IndexContext from "./context/indexContext";
+import useItemRef from "./hooks/useItemRef";
 
 const SortableItemInternal = (
   props: SortableItemProps,
@@ -12,8 +13,15 @@ const SortableItemInternal = (
   const { id, children, enableBorder } = props;
   const index = useContext(IndexContext);
 
+  const composedRef = useItemRef(index, ref);
+
   return (
-    <Draggable className="drag-item" id={id!} thisIndex={index} ref={ref}>
+    <Draggable
+      className="drag-item"
+      id={id!}
+      thisIndex={index}
+      ref={composedRef}
+    >
       <Waggle className="waggle-item">
         <Squircle className="squircle" enableBorder={enableBorder}>
           {children}

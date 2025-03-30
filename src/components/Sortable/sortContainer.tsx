@@ -28,7 +28,7 @@ const SortContainerInternal = (
     ...rest
   } = props;
 
-  const [sortedChildren, handleReorder] = useChildrenArray(
+  const [sortedChildren, handleReorder, registerItemRef] = useChildrenArray(
     children,
     onOrderChange
   );
@@ -77,6 +77,7 @@ const SortContainerInternal = (
             padding: containerPadding,
           },
           onReorder: handleReorder,
+          registerItemRef,
           draggingState,
           setDraggingState,
           containerRef,

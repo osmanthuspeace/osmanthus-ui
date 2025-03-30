@@ -133,14 +133,16 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
           await animate(scope.current, { x: 0, y: 0 }, { duration: 0.3 });
         }
       }
-      // flushSync(() => {
-        setShouldClearTransform(true);
+      setShouldClearTransform(true);
+
+      flushSync(() => {
+        console.log("flushSync");
         setDraggingState((prev) => ({
           ...prev,
           activeIndex: null,
           overIndex: null,
         }));
-      // });
+      });
 
       // await new Promise((resolve) => requestAnimationFrame(resolve));
       // await animate(
@@ -184,6 +186,9 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
           {
             width: `${unitSize}px`,
             height: `${unitSize}px`,
+            willChange: "transform",
+            transformStyle: "preserve-3d",
+            backfaceVisibility: "hidden",
             ...style,
           } as React.CSSProperties
         }

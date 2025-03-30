@@ -8,6 +8,7 @@ const defaultContext: SortableContextProps = {
   height: 100,
   enableDnd: false,
   onReorder: () => {},
+  registerItemRef: () => {},
   unitSize: 100,
   shouldClearTransform: false,
   setShouldClearTransform: () => {},

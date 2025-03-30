@@ -1,14 +1,19 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 import { useEffect } from "react";
 
 export const useChildrenArray = (
   children: React.ReactNode,
   onOrderChange?: (newOrderIds: string[]) => void
-): [React.ReactNode[], (oldIndex: number, newIndex: number) => void] => {
+): [
+  React.ReactNode[],
+  (oldIndex: number, newIndex: number) => void,
+  (index: number, ref: HTMLElement | null) => void
+] => {
   const [sortedChildren, setSortedChildren] = React.useState<React.ReactNode[]>(
     []
   );
-  
+  const itemRefs = useRef<Map<number, HTMLElement>>(new Map());
+
   const getChildIds = (children: React.ReactNode[]): string[] => {
     return children
       .map((child) =>
@@ -24,6 +29,9 @@ export const useChildrenArray = (
         const [removed] = newArray.splice(oldIndex, 1);
         newArray.splice(newIndex, 0, removed);
         requestAnimationFrame(() => {
+          itemRefs.current.forEach((item) => {
+            item.style.transform = "none";
+          });
           onOrderChange?.(getChildIds(newArray));
         });
         return newArray;
@@ -36,5 +44,17 @@ export const useChildrenArray = (
     const childrenArray = React.Children.toArray(children);
     setSortedChildren(childrenArray);
   }, [children]);
-  return [sortedChildren, handleReorder];
+
+  const registerItemRef = useCallback(
+    (index: number, ref: HTMLElement | null) => {
+      if (ref) {
+        itemRefs.current.set(index, ref);
+      } else {
+        itemRefs.current.delete(index);
+      }
+    },
+    []
+  );
+
+  return [sortedChildren, handleReorder, registerItemRef];
 };
