@@ -3,28 +3,24 @@ import getInterimTransform from "../_utils/getInterimTransform";
 import { AnimationScope, useAnimate } from "motion/react";
 import { GridLayout } from "../../Sortable/interface";
 import { DraggingState } from "../interface";
+import { Coordinate } from "../../../type";
 
 export const useTransformControl = (
   thisIndex: number,
   draggingState: DraggingState,
   gridLayout: GridLayout,
-  unitSize: number,
-  shouldClearTransform: boolean,
-  setShouldClearTransform: React.Dispatch<React.SetStateAction<boolean>>,
-  final: {
-    x: number;
-    y: number;
-  } | null
-): [AnimationScope<HTMLDivElement>, typeof animate] => {
+  unitSize: number
+): [
+  AnimationScope<HTMLDivElement> | null,
+  (final: Coordinate | null) => Promise<void>,
+  (enableAnimate: boolean) => Promise<void>
+] => {
   const [scope, animate] = useAnimate<HTMLDivElement>();
 
-  const [isDragged, setIsDragged] = useState(false);
-
   //拖拽过程中，实时更新transform
-  useEffect(() => {
-    if (draggingState.activeIndex === thisIndex && !isDragged) {
-      setIsDragged(true);
-    }
+  const handleInterimTransform = useCallback(async () => {
+    if (!scope.current) return;
+
     if (
       draggingState.activeIndex === null ||
       draggingState.overIndex === null ||
@@ -42,59 +38,64 @@ export const useTransformControl = (
       if (!transform) {
         throw new Error("transform is null");
       }
-      requestAnimationFrame(() => {
-        animate(scope.current, transform, { duration: 0.3 });
-      });
+      await animate(scope.current, transform, { duration: 0.3 });
     } catch (e) {
       console.error("error", e);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [draggingState.overIndex]);
+  }, [animate, draggingState, gridLayout, scope, thisIndex, unitSize]);
 
-  const clearTransform = useCallback(
-    async ({ x, y }: { x: number; y: number }) => {
-      await animate(scope.current, { x, y }, { duration: 0 });
+  const handleFinalTransform = useCallback(
+    async (final: Coordinate | null) => {
+      if (!scope.current) return;
+
+      console.log("final", final);
+
+      if (final) {
+        await animate(
+          scope.current,
+          {
+            x: final.x,
+            y: final.y,
+          },
+          { duration: 0 }
+        );
+        await animate(
+          scope.current,
+          { x: 0, y: 0 },
+          {
+            duration: 0.3,
+            onComplete: () => {
+              console.log("onComplete");
+              scope.current.style.transform = "none";
+            },
+          }
+        );
+        return;
+      } else {
+        await animate(scope.current, { x: 0, y: 0 }, { duration: 0 });
+        return;
+      }
     },
     [animate, scope]
   );
+
   // 在拖拽结束后，每一个组件都要将transform清除
+  const handleResetTransform = useCallback(
+    async (enableAnimate: boolean) => {
+      if (!scope.current) return;
+      await animate(
+        scope.current,
+        { x: 0, y: 0 },
+        { duration: enableAnimate ? 0.3 : 0 }
+      );
+    },
+    [animate, scope]
+  );
+
   useEffect(() => {
-    if (shouldClearTransform) {
-      const isDraggingEnd =
-        draggingState.activeIndex === null && draggingState.overIndex === null;
+    handleInterimTransform();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draggingState.overIndex]);
 
-      if (!isDraggingEnd) {
-        return;
-      }
-      console.log("clearTransform", final, isDragged);
-
-      if (final && isDragged) {
-        animate(scope.current, final, { duration: 0 });
-        animate(scope.current, { x: 0, y: 0 }, { duration: 0.2 });
-        return;
-      } else {
-        animate(scope.current, { x: 0, y: 0 }, { duration: 0 });
-        return;
-      }
-
-      // // 根据拖拽状态选择动画时长
-      // const duration = isDraggingEnd ? 0 : 0;
-
-      // clearTransform().then(() => {
-      //   setShouldClearTransform(false);
-      // });
-      setIsDragged(false);
-    }
-  }, [
-    animate,
-    draggingState.activeIndex,
-    draggingState.overIndex,
-    final,
-    isDragged,
-    scope,
-    setShouldClearTransform,
-    shouldClearTransform,
-  ]);
-
-  return [scope, animate];
+  return [scope, handleFinalTransform, handleResetTransform];
 };

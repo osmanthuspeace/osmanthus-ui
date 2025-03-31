@@ -42,12 +42,24 @@ export const getFinalTransform = (
   const currentCenterX = currentCoordinate.x + unitSize / 2;
   const currentCenterY = currentCoordinate.y + unitSize / 2;
 
-  const x = targetX - currentCenterX;
-  const y = targetY - currentCenterY;
-  console.log("x", x, "y", y);
+  console.log(
+    "currentCenterX",
+    currentCenterX,
+    "targetX",
+    targetX,
+    "currentCenterY",
+    currentCenterY,
+    "targetY",
+    targetY,
+    "getFinalTransform"
+  );
+
+  const x = currentCenterX - targetX;
+  const y = currentCenterY - targetY;
+  // console.log("x", x, "y", y);
 
   return {
-    x: -x,
-    y: -y,
+    x: x,
+    y: y,
   };
 };

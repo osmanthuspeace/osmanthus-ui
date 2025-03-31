@@ -1,5 +1,12 @@
 import { motion } from "motion/react";
-import { forwardRef, Ref, useCallback, useContext, useState } from "react";
+import {
+  forwardRef,
+  Ref,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import SortableContext from "../Sortable/context/sortableContext";
 import { useRef } from "react";
 import { useComposeRef } from "../../hooks/useComposeRef";
@@ -9,18 +16,14 @@ import { ComposedEvent, DragItemProps } from "./interface";
 import { useWhichContainer } from "./hooks/useWhichContainer";
 import { useThrottle } from "../../hooks/useThrottle";
 import CrossContainerContext from "../CrossContainer/CrossContainerContext";
-import { flushSync } from "react-dom";
 import { getFinalTransform } from "./_utils/getFinalTransform";
 import { getCoordinate } from "./_utils/getCoordinate";
-import { Coordinate } from "../../type";
-
+import "./draggable.css";
 const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   const { thisIndex, children, style } = props;
   const {
     id,
     onReorder,
-    shouldClearTransform,
-    setShouldClearTransform,
     unitSize,
     gridLayout,
     draggingState,
@@ -33,20 +36,15 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   const { calculateNewIndex } = usePositionCalculator(gridLayout, unitSize);
 
   const thisRef = useRef<HTMLDivElement>(null);
-  const [final, setFinal] = useState<Coordinate | null>(null);
 
-  const [scope, animate] = useTransformControl(
-    thisIndex,
-    draggingState,
-    gridLayout,
-    unitSize,
-    shouldClearTransform,
-    setShouldClearTransform,
-    final
-  );
+  const [scope, handleFinalTransform, handleResetTransform] =
+    useTransformControl(thisIndex, draggingState, gridLayout, unitSize);
   const composedRef = useComposeRef(scope, thisRef, ref);
 
   const { inWhichContainer } = useWhichContainer();
+
+  //标识这个index元素是否正在拖拽
+  const [isDragged, setIsDragged] = useState(false);
 
   const { onCross, getContainerCoordinateById } = useContext(
     CrossContainerContext
@@ -64,32 +62,35 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   const handleOnDrag = useCallback(
     async (e: ComposedEvent) => {
       console.log("handleOnDrag");
-
+      setIsDragged(true);
       onDrag?.(e);
+
       //暂时不支持移动端
       if (e instanceof TouchEvent) {
         return;
       }
+      console.log("e", e.clientX, e.clientY);
       const newContainerId = inWhichContainer(e.clientX, e.clientY);
       if (newContainerId === null) {
-        await animate(scope.current, { x: 0, y: 0 }, { duration: 0.3 });
+        await handleResetTransform(true);
         return;
       }
       const newIndex = calculateNewIndex(
         e.target as HTMLElement,
         newContainerId
       );
+      console.log("newIndex", newIndex);
+
       setDraggingState((prev) => ({
         ...prev,
         overIndex: newIndex,
       }));
     },
     [
-      animate,
       calculateNewIndex,
+      handleResetTransform,
       inWhichContainer,
       onDrag,
-      scope,
       setDraggingState,
     ]
   );
@@ -97,7 +98,6 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   //结束拖拽
   const handleDragEnd = async (e: ComposedEvent) => {
     onDragEnd?.(e);
-    if (!scope.current) return;
     try {
       if (!thisRef.current) return;
 
@@ -107,22 +107,29 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       const newContainerId = inWhichContainer(e.clientX, e.clientY);
       // console.log("inThisContainerId", inThisContainerId);
       if (newContainerId === null) {
-        animate(scope.current, { x: 0, y: 0 }, { duration: 0.3 });
+        await handleResetTransform(true);
         return;
       }
       const newIndex = calculateNewIndex(
         e.target as HTMLElement,
         newContainerId
       );
-      const { x, y } = getFinalTransform(
+      const finalTransform = getFinalTransform(
         newIndex,
         getCoordinate(thisRef.current),
         getContainerCoordinateById(newContainerId),
         gridLayout,
         unitSize
       );
-      setFinal({ x, y });
+
+      console.log("final state", newContainerId, id, newIndex, thisIndex);
+      setDraggingState((prev) => ({
+        ...prev,
+        activeIndex: null,
+        overIndex: null,
+      }));
       if (newContainerId !== id) {
+        // 进入其他容器
         onCross?.(
           { containerId: id, index: thisIndex },
           {
@@ -132,26 +139,31 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         );
       } else {
         if (newIndex !== thisIndex) {
-          onReorder(thisIndex, newIndex);
+          //进入同一容器的其他网格
+          onReorder(thisIndex, newIndex, draggingState.activeIndex as number);
+          await handleFinalTransform(finalTransform);
         } else {
-          await animate(scope.current, { x: 0, y: 0 }, { duration: 0.3 });
+          //回到原网格
+          console.log("no change, reset");
+
+          await handleResetTransform(true);
         }
       }
-      setShouldClearTransform(true);
-
-      flushSync(() => {
-        console.log("flushSync");
-        setDraggingState((prev) => ({
-          ...prev,
-          activeIndex: null,
-          overIndex: null,
-        }));
-      });
-      
     } catch (error) {
       console.error("拖拽结束处理出错:", error);
     }
   };
+
+  useEffect(() => {
+    if (
+      draggingState.activeIndex === null &&
+      draggingState.overIndex === null &&
+      !isDragged
+    ) {
+      handleResetTransform(false);
+    }
+  }, [draggingState, handleResetTransform, isDragged]);
+
   //将handleOnDrag函数节流
   const throttledHandleOnDrag = useThrottle(handleOnDrag, 100);
   return (

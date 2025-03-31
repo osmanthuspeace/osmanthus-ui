@@ -10,8 +10,6 @@ const defaultContext: SortableContextProps = {
   onReorder: () => {},
   registerItemRef: () => {},
   unitSize: 100,
-  shouldClearTransform: false,
-  setShouldClearTransform: () => {},
   containerCoordinate: { x: 0, y: 0 },
   gridLayout: {
     columns: 2,

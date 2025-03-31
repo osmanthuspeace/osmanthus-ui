@@ -8,7 +8,7 @@ import { SortContainerProps } from "./interface";
 import { DraggingState } from "../Drag/interface";
 import { useRenderedChildren } from "./hooks/useRenderedChildren";
 import { useContainerRegister } from "../CrossContainer/hooks/useContainerRegister";
-
+import "./sortContainer.css"
 const SortContainerInternal = (
   props: SortContainerProps,
   ref: React.Ref<HTMLDivElement>
@@ -39,7 +39,7 @@ const SortContainerInternal = (
     containerRef,
     ref
   ) as React.RefObject<HTMLDivElement>;
-  const [shouldClearTransform, setShouldClearTransform] = useState(false);
+  // const [shouldClearTransform, setShouldClearTransform] = useState(false);
   const containerCoordinate = useObserveContainer(containerRef);
 
   const { computedGap, computedGridTemplateRows, containerPadding } =
@@ -66,8 +66,6 @@ const SortContainerInternal = (
           width,
           height,
           enableDnd,
-          shouldClearTransform,
-          setShouldClearTransform,
           unitSize: unitSize,
           containerCoordinate,
           gridLayout: {

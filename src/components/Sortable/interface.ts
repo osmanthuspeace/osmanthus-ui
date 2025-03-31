@@ -13,9 +13,7 @@ export interface SortableContextProps {
   width: number;
   height: number;
   enableDnd: boolean;
-  shouldClearTransform: boolean;
-  setShouldClearTransform: React.Dispatch<React.SetStateAction<boolean>>;
-  onReorder: (oldIndex: number, newIndex: number) => void;
+  onReorder: (oldIndex: number, newIndex: number, activeIndex: number) => void;
   registerItemRef: (index: number, ref: HTMLElement | null) => void;
   containerCoordinate: { x: number; y: number };
   unitSize: number;

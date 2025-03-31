@@ -6,7 +6,7 @@ export const useChildrenArray = (
   onOrderChange?: (newOrderIds: string[]) => void
 ): [
   React.ReactNode[],
-  (oldIndex: number, newIndex: number) => void,
+  (oldIndex: number, newIndex: number, activeIndex: number) => void,
   (index: number, ref: HTMLElement | null) => void
 ] => {
   const [sortedChildren, setSortedChildren] = React.useState<React.ReactNode[]>(
@@ -23,15 +23,19 @@ export const useChildrenArray = (
   };
 
   const handleReorder = useCallback(
-    (oldIndex: number, newIndex: number) => {
+    (oldIndex: number, newIndex: number, activeIndex: number) => {
       setSortedChildren((prev) => {
         const newArray = [...prev];
         const [removed] = newArray.splice(oldIndex, 1);
         newArray.splice(newIndex, 0, removed);
         requestAnimationFrame(() => {
-          // itemRefs.current.forEach((item) => {
-          //   item.style.transform = "none";
-          // });
+          itemRefs.current.forEach((item) => {
+            item.style.transform = "none";
+
+            if (oldIndex !== activeIndex) {
+              item.style.transform = "none";
+            }
+          });
           onOrderChange?.(getChildIds(newArray));
         });
         return newArray;

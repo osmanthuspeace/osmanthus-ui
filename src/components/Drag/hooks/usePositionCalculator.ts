@@ -12,7 +12,7 @@ export function usePositionCalculator(
 
   const calculateNewIndex = useCallback(
     (element: HTMLElement, containerId: string) => {
-      const { x, y } = getCoordinate(element);
+      const { x, y } = getCoordinate(element, 1.05);
       const { containerX, containerY } =
         getContainerCoordinateById(containerId);
       return calculateIndexByCooridnate(

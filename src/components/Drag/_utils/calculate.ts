@@ -12,7 +12,7 @@ export const calculateCenterByIndex = (
   return { centerX, centerY };
 };
 
-//通过绝对坐标，计算出index
+//通过左上角的坐标，计算出index
 export const calculateIndexByCooridnate = (
   x: number,
   y: number,

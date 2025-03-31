@@ -1,9 +1,9 @@
-export const getCoordinate = (element: Element) => {
+export const getCoordinate = (element: Element, scale?: number) => {
   // TODO
   const { x, y } = element.getBoundingClientRect();
   return {
-    x,
-    y,
+    x: x / (scale ?? 1),
+    y: y / (scale ?? 1),
   };
 };
 
