@@ -96,6 +96,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   );
 
   //结束拖拽
+  //TODO: 使用flip，先将正在拖拽的元素归位，然后onReorder重排，再使用transform过渡到原位置，再将transform全部清除
   const handleDragEnd = async (e: ComposedEvent) => {
     onDragEnd?.(e);
     try {
