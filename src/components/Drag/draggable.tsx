@@ -17,7 +17,6 @@ import { useWhichContainer } from "./hooks/useWhichContainer";
 import { useThrottle } from "../../hooks/useThrottle";
 import CrossContainerContext from "../CrossContainer/CrossContainerContext";
 import { getFinalTransform } from "./_utils/getFinalTransform";
-import { getCoordinate } from "./_utils/getCoordinate";
 import "./draggable.css";
 const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   const { thisIndex, children, style } = props;
@@ -69,7 +68,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       if (e instanceof TouchEvent) {
         return;
       }
-      console.log("e", e.clientX, e.clientY);
+      // console.log("e", e.clientX, e.clientY);
       const newContainerId = inWhichContainer(e.clientX, e.clientY);
       if (newContainerId === null) {
         await handleResetTransform(true);
@@ -105,6 +104,8 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       if (e instanceof TouchEvent) {
         return;
       }
+      console.log("e", e.clientX, e.clientY);
+
       const newContainerId = inWhichContainer(e.clientX, e.clientY);
       // console.log("inThisContainerId", inThisContainerId);
       if (newContainerId === null) {
@@ -116,19 +117,15 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         newContainerId
       );
       const finalTransform = getFinalTransform(
+        thisIndex,
         newIndex,
-        getCoordinate(thisRef.current),
         getContainerCoordinateById(newContainerId),
         gridLayout,
         unitSize
       );
 
       console.log("final state", newContainerId, id, newIndex, thisIndex);
-      setDraggingState((prev) => ({
-        ...prev,
-        activeIndex: null,
-        overIndex: null,
-      }));
+
       if (newContainerId !== id) {
         // 进入其他容器
         onCross?.(
@@ -141,8 +138,19 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       } else {
         if (newIndex !== thisIndex) {
           //进入同一容器的其他网格
-          onReorder(thisIndex, newIndex, draggingState.activeIndex as number);
           await handleFinalTransform(finalTransform);
+          console.log("handleFinalTransform");
+
+          // await new Promise((resolve) => {
+          //   setTimeout(resolve, 3000);
+          // });
+          console.log("handleFinalTransform end");
+          setDraggingState((prev) => ({
+            ...prev,
+            activeIndex: null,
+            overIndex: null,
+          }));
+          onReorder(thisIndex, newIndex, draggingState.activeIndex as number);
         } else {
           //回到原网格
           console.log("no change, reset");
@@ -158,8 +166,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   useEffect(() => {
     if (
       draggingState.activeIndex === null &&
-      draggingState.overIndex === null &&
-      !isDragged
+      draggingState.overIndex === null
     ) {
       handleResetTransform(false);
     }

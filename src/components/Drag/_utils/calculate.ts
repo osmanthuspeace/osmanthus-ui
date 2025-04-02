@@ -1,15 +1,31 @@
-//通过index，计算出绝对的中心坐标
-export const calculateCenterByIndex = (
+import { GridLayout } from "../../Sortable/interface";
+
+//通过index，计算出应该在的左上角坐标
+export const calculateCoordianteByIndex = (
   index: number,
-  padding: number,
-  gap: number,
-  itemUnit: number,
-  containerX: number,
-  containerY: number
-) => {
-  const centerX = padding + (index + 0.5) * itemUnit + index * gap + containerX;
-  const centerY = padding + (index + 0.5) * itemUnit + index * gap + containerY;
-  return { centerX, centerY };
+  gridLayout: GridLayout,
+  unitSize: number,
+  containerCoordinate: {
+    containerX: number;
+    containerY: number;
+  }
+): {
+  x: number;
+  y: number;
+} => {
+  const targetRow = Math.floor(index / gridLayout.columns);
+  const targetCol = index % gridLayout.columns;
+  const targetX =
+    targetCol * (unitSize + gridLayout.gap) +
+    gridLayout.gap +
+    unitSize / 2 +
+    containerCoordinate.containerX;
+  const targetY =
+    targetRow * (unitSize + gridLayout.gap) +
+    gridLayout.gap +
+    unitSize / 2 +
+    containerCoordinate.containerY;
+  return { x: targetX, y: targetY };
 };
 
 //通过左上角的坐标，计算出index

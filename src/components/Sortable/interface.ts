@@ -13,7 +13,7 @@ export interface SortableContextProps {
   width: number;
   height: number;
   enableDnd: boolean;
-  onReorder: (oldIndex: number, newIndex: number, activeIndex: number) => void;
+  onReorder: (oldIndex: number, newIndex: number, activeIndex?: number) => void;
   registerItemRef: (index: number, ref: HTMLElement | null) => void;
   containerCoordinate: { x: number; y: number };
   unitSize: number;

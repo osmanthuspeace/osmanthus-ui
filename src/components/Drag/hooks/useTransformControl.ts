@@ -57,18 +57,7 @@ export const useTransformControl = (
             x: final.x,
             y: final.y,
           },
-          { duration: 0 }
-        );
-        await animate(
-          scope.current,
-          { x: 0, y: 0 },
-          {
-            duration: 0.3,
-            onComplete: () => {
-              console.log("onComplete");
-              scope.current.style.transform = "none";
-            },
-          }
+          { duration: 0.2 }
         );
         return;
       } else {

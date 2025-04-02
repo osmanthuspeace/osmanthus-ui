@@ -1,62 +1,32 @@
-import { Coordinate } from "../../../type";
+import { GridLayout } from "../../Sortable/interface";
+import { calculateCoordianteByIndex } from "./calculate";
 
 export const getFinalTransform = (
+  originIndex: number,
   newIndex: number,
-  currentCoordinate: Coordinate,
   containerCoordinate: {
     containerX: number;
     containerY: number;
   },
-  gridLayout: {
-    columns: number;
-    gap: number;
-  },
+  gridLayout: GridLayout,
   unitSize: number
 ): { x: number; y: number } => {
-  //   console.log(
-  //     "newIndex",
-  //     newIndex,
-  //     "currentCoordinate",
-  //     currentCoordinate,
-  //     "gridLayout",
-  //     gridLayout,
-  //     "unitSize",
-  //     unitSize,
-  //     "getFinalTransform"
-  //   );
-
-  const targetRow = Math.floor(newIndex / gridLayout.columns);
-  const targetCol = newIndex % gridLayout.columns;
-
-  const targetX =
-    targetCol * (unitSize + gridLayout.gap) +
-    gridLayout.gap +
-    unitSize / 2 +
-    containerCoordinate.containerX;
-  const targetY =
-    targetRow * (unitSize + gridLayout.gap) +
-    gridLayout.gap +
-    unitSize / 2 +
-    containerCoordinate.containerY;
-
-  const currentCenterX = currentCoordinate.x + unitSize / 2;
-  const currentCenterY = currentCoordinate.y + unitSize / 2;
-
-  console.log(
-    "currentCenterX",
-    currentCenterX,
-    "targetX",
-    targetX,
-    "currentCenterY",
-    currentCenterY,
-    "targetY",
-    targetY,
-    "getFinalTransform"
+  const originCoord = calculateCoordianteByIndex(
+    originIndex,
+    gridLayout,
+    unitSize,
+    containerCoordinate
   );
 
-  const x = currentCenterX - targetX;
-  const y = currentCenterY - targetY;
-  // console.log("x", x, "y", y);
+  const newCoord = calculateCoordianteByIndex(
+    newIndex,
+    gridLayout,
+    unitSize,
+    containerCoordinate
+  );
+  const x = newCoord.x - originCoord.x;
+  const y = newCoord.y - originCoord.y;
+  console.log("x", x, "y", y);
 
   return {
     x: x,
