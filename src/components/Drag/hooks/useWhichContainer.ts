@@ -2,11 +2,12 @@ import { useCallback, useContext } from "react";
 import CrossContainerContext from "../../CrossContainer/CrossContainerContext";
 
 export const useWhichContainer = () => {
-  const { containerRegister } = useContext(CrossContainerContext);
+  const context = useContext(CrossContainerContext);
 
   const inWhichContainer = useCallback(
     (itemX: number, itemY: number) => {
-      for (const [id, containerRect] of containerRegister) {
+      if (!context?.containerRegister) return null;
+      for (const [id, containerRect] of context.containerRegister) {
         if (
           itemX >= containerRect.left &&
           itemX <= containerRect.left + containerRect.width &&
@@ -18,7 +19,7 @@ export const useWhichContainer = () => {
       }
       return null;
     },
-    [containerRegister]
+    [context?.containerRegister]
   );
   return { inWhichContainer };
 };

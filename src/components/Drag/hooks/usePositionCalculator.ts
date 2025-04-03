@@ -8,27 +8,30 @@ export function usePositionCalculator(
   gridLayout: GridLayout,
   unitSize: number
 ) {
-  const { getContainerCoordinateById } = useContext(CrossContainerContext);
-
+  const context = useContext(CrossContainerContext);
   const calculateNewIndex = useCallback(
     (element: HTMLElement, containerId: string) => {
       const { x, y } = getCoordinate(element, 1.05);
-      const { containerX, containerY } =
-        getContainerCoordinateById(containerId);
+      const containerCoordinate = context?.getContainerCoordinateById?.(
+        containerId
+      ) || {
+        containerX: 0,
+        containerY: 0,
+      };
       return calculateIndexByCooridnate(
         x,
         y,
         gridLayout.padding,
         gridLayout.gap,
         unitSize,
-        containerX,
-        containerY,
+        containerCoordinate.containerX,
+        containerCoordinate.containerY,
         gridLayout.columns,
         gridLayout.rows
       );
     },
     [
-      getContainerCoordinateById,
+      context,
       gridLayout.columns,
       gridLayout.gap,
       gridLayout.padding,

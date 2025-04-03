@@ -29,9 +29,9 @@ export const useChildrenArray = (
         const [removed] = newArray.splice(oldIndex, 1);
         newArray.splice(newIndex, 0, removed);
         requestAnimationFrame(() => {
-          itemRefs.current.forEach((item) => {
-            item.style.transform = "none";
-          });
+          // itemRefs.current.forEach((item) => {
+          //   item.style.transform = "none";
+          // });
           onOrderChange?.(getChildIds(newArray));
         });
         return newArray;

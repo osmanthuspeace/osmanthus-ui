@@ -1,12 +1,5 @@
 import { motion } from "motion/react";
-import {
-  forwardRef,
-  Ref,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { forwardRef, Ref, useCallback, useContext, useEffect } from "react";
 import SortableContext from "../Sortable/context/sortableContext";
 import { useRef } from "react";
 import { useComposeRef } from "../../hooks/useComposeRef";
@@ -18,6 +11,7 @@ import { useThrottle } from "../../hooks/useThrottle";
 import CrossContainerContext from "../CrossContainer/CrossContainerContext";
 import { getFinalTransform } from "./_utils/getFinalTransform";
 import "./draggable.css";
+import { eventBus } from "./_utils/eventBus";
 const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   const { thisIndex, children, style } = props;
   const {
@@ -42,12 +36,26 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
 
   const { inWhichContainer } = useWhichContainer();
 
-  //标识这个index元素是否正在拖拽
-  const [isDragged, setIsDragged] = useState(false);
+  const { onCross, getContainerCoordinateById } =
+    useContext(CrossContainerContext) || {};
 
-  const { onCross, getContainerCoordinateById } = useContext(
-    CrossContainerContext
-  );
+  useEffect(() => {
+    eventBus.subscribe(
+      "resetTransform",
+      async () => await handleResetTransform(false)
+    );
+    return () => {
+      eventBus.unsubscribe("resetTransform");
+    };
+  }, [handleResetTransform]);
+  useEffect(() => {
+    if (
+      draggingState.activeIndex === null &&
+      draggingState.overIndex === null
+    ) {
+      handleResetTransform(false);
+    }
+  }, [draggingState, handleResetTransform]);
 
   //开始拖拽
   const handleDragStart = (e: ComposedEvent) => {
@@ -61,9 +69,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   const handleOnDrag = useCallback(
     async (e: ComposedEvent) => {
       console.log("handleOnDrag");
-      setIsDragged(true);
       onDrag?.(e);
-
       //暂时不支持移动端
       if (e instanceof TouchEvent) {
         return;
@@ -95,7 +101,6 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   );
 
   //结束拖拽
-  //TODO: 使用flip，先将正在拖拽的元素归位，然后onReorder重排，再使用transform过渡到原位置，再将transform全部清除
   const handleDragEnd = async (e: ComposedEvent) => {
     onDragEnd?.(e);
     try {
@@ -126,7 +131,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
 
       console.log("final state", newContainerId, id, newIndex, thisIndex);
 
-      if (newContainerId !== id) {
+      if (newContainerId !== id && onCross) {
         // 进入其他容器
         onCross?.(
           { containerId: id, index: thisIndex },
@@ -139,12 +144,8 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         if (newIndex !== thisIndex) {
           //进入同一容器的其他网格
           await handleFinalTransform(finalTransform);
-          console.log("handleFinalTransform");
-
-          // await new Promise((resolve) => {
-          //   setTimeout(resolve, 3000);
-          // });
           console.log("handleFinalTransform end");
+          await eventBus.publish("resetTransform");
           setDraggingState((prev) => ({
             ...prev,
             activeIndex: null,
@@ -163,17 +164,8 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
     }
   };
 
-  useEffect(() => {
-    if (
-      draggingState.activeIndex === null &&
-      draggingState.overIndex === null
-    ) {
-      handleResetTransform(false);
-    }
-  }, [draggingState, handleResetTransform, isDragged]);
-
   //将handleOnDrag函数节流
-  const throttledHandleOnDrag = useThrottle(handleOnDrag, 100);
+  const throttledHandleOnDrag = useThrottle(handleOnDrag, 50);
   return (
     <>
       <motion.div

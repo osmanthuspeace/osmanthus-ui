@@ -25,7 +25,7 @@ function App() {
   ]);
 
   const [storedItems, setStoredItems] = useState<SortableItems>(
-    Array.from({ length: 800 }).map((_, index) => {
+    Array.from({ length: 80 }).map((_, index) => {
       return { id: `store-${index}`, children: "test" + index };
     })
   );
@@ -69,7 +69,7 @@ function App() {
     <>
       <section className="main-container">
         <button onClick={handleClick}>编辑</button>
-        <CrossContainer onCross={handleCrossContainer}>
+        {/* <CrossContainer onCross={handleCrossContainer}> */}
           <SortContainer
             id="sort-container111"
             enableDnd={isEditing}
@@ -90,7 +90,7 @@ function App() {
               );
             })}
           </SortContainer>
-          <SortContainer
+          {/* <SortContainer
             className="drag-container"
             id="222"
             width={600}
@@ -105,8 +105,8 @@ function App() {
                 </SortableItem>
               );
             })}
-          </SortContainer>
-        </CrossContainer>
+          </SortContainer> */}
+        {/* </CrossContainer> */}
       </section>
     </>
   );

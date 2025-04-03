@@ -57,7 +57,7 @@ export const useTransformControl = (
             x: final.x,
             y: final.y,
           },
-          { duration: 0.2 }
+          { duration: 0.3 }
         );
         return;
       } else {
