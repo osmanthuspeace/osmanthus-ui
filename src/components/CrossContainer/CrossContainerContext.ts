@@ -17,11 +17,16 @@ export interface CrossContainerContextProps {
   containerRegister: Map<Id, ContainerRect>;
   updateContainerMap: (id: Id, rect: DOMRectReadOnly) => void;
   getContainerCoordinateById: (id: Id) => {
-    containerX: number;
-    containerY: number;
+    x: number;
+    y: number;
   };
   onCross: (source: CrossInfo, target: CrossInfo) => void;
 }
+
+export const emptyFn = () => ({
+  x: 0,
+  y: 0,
+});
 
 const defaultContext: CrossContainerContextProps = {
   sourceContainerId: null,
@@ -30,10 +35,7 @@ const defaultContext: CrossContainerContextProps = {
   setTargetContainerId: () => {},
   containerRegister: new Map(),
   updateContainerMap: () => {},
-  getContainerCoordinateById: () => ({
-    containerX: 0,
-    containerY: 0,
-  }),
+  getContainerCoordinateById: emptyFn,
   onCross: noop,
 };
 const CrossContainerContext =

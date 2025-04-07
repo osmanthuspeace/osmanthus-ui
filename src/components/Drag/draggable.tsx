@@ -25,6 +25,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
     onDragStart,
     onDrag,
     onDragEnd,
+    containerCoordinate,
   } = useContext(SortableContext);
 
   const { calculateNewIndex } = usePositionCalculator(gridLayout, unitSize);
@@ -66,6 +67,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
     setDraggingState((prev) => ({
       ...prev,
       activeIndex: thisIndex,
+      activeContainerId: id,
     }));
     setSourceContainerId?.(id);
   };
@@ -87,9 +89,11 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         await handleResetTransform(true);
         return;
       }
+
       const newIndex = calculateNewIndex(
         e.target as HTMLElement,
-        newContainerId
+        newContainerId,
+        containerCoordinate
       );
       console.log("newIndex", newIndex);
 
@@ -104,6 +108,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       inWhichContainer,
       onDrag,
       setDraggingState,
+      containerCoordinate
     ]
   );
 
@@ -126,9 +131,11 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         await handleResetTransform(true);
         return;
       }
+
       const newIndex = calculateNewIndex(
         e.target as HTMLElement,
-        newContainerId
+        newContainerId,
+        containerCoordinate
       );
       const finalTransform = getFinalTransform(
         thisIndex,

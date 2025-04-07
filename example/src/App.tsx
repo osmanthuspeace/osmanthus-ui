@@ -76,7 +76,7 @@ function App() {
             className="drag-container"
             onOrderChange={handleOrderChange}
             width={600}
-            height={250}
+            height={320}
             gridTemplateColumns={4}
             // onDragStart={() => console.log("drag start")}
             // onAnyDrag={() => console.log("drag")}

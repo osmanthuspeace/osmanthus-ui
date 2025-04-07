@@ -8,7 +8,8 @@ import { SortContainerProps } from "./interface";
 import { DraggingState } from "../Drag/interface";
 import { useRenderedChildren } from "./hooks/useRenderedChildren";
 import { useContainerRegister } from "../CrossContainer/hooks/useContainerRegister";
-import "./sortContainer.css"
+import "./sortContainer.css";
+import { useInternalSize } from "./hooks/useInternalSize";
 const SortContainerInternal = (
   props: SortContainerProps,
   ref: React.Ref<HTMLDivElement>
@@ -16,8 +17,8 @@ const SortContainerInternal = (
   const {
     id,
     children,
-    width = 250,
-    height = 550,
+    width,
+    height,
     unitSize = 100,
     gridTemplateColumns = 2,
     enableDnd = false,
@@ -39,11 +40,17 @@ const SortContainerInternal = (
     containerRef,
     ref
   ) as React.RefObject<HTMLDivElement>;
-  // const [shouldClearTransform, setShouldClearTransform] = useState(false);
+
   const containerCoordinate = useObserveContainer(containerRef);
 
+  const { internalWidth, internalHeight } = useInternalSize(
+    width,
+    height,
+    containerRef
+  );
+
   const { computedGap, computedGridTemplateRows, containerPadding } =
-    useGridLayout(width, height, unitSize, gridTemplateColumns);
+    useGridLayout(internalWidth, internalHeight, unitSize, gridTemplateColumns);
 
   const [draggingState, setDraggingState] = useState<DraggingState>({
     activeIndex: null,
@@ -63,8 +70,8 @@ const SortContainerInternal = (
       <SortableContext.Provider
         value={{
           id,
-          width,
-          height,
+          width: internalWidth,
+          height: internalHeight,
           enableDnd,
           unitSize: unitSize,
           containerCoordinate,
@@ -87,14 +94,15 @@ const SortContainerInternal = (
         <div
           style={{
             display: "grid",
-            width: `${width}px`,
-            height: `${height}px`,
+            width: width ? `${width}px` : `auto`,
+            height: height ? `${height}px` : `auto`,
             gridTemplateRows: `repeat(${computedGridTemplateRows}, 1fr)`,
             gridTemplateColumns: `repeat(${gridTemplateColumns}, 1fr)`,
             gridGap: `${computedGap}px`,
             padding: `${computedGap}px`,
             margin: "0 auto",
             border: "1px solid red",
+            boxSizing: "border-box",
           }}
           {...rest}
           ref={composedRef}

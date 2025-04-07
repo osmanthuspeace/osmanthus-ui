@@ -1,30 +1,30 @@
+import { Coordinate } from "../../../type";
 import { GridLayout } from "../../Sortable/interface";
 
-//通过index，计算出应该在的左上角坐标
+//通过index，计算出应该在的坐标（左上角）
 export const calculateCoordianteByIndex = (
   index: number,
   gridLayout: GridLayout,
   unitSize: number,
-  containerCoordinate: {
-    containerX: number;
-    containerY: number;
-  }
+  containerCoordinate: Coordinate
 ): {
   x: number;
   y: number;
 } => {
+  //从0开始的row和col
   const targetRow = Math.floor(index / gridLayout.columns);
   const targetCol = index % gridLayout.columns;
+  // console.log("targetRow", targetRow, "targetCol", targetCol);
   const targetX =
     targetCol * (unitSize + gridLayout.gap) +
     gridLayout.gap +
-    unitSize / 2 +
-    containerCoordinate.containerX;
+    // unitSize / 2 +
+    containerCoordinate.x;
   const targetY =
     targetRow * (unitSize + gridLayout.gap) +
     gridLayout.gap +
-    unitSize / 2 +
-    containerCoordinate.containerY;
+    // unitSize / 2 +
+    containerCoordinate.y;
   return { x: targetX, y: targetY };
 };
 
@@ -40,17 +40,17 @@ export const calculateIndexByCooridnate = (
   gridCol: number,
   gridRow: number
 ) => {
-  // const centerOffset = unitSize / 2;
   const maxRowIndex = gridRow - 1;
   const maxColIndex = gridCol - 1;
-  console.log("maxRowIndex", maxRowIndex, "maxColIndex", maxColIndex);
   let row = Math.round((y - containerY - padding) / (unitSize + gap));
   row = row < 0 ? 0 : row;
   row = row > maxRowIndex ? maxRowIndex : row;
   let col = Math.round((x - containerX - padding) / (unitSize + gap));
+  console.log("x", x, "containerX", containerX, "padding", padding);
   col = col < 0 ? 0 : col;
   col = col > maxColIndex ? maxColIndex : col;
   console.log("row", row, "col", col);
   const index = row * gridCol + col;
+  // console.log("index", index);
   return index;
 };
