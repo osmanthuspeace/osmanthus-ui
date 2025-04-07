@@ -12,6 +12,7 @@ import CrossContainerContext from "../CrossContainer/CrossContainerContext";
 import { getFinalTransform } from "./_utils/getFinalTransform";
 import "./draggable.css";
 import { eventBus } from "./_utils/eventBus";
+import { noop } from "../../utils/noop";
 const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   const { thisIndex, children, style } = props;
   const {
@@ -36,8 +37,10 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
 
   const { inWhichContainer } = useWhichContainer();
 
-  const { onCross, getContainerCoordinateById } =
+  const { onCross, getContainerCoordinateById, setSourceContainerId } =
     useContext(CrossContainerContext) || {};
+
+  const enableCross = onCross !== noop;
 
   useEffect(() => {
     eventBus.subscribe(
@@ -64,6 +67,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       ...prev,
       activeIndex: thisIndex,
     }));
+    setSourceContainerId?.(id);
   };
   //拖拽过程中
   const handleOnDrag = useCallback(
@@ -75,7 +79,10 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         return;
       }
       // console.log("e", e.clientX, e.clientY);
-      const newContainerId = inWhichContainer(e.clientX, e.clientY);
+      const newContainerId = enableCross
+        ? inWhichContainer(e.clientX, e.clientY)
+        : id;
+
       if (newContainerId === null) {
         await handleResetTransform(true);
         return;
@@ -111,7 +118,9 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       }
       console.log("e", e.clientX, e.clientY);
 
-      const newContainerId = inWhichContainer(e.clientX, e.clientY);
+      const newContainerId = enableCross
+        ? inWhichContainer(e.clientX, e.clientY)
+        : id;
       // console.log("inThisContainerId", inThisContainerId);
       if (newContainerId === null) {
         await handleResetTransform(true);
@@ -131,9 +140,9 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
 
       console.log("final state", newContainerId, id, newIndex, thisIndex);
 
-      if (newContainerId !== id && onCross) {
+      if (newContainerId !== id && enableCross) {
         // 进入其他容器
-        onCross?.(
+        onCross(
           { containerId: id, index: thisIndex },
           {
             containerId: newContainerId,
@@ -146,19 +155,17 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
           await handleFinalTransform(finalTransform);
           console.log("handleFinalTransform end");
           await eventBus.publish("resetTransform");
-          setDraggingState((prev) => ({
-            ...prev,
-            activeIndex: null,
-            overIndex: null,
-          }));
           onReorder(thisIndex, newIndex, draggingState.activeIndex as number);
         } else {
           //回到原网格
-          console.log("no change, reset");
-
           await handleResetTransform(true);
         }
       }
+      setDraggingState((prev) => ({
+        ...prev,
+        activeIndex: null,
+        overIndex: null,
+      }));
     } catch (error) {
       console.error("拖拽结束处理出错:", error);
     }

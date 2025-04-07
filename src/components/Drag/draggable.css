@@ -2,4 +2,10 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  animation-fill-mode: none;
 }
+/*
+当元素应用了非整数像素偏移的 transform（如 translate(-50%, -50%)）
+并被提升为合成层（如因动画、WebGL 叠加等），
+Chrome 可能因像素不对齐导致文字模糊。合成层的亚像素渲染会触发插值计算，进而产生模糊
+*/

@@ -43,13 +43,14 @@ export const calculateIndexByCooridnate = (
   // const centerOffset = unitSize / 2;
   const maxRowIndex = gridRow - 1;
   const maxColIndex = gridCol - 1;
+  console.log("maxRowIndex", maxRowIndex, "maxColIndex", maxColIndex);
   let row = Math.round((y - containerY - padding) / (unitSize + gap));
   row = row < 0 ? 0 : row;
   row = row > maxRowIndex ? maxRowIndex : row;
   let col = Math.round((x - containerX - padding) / (unitSize + gap));
   col = col < 0 ? 0 : col;
   col = col > maxColIndex ? maxColIndex : col;
-  // console.log("row", row, "col", col);
+  console.log("row", row, "col", col);
   const index = row * gridCol + col;
   return index;
 };

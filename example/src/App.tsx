@@ -25,7 +25,7 @@ function App() {
   ]);
 
   const [storedItems, setStoredItems] = useState<SortableItems>(
-    Array.from({ length: 80 }).map((_, index) => {
+    Array.from({ length: 8 }).map((_, index) => {
       return { id: `store-${index}`, children: "test" + index };
     })
   );
@@ -76,7 +76,7 @@ function App() {
             className="drag-container"
             onOrderChange={handleOrderChange}
             width={600}
-            height={300}
+            height={250}
             gridTemplateColumns={4}
             // onDragStart={() => console.log("drag start")}
             // onAnyDrag={() => console.log("drag")}

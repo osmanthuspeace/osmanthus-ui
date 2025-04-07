@@ -6,7 +6,10 @@ export const useWhichContainer = () => {
 
   const inWhichContainer = useCallback(
     (itemX: number, itemY: number) => {
-      if (!context?.containerRegister) return null;
+      console.warn("context", context);
+
+      if (!context?.containerRegister)
+        return context?.sourceContainerId || null;
       for (const [id, containerRect] of context.containerRegister) {
         if (
           itemX >= containerRect.left &&
@@ -19,7 +22,7 @@ export const useWhichContainer = () => {
       }
       return null;
     },
-    [context?.containerRegister]
+    [context?.containerRegister, context?.sourceContainerId]
   );
   return { inWhichContainer };
 };

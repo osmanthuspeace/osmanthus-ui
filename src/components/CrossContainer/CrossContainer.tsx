@@ -13,6 +13,10 @@ export const CrossContainer = ({
   const [containerMap, setContainerMap] = useState<Map<Id, ContainerRect>>(
     new Map()
   );
+
+  const [sourceContainerId, setSourceContainerId] = useState<Id | null>(null);
+  const [targetContainerId, setTargetContainerId] = useState<Id | null>(null);
+
   const updateContainerMap = useCallback((id: Id, rect: DOMRectReadOnly) => {
     // console.warn("[DEBUG] enter updateContainerMap");
 
@@ -56,8 +60,10 @@ export const CrossContainer = ({
   const value = useMemo(
     () => ({
       onCross,
-      sourceContainerId: null,
-      targetContainerId: null,
+      sourceContainerId: sourceContainerId,
+      targetContainerId: targetContainerId,
+      setSourceContainerId,
+      setTargetContainerId,
       containerRegister: containerMap,
       updateContainerMap,
       getContainerCoordinateById,

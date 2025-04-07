@@ -16,9 +16,9 @@ export const useGridLayout = (
       //标准盒模型
       (width - gridTemplateColumns * unitSize) / (gridTemplateColumns - 1)
     );
-    // console.log("gap", gap);
+    console.log("gap", gap);
     const rows = Math.ceil((height + gap) / (unitSize + gap));
-    // console.log("rows", rows);
+    console.log("rows", rows, "column", gridTemplateColumns);
     return {
       computedGap: gap,
       computedGridTemplateRows: rows,
