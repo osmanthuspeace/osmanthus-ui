@@ -17,14 +17,12 @@ export const useObserveContainer = (
     const container = containerRef.current;
 
     const observer = new ResizeObserver((entries) => {
-      console.log("触发了resizeObserver");
-      requestAnimationFrame(() => {
-        const rect = entries[0].target.getBoundingClientRect();
-        console.log('Consistent rect:', rect);
-        setContainerCooridnate({
-          x: rect.x,
-          y: rect.y,
-        });
+      // console.log("触发了resizeObserver");
+      const rect = entries[0].target.getBoundingClientRect();
+      // console.log('Consistent rect:', rect);
+      setContainerCooridnate({
+        x: rect.x,
+        y: rect.y,
       });
     });
     observer.observe(container);

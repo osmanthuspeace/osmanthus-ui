@@ -24,13 +24,12 @@ export const useGridLayout = (
   return useMemo(() => {
     const gap = Math.max(
       0,
-      //(width - gridTemplateColumns * unitSize) / (gridTemplateColumns - 1) 标准盒模型
-      (width - gridTemplateColumns * unitSize) / (gridTemplateColumns + 1)
+      (width - gridTemplateColumns * unitSize) / (gridTemplateColumns + 1) //(width - gridTemplateColumns * unitSize) / (gridTemplateColumns - 1) 标准盒模型
     );
     // console.log("gap", gap);
     //从1开始的rows
-    const rows = Math.floor(childrenLength / gridTemplateColumns);
-    console.log("rows", rows, "column", gridTemplateColumns);
+    const rows = Math.ceil(childrenLength / gridTemplateColumns);
+    // console.log("rows", rows, "column", gridTemplateColumns);
     return {
       computedGap: gap,
       computedGridTemplateRows: rows,

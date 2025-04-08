@@ -1,6 +1,6 @@
 import { Coordinate } from "../../../type";
 import { GridLayout } from "../../Sortable/interface";
-import { calculateCoordianteByIndex } from "./calculate";
+import { calculateCoordianteByIndex } from "./calculateCoordianteByIndex";
 
 export const getFinalTransform = (
   originIndex: number,

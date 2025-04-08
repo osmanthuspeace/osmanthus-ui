@@ -38,7 +38,7 @@ export const useTransformControl = (
       if (!transform) {
         throw new Error("transform is null");
       }
-      await animate(scope.current, transform, { duration: 0.3 });
+      await animate(scope.current, transform, { duration: 0.25 });
     } catch (e) {
       console.error("error", e);
     }

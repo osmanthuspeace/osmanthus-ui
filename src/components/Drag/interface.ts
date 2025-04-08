@@ -12,4 +12,5 @@ export interface DraggingState {
   activeContainerId: string | null;
   overIndex: number | null;
   overContainerId: string | null;
+  isDragTransitionEnd: boolean;
 }

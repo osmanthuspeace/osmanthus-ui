@@ -52,22 +52,17 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       eventBus.unsubscribe("resetTransform");
     };
   }, [handleResetTransform]);
-  useEffect(() => {
-    if (
-      draggingState.activeIndex === null &&
-      draggingState.overIndex === null
-    ) {
-      handleResetTransform(false);
-    }
-  }, [draggingState, handleResetTransform]);
 
   //开始拖拽
   const handleDragStart = (e: ComposedEvent) => {
+    console.log("handleDragStart");
+
     onDragStart?.(e);
     setDraggingState((prev) => ({
       ...prev,
       activeIndex: thisIndex,
       activeContainerId: id,
+      isDragTransitionEnd: false,
     }));
     setSourceContainerId?.(id);
   };
@@ -112,6 +107,11 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
     ]
   );
 
+  // useEffect(() => {
+  //   console.log("draggingState", draggingState);
+  //   console.log("thisIndex", thisIndex);
+  // }, [draggingState]);
+
   //结束拖拽
   const handleDragEnd = async (e: ComposedEvent) => {
     onDragEnd?.(e);
@@ -121,7 +121,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       if (e instanceof TouchEvent) {
         return;
       }
-      console.log("e", e.clientX, e.clientY);
+      // console.log("e", e.clientX, e.clientY);
 
       const newContainerId = enableCross
         ? inWhichContainer(e.clientX, e.clientY)
@@ -147,7 +147,11 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       );
 
       console.log("final state", newContainerId, id, newIndex, thisIndex);
-
+      setDraggingState((prev) => ({
+        ...prev,
+        activeIndex: null,
+        overIndex: null,
+      }));
       if (newContainerId !== id && enableCross) {
         // 进入其他容器
         onCross(
@@ -161,7 +165,6 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         if (newIndex !== thisIndex) {
           //进入同一容器的其他网格
           await handleFinalTransform(finalTransform);
-          console.log("handleFinalTransform end");
           await eventBus.publish("resetTransform");
           onReorder(thisIndex, newIndex, draggingState.activeIndex as number);
         } else {
@@ -169,14 +172,18 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
           await handleResetTransform(true);
         }
       }
-      setDraggingState((prev) => ({
-        ...prev,
-        activeIndex: null,
-        overIndex: null,
-      }));
     } catch (error) {
       console.error("拖拽结束处理出错:", error);
     }
+  };
+
+  const handleDragTransitionEnd = () => {
+    //防止过渡动画没有结束就开始了新的拖拽
+    setDraggingState((prev) => ({
+      ...prev,
+      isDragTransitionEnd: true,
+    }));
+    console.log("handleDragTransitionEnd");
   };
 
   //将handleOnDrag函数节流
@@ -195,6 +202,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         onDragStart={(e) => handleDragStart(e)}
         onDrag={(e) => throttledHandleOnDrag(e)}
         onDragEnd={(e) => handleDragEnd(e)}
+        onDragTransitionEnd={() => handleDragTransitionEnd()}
         style={
           {
             width: `${unitSize}px`,

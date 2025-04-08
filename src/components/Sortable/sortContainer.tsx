@@ -50,13 +50,20 @@ const SortContainerInternal = (
   );
 
   const { computedGap, computedGridTemplateRows, containerPadding } =
-    useGridLayout(internalWidth, internalHeight, unitSize, gridTemplateColumns,sortedChildren.length);
+    useGridLayout(
+      internalWidth,
+      internalHeight,
+      unitSize,
+      gridTemplateColumns,
+      sortedChildren.length
+    );
 
   const [draggingState, setDraggingState] = useState<DraggingState>({
     activeIndex: null,
     activeContainerId: id,
     overIndex: null,
     overContainerId: null,
+    isDragTransitionEnd: true,
   });
   const renderedChildren = useRenderedChildren(sortedChildren);
   // const renderCount = useRef(0);
