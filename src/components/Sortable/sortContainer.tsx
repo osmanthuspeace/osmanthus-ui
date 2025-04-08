@@ -50,7 +50,7 @@ const SortContainerInternal = (
   );
 
   const { computedGap, computedGridTemplateRows, containerPadding } =
-    useGridLayout(internalWidth, internalHeight, unitSize, gridTemplateColumns);
+    useGridLayout(internalWidth, internalHeight, unitSize, gridTemplateColumns,sortedChildren.length);
 
   const [draggingState, setDraggingState] = useState<DraggingState>({
     activeIndex: null,
@@ -94,19 +94,18 @@ const SortContainerInternal = (
         <div
           style={{
             display: "grid",
-            width: width ? `${width}px` : `auto`,
-            height: height ? `${height}px` : `auto`,
+            width: width ? `${width}px` : `100%`,
+            height: height ? `${height}px` : `100%`,
             gridTemplateRows: `repeat(${computedGridTemplateRows}, 1fr)`,
             gridTemplateColumns: `repeat(${gridTemplateColumns}, 1fr)`,
             gridGap: `${computedGap}px`,
             padding: `${computedGap}px`,
-            margin: "0 auto",
             border: "1px solid red",
             boxSizing: "border-box",
           }}
           {...rest}
           ref={composedRef}
-          className="drag-container"
+          className="sort-container"
         >
           {renderedChildren}
         </div>

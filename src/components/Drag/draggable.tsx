@@ -108,7 +108,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       inWhichContainer,
       onDrag,
       setDraggingState,
-      containerCoordinate
+      containerCoordinate,
     ]
   );
 
@@ -137,6 +137,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         newContainerId,
         containerCoordinate
       );
+
       const finalTransform = getFinalTransform(
         thisIndex,
         newIndex,

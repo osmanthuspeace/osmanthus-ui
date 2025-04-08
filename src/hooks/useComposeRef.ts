@@ -1,6 +1,8 @@
 //让ref指向正确的元素
 export const fillRef = <T>(ref: React.Ref<T>, node: T) => {
-  if (ref && typeof ref === "object" && "current" in ref) {
+  if (typeof ref === "function") {
+    ref(node);
+  } else if (ref && typeof ref === "object" && "current" in ref) {
     (ref as any).current = node;
   }
 };

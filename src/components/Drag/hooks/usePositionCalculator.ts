@@ -19,11 +19,13 @@ export function usePositionCalculator(
       containerId: string,
       thisContainerCoordinate: Coordinate
     ) => {
-      const { x, y } = getCoordinate(element, 1.05);
+      const { x, y } = getCoordinate(element);
       const containerCoordinate =
         context?.getContainerCoordinateById !== emptyFn
           ? context?.getContainerCoordinateById(containerId)
           : thisContainerCoordinate;
+
+      console.log("thisContainerCoordinate", thisContainerCoordinate);
 
       return calculateIndexByCooridnate(
         x,

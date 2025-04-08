@@ -15,9 +15,21 @@ const useInternalLayoutEffect = (
     };
   }, []);
 };
+// 只在第一次渲染时执行
 export const useLayoutUpdateEffect: typeof useEffect = (callback, deps) => {
   useInternalLayoutEffect((firstMount) => {
     if (firstMount) {
+      return callback();
+    }
+  }, deps);
+};
+// 跳过第一次渲染
+export const useEffectSkipFirst: typeof useEffect = (
+  callback,
+  deps
+) => {
+  useInternalLayoutEffect((firstMount) => {
+    if (!firstMount) {
       return callback();
     }
   }, deps);

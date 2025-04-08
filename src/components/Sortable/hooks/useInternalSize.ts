@@ -1,39 +1,59 @@
 import { RefObject, useEffect, useRef, useState } from "react";
 
+//初始化时计算容器大小，如果有传入的width和height，则使用传入的值，否则使用auto的宽高
 export const useInternalSize = (
   width: number | undefined,
   height: number | undefined,
   containerRef: RefObject<HTMLDivElement>
 ) => {
+  if (width !== undefined && height !== undefined) {
+    return {
+      internalWidth: width,
+      internalHeight: height,
+    };
+  }
+
   const [containerSize, setContainerSize] = useState({
-    width: 0,
-    height: 0,
+    width: width ?? 0,
+    height: height ?? 0,
   });
-  const first = useRef(true);
 
   useEffect(() => {
+    if (width !== undefined && height !== undefined) return;
+
     const container = containerRef.current;
     if (!container) return;
+    const parent = container.parentElement;
+    if (!parent) return;
 
-    const observer = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      if (entry && first.current) {
-        const { width, height } = entry.contentRect;
-        // console.log("width", width, "height", height);
+    const updateSize = () => {
+      const rect = parent.getBoundingClientRect();
 
-        if (width !== containerSize.width || height !== containerSize.height) {
-          setContainerSize({ width, height });
-        }
-        first.current = false;
-      }
+      setContainerSize(() => {
+        const newWidth = width ?? rect.width;
+        const newHeight = height ?? rect.height;
+
+        // console.log("触发了internalSize中的updateSize", newWidth, newHeight);
+
+        return { width: newWidth, height: newHeight };
+      });
+    };
+
+    const observer = new ResizeObserver(() => {
+      // console.log("触发了internalSize中的resizeObserver");
+      updateSize();
     });
-
     observer.observe(container);
-    return () => observer.disconnect();
-  }, []);
+
+    updateSize();
+    return () => {
+      observer.disconnect();
+    };
+  }, [width,height]);
 
   const internalWidth = width ?? containerSize.width;
   const internalHeight = height ?? containerSize.height;
+
   return {
     internalWidth,
     internalHeight,

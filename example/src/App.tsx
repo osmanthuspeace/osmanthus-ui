@@ -73,10 +73,10 @@ function App() {
           <SortContainer
             id="sort-container111"
             enableDnd={isEditing}
-            className="drag-container"
+            className="drag-container-user"
             onOrderChange={handleOrderChange}
-            width={600}
-            height={320}
+            // width={600}
+            // height={320}
             gridTemplateColumns={4}
             // onDragStart={() => console.log("drag start")}
             // onAnyDrag={() => console.log("drag")}

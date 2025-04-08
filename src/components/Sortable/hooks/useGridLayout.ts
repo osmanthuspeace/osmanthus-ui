@@ -4,7 +4,8 @@ export const useGridLayout = (
   width: number,
   height: number,
   unitSize: number,
-  gridTemplateColumns: number
+  gridTemplateColumns: number,
+  childrenLength: number
 ): {
   computedGap: number;
   computedGridTemplateRows: number;
@@ -28,8 +29,8 @@ export const useGridLayout = (
     );
     // console.log("gap", gap);
     //从1开始的rows
-    const rows = Math.ceil((height - gap) / (unitSize + gap));
-    // console.log("rows", rows, "column", gridTemplateColumns);
+    const rows = Math.floor(childrenLength / gridTemplateColumns);
+    console.log("rows", rows, "column", gridTemplateColumns);
     return {
       computedGap: gap,
       computedGridTemplateRows: rows,

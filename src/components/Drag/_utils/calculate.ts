@@ -42,11 +42,24 @@ export const calculateIndexByCooridnate = (
 ) => {
   const maxRowIndex = gridRow - 1;
   const maxColIndex = gridCol - 1;
+
   let row = Math.round((y - containerY - padding) / (unitSize + gap));
   row = row < 0 ? 0 : row;
   row = row > maxRowIndex ? maxRowIndex : row;
+  
   let col = Math.round((x - containerX - padding) / (unitSize + gap));
-  console.log("x", x, "containerX", containerX, "padding", padding);
+  console.log(
+    "x",
+    x,
+    "containerX",
+    containerX,
+    "y",
+    y,
+    "containerY",
+    containerY,
+    "padding",
+    padding
+  );
   col = col < 0 ? 0 : col;
   col = col > maxColIndex ? maxColIndex : col;
   console.log("row", row, "col", col);

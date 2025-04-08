@@ -15,15 +15,25 @@ export const useObserveContainer = (
       return;
     }
     const container = containerRef.current;
-    const observer = new ResizeObserver(() => {
-      const rect = container.getBoundingClientRect();
-      setContainerCooridnate({
-        x: rect.x,
-        y: rect.y,
+
+    const observer = new ResizeObserver((entries) => {
+      console.log("触发了resizeObserver");
+      requestAnimationFrame(() => {
+        const rect = entries[0].target.getBoundingClientRect();
+        console.log('Consistent rect:', rect);
+        setContainerCooridnate({
+          x: rect.x,
+          y: rect.y,
+        });
       });
     });
     observer.observe(container);
     return () => observer.disconnect();
   }, [containerRef]);
+
+  // useEffect(() => {
+  //   console.log("containerCooridnate", containerCooridnate);
+  // }, [containerCooridnate]);
+
   return containerCooridnate;
 };
