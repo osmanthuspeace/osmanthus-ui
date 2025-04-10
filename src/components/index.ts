@@ -1,9 +1,9 @@
 export * from "./Badge";
-export * from "./CrossContainer";
+export * from "./SortableProvider";
 export * from "./Drag";
 export * from "./FlipCard";
 // export * from "./Page";
-export * from "./Sortable";
+export * from "./SortableItem";
 export * from "./Squircle";
 export * from "./Waggle";
 // export * from "./Widget";

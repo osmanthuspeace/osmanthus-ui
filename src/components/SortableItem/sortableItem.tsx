@@ -4,14 +4,14 @@ import { Waggle } from "../Waggle/waggle";
 import { Draggable } from "../Drag/draggable";
 import { SortableItemProps } from "./interface";
 import IndexContext from "./context/indexContext";
-import useItemRef from "./hooks/useItemRef";
+import useItemRef from "../SortableContainer/hooks/useItemRef";
 
 const SortableItemInternal = (
   props: SortableItemProps,
   ref: React.Ref<HTMLDivElement>
 ) => {
   const { id, children, enableBorder } = props;
-  const index = useContext(IndexContext);
+  const { index } = useContext(IndexContext);
 
   const composedRef = useItemRef(index, ref);
 

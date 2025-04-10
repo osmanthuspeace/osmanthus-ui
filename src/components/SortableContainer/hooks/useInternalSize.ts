@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 
 //初始化时计算容器大小，如果有传入的width和height，则使用传入的值，否则使用auto的宽高
 export const useInternalSize = (
@@ -6,12 +6,6 @@ export const useInternalSize = (
   height: number | undefined,
   containerRef: RefObject<HTMLDivElement>
 ) => {
-  if (width !== undefined && height !== undefined) {
-    return {
-      internalWidth: width,
-      internalHeight: height,
-    };
-  }
 
   const [containerSize, setContainerSize] = useState({
     width: width ?? 0,
@@ -49,7 +43,7 @@ export const useInternalSize = (
     return () => {
       observer.disconnect();
     };
-  }, [width,height]);
+  }, [width, height]);
 
   const internalWidth = width ?? containerSize.width;
   const internalHeight = height ?? containerSize.height;

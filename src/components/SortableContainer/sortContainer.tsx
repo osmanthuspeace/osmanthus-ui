@@ -1,13 +1,13 @@
-import SortableContext from "./context/sortableContext";
+import SortableContext from "../SortableContext/sortableContext";
 import { useComposeRef } from "../../hooks/useComposeRef";
 import { useObserveContainer } from "./hooks/useObserveContainer";
 import { useChildrenArray } from "./hooks/useChildrenArray";
 import { useGridLayout } from "./hooks/useGridLayout";
 import { forwardRef, useRef, useState } from "react";
-import { SortContainerProps } from "./interface";
+import { SortContainerProps } from "../SortableItem/interface";
 import { DraggingState } from "../Drag/interface";
 import { useRenderedChildren } from "./hooks/useRenderedChildren";
-import { useContainerRegister } from "../CrossContainer/hooks/useContainerRegister";
+import { useContainerRegister } from "../SortableProvider/hooks/useContainerRegister";
 import "./sortContainer.css";
 import { useInternalSize } from "./hooks/useInternalSize";
 const SortContainerInternal = (
@@ -34,7 +34,8 @@ const SortContainerInternal = (
     onOrderChange
   );
   const containerRef = useRef<HTMLDivElement>(null);
-  const refInContext = useContainerRegister(id);
+
+  const refInContext = useContainerRegister(id, sortedChildren.length);
   const composedRef = useComposeRef(
     refInContext,
     containerRef,
@@ -65,7 +66,7 @@ const SortContainerInternal = (
     overContainerId: null,
     isDragTransitionEnd: true,
   });
-  const renderedChildren = useRenderedChildren(sortedChildren);
+  const renderedChildren = useRenderedChildren(sortedChildren, id);
   // const renderCount = useRef(0);
 
   // useEffect(() => {

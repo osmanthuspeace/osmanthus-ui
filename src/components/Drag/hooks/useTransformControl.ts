@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import getInterimTransform from "../_utils/getInterimTransform";
 import { AnimationScope, useAnimate } from "motion/react";
-import { GridLayout } from "../../Sortable/interface";
+import { GridLayout } from "../../SortableItem/interface";
 import { DraggingState } from "../interface";
 import { Coordinate } from "../../../type";
 

@@ -1,4 +1,4 @@
-import { SortableItems } from "../Sortable/interface";
+import { SortableItems } from "../SortableItem/interface";
 
 export interface CrossInfo {
   containerId: string;
@@ -12,3 +12,13 @@ export type CrossMap = Record<
   string,
   [SortableItems, React.Dispatch<React.SetStateAction<SortableItems>>]
 >;
+export interface ContainerRect {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+}
+export interface ContainerInfo {
+  rect: ContainerRect;
+  childrenLength: number;
+}

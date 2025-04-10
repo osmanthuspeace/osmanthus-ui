@@ -1,14 +1,14 @@
 import { useState } from "react";
 import "./App.css";
 
-import { SortableItem } from "../../src/components/Sortable/sortableItem";
-import { SortContainer } from "../../src/components/Sortable/sortContainer";
-import { SortableItems } from "../../src/components/Sortable/interface";
-import { CrossContainer } from "../../src/components/CrossContainer/CrossContainer";
+import { SortableItem } from "../../src/components/SortableItem/sortableItem";
+import { SortContainer } from "../../src/components/SortableContainer/sortContainer";
+import { SortableItems } from "../../src/components/SortableItem/interface";
 import {
   CrossInfo,
   CrossMap,
-} from "../../src/components/CrossContainer/interface";
+} from "../../src/components/SortableProvider/interface.ts";
+import { SortableProvider } from "../../src/components/SortableProvider/SortableProvider.tsx";
 function App() {
   const [isEditing, setIsActive] = useState(false);
 
@@ -69,7 +69,7 @@ function App() {
     <>
       <section className="main-container">
         <button onClick={handleClick}>编辑</button>
-        {/* <CrossContainer onCross={handleCrossContainer}> */}
+        <SortableProvider onCross={handleCrossContainer} crossMap={crossMap}>
           <SortContainer
             id="sort-container111"
             enableDnd={isEditing}
@@ -90,23 +90,23 @@ function App() {
               );
             })}
           </SortContainer>
-          {/* <SortContainer
+          <SortContainer
             className="drag-container"
             id="222"
-            width={600}
-            height={300}
+            // width={600}
+            // height={300}
             onOrderChange={handleOrderChange2}
             gridTemplateColumns={4}
           >
             {sortableItems.map((item) => {
               return (
-                <SortableItem key={item.id} id={item.id}>
+                <SortableItem key={item.id} id={item.id} enableBorder={false}>
                   {item.children}
                 </SortableItem>
               );
             })}
-          </SortContainer> */}
-        {/* </CrossContainer> */}
+          </SortContainer>
+        </SortableProvider>
       </section>
     </>
   );

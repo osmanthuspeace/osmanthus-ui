@@ -1,6 +1,5 @@
 import { createContext } from "react";
-import { SortableContextProps } from "../interface";
-
+import { SortableContextProps } from "../SortableItem/interface";
 
 const defaultContext: SortableContextProps = {
   id: "",
@@ -22,6 +21,7 @@ const defaultContext: SortableContextProps = {
     activeContainerId: null,
     overIndex: null,
     overContainerId: null,
+    isDragTransitionEnd: false,
   },
   setDraggingState: () => {},
   containerRef: null,

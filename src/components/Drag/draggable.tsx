@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { forwardRef, Ref, useCallback, useContext, useEffect } from "react";
-import SortableContext from "../Sortable/context/sortableContext";
+import SortableContext from "../SortableContext/sortableContext";
 import { useRef } from "react";
 import { useComposeRef } from "../../hooks/useComposeRef";
 import { usePositionCalculator } from "./hooks/usePositionCalculator";
@@ -8,7 +8,7 @@ import { useTransformControl } from "./hooks/useTransformControl";
 import { ComposedEvent, DragItemProps } from "./interface";
 import { useWhichContainer } from "./hooks/useWhichContainer";
 import { useThrottle } from "../../hooks/useThrottle";
-import CrossContainerContext from "../CrossContainer/CrossContainerContext";
+import SortableProviderContext from "../SortableProvider/SortableProviderContext";
 import { getFinalTransform } from "./_utils/getFinalTransform";
 import "./draggable.css";
 import { eventBus } from "./_utils/eventBus";
@@ -38,8 +38,12 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
 
   const { inWhichContainer } = useWhichContainer();
 
-  const { onCross, getContainerCoordinateById, setSourceContainerId } =
-    useContext(CrossContainerContext) || {};
+  const {
+    onCross,
+    getContainerInfoById,
+    sourceContainerId,
+    setSourceContainerId,
+  } = useContext(SortableProviderContext) || {};
 
   const enableCross = onCross !== noop;
 
@@ -64,10 +68,12 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       activeContainerId: id,
       isDragTransitionEnd: false,
     }));
-    setSourceContainerId?.(id);
+    setSourceContainerId(id);
   };
+
   //拖拽过程中
   const handleOnDrag = useCallback(
+    //TODO: 如果拖动距离小于一定值，不应该触发onDragEnd，或者至少不应该触发getBoundingClientRect
     async (e: ComposedEvent) => {
       console.log("handleOnDrag");
       onDrag?.(e);
@@ -79,6 +85,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       const newContainerId = enableCross
         ? inWhichContainer(e.clientX, e.clientY)
         : id;
+      console.log("newContainerId", newContainerId, id);
 
       if (newContainerId === null) {
         await handleResetTransform(true);
@@ -141,7 +148,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       const finalTransform = getFinalTransform(
         thisIndex,
         newIndex,
-        getContainerCoordinateById(newContainerId),
+        getContainerInfoById(newContainerId),
         gridLayout,
         unitSize
       );

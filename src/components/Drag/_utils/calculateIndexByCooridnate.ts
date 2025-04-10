@@ -1,21 +1,24 @@
+import { Coordinate } from "../../../type";
+import { GridLayout } from "../../SortableItem/interface";
 
 //通过左上角的坐标，计算出index
 export const calculateIndexByCooridnate = (
   x: number,
   y: number,
-  padding: number,
-  gap: number,
+  gridLayout: GridLayout,
   unitSize: number,
-  containerX: number,
-  containerY: number,
-  gridCol: number,
-  gridRow: number
+  containerCoordinate: Coordinate,
+  childrenLength: number
 ) => {
+  const { gap, padding } = gridLayout;
+  const { x: containerX, y: containerY } = containerCoordinate;
+  const { columns: gridCol, rows: gridRow } = gridLayout;
+
   const maxRowIndex = gridRow - 1;
   const maxColIndex = gridCol - 1;
 
-  // console.log('max', maxRowIndex, maxColIndex);
-  
+  console.log('max', maxRowIndex, maxColIndex);
+
   let row = Math.round((y - containerY - padding) / (unitSize + gap));
   row = row < 0 ? 0 : row;
   row = row > maxRowIndex ? maxRowIndex : row;
@@ -37,7 +40,10 @@ export const calculateIndexByCooridnate = (
   //   padding
   // );
   // console.log("row", row, "col", col);
-  const index = row * gridCol + col;
-  // console.log("index", index);
+  let index = row * gridCol + col;
+  console.log("origin index", index);
+  index = index < 0 ? 0 : index;
+  index = index > childrenLength - 1 ? childrenLength - 1 : index;
+  console.log("index", index);
   return index;
 };

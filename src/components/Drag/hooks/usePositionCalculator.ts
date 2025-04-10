@@ -1,17 +1,15 @@
 import { useCallback, useContext } from "react";
 import { getCoordinate } from "../_utils/getCoordinate";
 import { calculateIndexByCooridnate } from "../_utils/calculateIndexByCooridnate";
-import { GridLayout } from "../../Sortable/interface";
-import CrossContainerContext, {
-  emptyFn,
-} from "../../CrossContainer/CrossContainerContext";
+import { GridLayout } from "../../SortableItem/interface";
+import SortableProviderContext from "../../SortableProvider/SortableProviderContext";
 import { Coordinate } from "../../../type";
 
 export function usePositionCalculator(
   gridLayout: GridLayout,
   unitSize: number
 ) {
-  const context = useContext(CrossContainerContext);
+  const context = useContext(SortableProviderContext);
 
   const calculateNewIndex = useCallback(
     (
@@ -20,24 +18,27 @@ export function usePositionCalculator(
       thisContainerCoordinate: Coordinate
     ) => {
       const { x, y } = getCoordinate(element);
-      const containerCoordinate =
-        context?.getContainerCoordinateById !== emptyFn
-          ? context?.getContainerCoordinateById(containerId)
-          : thisContainerCoordinate;
+      const { rect, childrenLength } =
+        context?.getContainerInfoById(containerId);
 
+      const containerCoordinate = {
+        x: rect.left,
+        y: rect.top,
+      };
       // console.log("x,y", x, y);
-      // console.log("thisContainerCoordinate", thisContainerCoordinate);
+      console.log(
+        "thisContainerCoordinate",
+        containerCoordinate,
+        childrenLength
+      );
 
       return calculateIndexByCooridnate(
         x,
         y,
-        gridLayout.padding,
-        gridLayout.gap,
+        gridLayout,
         unitSize,
-        containerCoordinate.x,
-        containerCoordinate.y,
-        gridLayout.columns,
-        gridLayout.rows
+        containerCoordinate,
+        childrenLength
       );
     },
     [

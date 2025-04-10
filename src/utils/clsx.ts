@@ -7,5 +7,4 @@ export function clsx(...args: any[]) {
   }
   return composedClassnames.trim();
 }
-
 export default clsx;

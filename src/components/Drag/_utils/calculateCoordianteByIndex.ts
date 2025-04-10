@@ -1,5 +1,5 @@
 import { Coordinate } from "../../../type";
-import { GridLayout } from "../../Sortable/interface";
+import { GridLayout } from "../../SortableItem/interface";
 
 //通过index，计算出应该在的坐标（左上角）
 export const calculateCoordianteByIndex = (

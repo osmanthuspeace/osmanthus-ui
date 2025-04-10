@@ -1,14 +1,18 @@
-import { Coordinate } from "../../../type";
-import { GridLayout } from "../../Sortable/interface";
+import { GridLayout } from "../../SortableItem/interface";
+import { ContainerInfo } from "../../SortableProvider/interface";
 import { calculateCoordianteByIndex } from "./calculateCoordianteByIndex";
 
 export const getFinalTransform = (
   originIndex: number,
   newIndex: number,
-  containerCoordinate: Coordinate,
+  containerInfo: ContainerInfo,
   gridLayout: GridLayout,
   unitSize: number
 ): { x: number; y: number } => {
+  const containerCoordinate = {
+    x: containerInfo.rect.left,
+    y: containerInfo.rect.top,
+  };
   const originCoord = calculateCoordianteByIndex(
     originIndex,
     gridLayout,
