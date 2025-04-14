@@ -1,8 +1,9 @@
 import { forwardRef, useContext } from "react";
 import { cachedGetMaskStyle } from "./_utils/getMaskStyle";
 import { Badge } from "../Badge/badge";
-import SortableContext from "../SortableContext/sortableContext";
+import SortableContext from "../SortableContainer/context/sortableContext";
 import clsx from "../../utils/clsx";
+import LayoutContext from "../SortableContainer/context/LayoutContext";
 interface SquircleInternalProps extends React.HTMLAttributes<HTMLDivElement> {
   width: number;
   height: number;
@@ -68,8 +69,8 @@ export interface SquircleProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const Squircle = (props: SquircleProps) => {
   const { children, enableBorder } = props;
-  const { enableDnd, unitSize } = useContext(SortableContext);
-
+  const { enableDnd } = useContext(SortableContext);
+  const { unitSize } = useContext(LayoutContext);
   return (
     <Badge visible={enableDnd}>
       <SquircleInternal

@@ -19,3 +19,4 @@ export interface ClientRectangle {
   y: number;
 }
 export type Id = string|null;
+export type Direction = "left" | "right" | "up" | "down" | null;

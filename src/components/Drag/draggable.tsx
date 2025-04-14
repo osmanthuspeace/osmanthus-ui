@@ -1,6 +1,6 @@
-import { motion } from "motion/react";
+import { motion, PanInfo } from "motion/react";
 import { forwardRef, Ref, useCallback, useContext, useEffect } from "react";
-import SortableContext from "../SortableContext/sortableContext";
+import SortableContext from "../SortableContainer/context/sortableContext";
 import { useRef } from "react";
 import { useComposeRef } from "../../hooks/useComposeRef";
 import { usePositionCalculator } from "./hooks/usePositionCalculator";
@@ -8,32 +8,39 @@ import { useTransformControl } from "./hooks/useTransformControl";
 import { ComposedEvent, DragItemProps } from "./interface";
 import { useWhichContainer } from "./hooks/useWhichContainer";
 import { useThrottle } from "../../hooks/useThrottle";
-import SortableProviderContext from "../SortableProvider/SortableProviderContext";
 import { getFinalTransform } from "./_utils/getFinalTransform";
 import "./draggable.css";
 import { eventBus } from "./_utils/eventBus";
 import { noop } from "../../utils/noop";
+import LayoutContext from "../SortableContainer/context/LayoutContext";
+import DragContext from "../SortableProvider/context/DragContext";
+import SortableProviderContext from "../SortableProvider/context/SortableProviderContext";
 const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   const { thisIndex, children, style } = props;
   const {
-    id,
+    containerId: thisContainerId,
     onReorder,
-    unitSize,
-    gridLayout,
-    draggingState,
-    setDraggingState,
     onDragStart,
     onDrag,
     onDragEnd,
     containerCoordinate,
   } = useContext(SortableContext);
 
+  const { unitSize, gridLayout } = useContext(LayoutContext);
+  const { draggingState, setDraggingState } = useContext(DragContext);
+
   const { calculateNewIndex } = usePositionCalculator(gridLayout, unitSize);
 
   const thisRef = useRef<HTMLDivElement>(null);
 
   const [scope, handleFinalTransform, handleResetTransform] =
-    useTransformControl(thisIndex, draggingState, gridLayout, unitSize);
+    useTransformControl(
+      thisIndex,
+      thisContainerId,
+      draggingState,
+      gridLayout,
+      unitSize
+    );
   const composedRef = useComposeRef(scope, thisRef, ref);
 
   const { inWhichContainer } = useWhichContainer();
@@ -65,27 +72,32 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
     setDraggingState((prev) => ({
       ...prev,
       activeIndex: thisIndex,
-      activeContainerId: id,
-      isDragTransitionEnd: false,
+      activeContainerId: thisContainerId,
     }));
-    setSourceContainerId(id);
+    setSourceContainerId(thisContainerId);
   };
 
   //拖拽过程中
   const handleOnDrag = useCallback(
-    //TODO: 如果拖动距离小于一定值，不应该触发onDragEnd，或者至少不应该触发getBoundingClientRect
-    async (e: ComposedEvent) => {
-      console.log("handleOnDrag");
+    async (e: ComposedEvent, info: PanInfo) => {
       onDrag?.(e);
+      //TODO: 如果拖动距离小于一定值，不应该触发onDragEnd，或者至少不应该触发getBoundingClientRect
+      if (info.delta.x === 0 && info.delta.y === 0) {
+        return;
+      }
+      // console.log("handleOnDrag", info);
+
       //暂时不支持移动端
       if (e instanceof TouchEvent) {
         return;
       }
+
+      const direction = info.delta.x > 0 ? "right" : "left";
+
       // console.log("e", e.clientX, e.clientY);
       const newContainerId = enableCross
         ? inWhichContainer(e.clientX, e.clientY)
-        : id;
-      console.log("newContainerId", newContainerId, id);
+        : thisContainerId;
 
       if (newContainerId === null) {
         await handleResetTransform(true);
@@ -97,11 +109,13 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         newContainerId,
         containerCoordinate
       );
-      console.log("newIndex", newIndex);
+      console.log("new", newContainerId, newIndex);
 
       setDraggingState((prev) => ({
         ...prev,
         overIndex: newIndex,
+        overContainerId: newContainerId,
+        direction,
       }));
     },
     [
@@ -132,7 +146,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
 
       const newContainerId = enableCross
         ? inWhichContainer(e.clientX, e.clientY)
-        : id;
+        : thisContainerId;
       // console.log("inThisContainerId", inThisContainerId);
       if (newContainerId === null) {
         await handleResetTransform(true);
@@ -153,16 +167,24 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         unitSize
       );
 
-      console.log("final state", newContainerId, id, newIndex, thisIndex);
+      console.log(
+        "final state",
+        newContainerId,
+        thisContainerId,
+        newIndex,
+        thisIndex
+      );
       setDraggingState((prev) => ({
         ...prev,
         activeIndex: null,
+        activeContainerId: null,
         overIndex: null,
+        overContainerId: null,
       }));
-      if (newContainerId !== id && enableCross) {
+      if (newContainerId !== thisContainerId && enableCross) {
         // 进入其他容器
         onCross(
-          { containerId: id, index: thisIndex },
+          { containerId: thisContainerId, index: thisIndex },
           {
             containerId: newContainerId,
             index: newIndex,
@@ -186,15 +208,11 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
 
   const handleDragTransitionEnd = () => {
     //防止过渡动画没有结束就开始了新的拖拽
-    setDraggingState((prev) => ({
-      ...prev,
-      isDragTransitionEnd: true,
-    }));
     console.log("handleDragTransitionEnd");
   };
 
   //将handleOnDrag函数节流
-  const throttledHandleOnDrag = useThrottle(handleOnDrag, 50);
+  const throttledHandleOnDrag = useThrottle(handleOnDrag, 100);
   return (
     <>
       <motion.div
@@ -207,7 +225,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         // dragTransition={{ bounceStiffness: 100, bounceDamping: 10 }} //回弹效果
         transition={{ type: "spring", stiffness: 300, damping: 30 }} //速度，减速度
         onDragStart={(e) => handleDragStart(e)}
-        onDrag={(e) => throttledHandleOnDrag(e)}
+        onDrag={(e, info) => throttledHandleOnDrag(e, info)}
         onDragEnd={(e) => handleDragEnd(e)}
         onDragTransitionEnd={() => handleDragTransitionEnd()}
         style={

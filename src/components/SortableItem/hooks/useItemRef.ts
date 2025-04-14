@@ -1,5 +1,5 @@
 import { Ref, useContext, useEffect, useRef } from "react";
-import SortableContext from "../../SortableContext/sortableContext";
+import SortableContext from "../../SortableContainer/context/sortableContext";
 import { useComposeRef } from "../../../hooks/useComposeRef";
 
 const useItemRef = (index: number, ref: Ref<HTMLDivElement>) => {

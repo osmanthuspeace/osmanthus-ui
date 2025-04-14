@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef } from "react";
-import SortableProviderContext from "../SortableProviderContext";
 import { ContainerRect } from "../interface";
+import SortableProviderContext from "../context/SortableProviderContext";
 
 export const useContainerRegister = (
   containerId: string,

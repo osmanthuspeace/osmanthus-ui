@@ -1,7 +1,9 @@
 import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
-import SortableProviderContext from "./SortableProviderContext";
 import { Id } from "../../type";
 import { ContainerInfo, CrossInfo } from "./interface";
+import { DraggingState } from "../Drag/interface";
+import SortableProviderContext from "./context/SortableProviderContext";
+import DragContext from "./context/DragContext";
 
 // 用于包裹所有的容器，提供跨容器拖拽的上下文
 export const SortableProvider = ({
@@ -22,6 +24,17 @@ export const SortableProvider = ({
   const [sourceContainerId, setSourceContainerId] = useState<Id>(null);
   const [targetContainerId, setTargetContainerId] = useState<Id>(null);
 
+  const [draggingState, setDraggingState] = useState<DraggingState>({
+    activeIndex: null,
+    activeContainerId: null,
+    overIndex: null,
+    overContainerId: null,
+    direction: null,
+  });
+  const dragValue = {
+    draggingState,
+    setDraggingState,
+  };
   const updateContainerMap = useCallback(
     (id: Id, containerInfo: ContainerInfo) => {
       // console.warn("[DEBUG] enter updateContainerMap");
@@ -83,7 +96,7 @@ export const SortableProvider = ({
   ]);
   return (
     <SortableProviderContext.Provider value={value}>
-      {children}
+      <DragContext.Provider value={dragValue}>{children}</DragContext.Provider>
     </SortableProviderContext.Provider>
   );
 };

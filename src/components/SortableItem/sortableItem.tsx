@@ -1,4 +1,4 @@
-import { forwardRef, useContext } from "react";
+import { forwardRef, useContext, useEffect } from "react";
 import { Squircle } from "../Squircle/squircle";
 import { Waggle } from "../Waggle/waggle";
 import { Draggable } from "../Drag/draggable";
@@ -14,6 +14,7 @@ const SortableItemInternal = (
   const { index } = useContext(IndexContext);
 
   const composedRef = useItemRef(index, ref);
+
 
   return (
     <Draggable

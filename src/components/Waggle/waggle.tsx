@@ -1,6 +1,7 @@
 import { motion, Transition } from "motion/react";
 import { useContext, useMemo } from "react";
-import SortableContext from "../SortableContext/sortableContext";
+import SortableContext from "../SortableContainer/context/sortableContext";
+import LayoutContext from "../SortableContainer/context/LayoutContext";
 
 interface WaggleProps extends React.HTMLAttributes<HTMLDivElement> {
   rotateAngle?: number;
@@ -15,7 +16,9 @@ const Waggle: React.FC<WaggleProps> = ({
   offsetY = 0.5,
 }) => {
   const delay = useMemo(() => Math.random() * 3, []);
-  const { enableDnd, unitSize } = useContext(SortableContext);
+  const { enableDnd } = useContext(SortableContext);
+
+  const { unitSize } = useContext(LayoutContext);
 
   const initialConfig = {
     rotate: 0,

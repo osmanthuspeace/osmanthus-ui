@@ -1,12 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import getInterimTransform from "../_utils/getInterimTransform";
 import { AnimationScope, useAnimate } from "motion/react";
-import { GridLayout } from "../../SortableItem/interface";
 import { DraggingState } from "../interface";
 import { Coordinate } from "../../../type";
+import { GridLayout } from "../../SortableContainer/interface";
 
 export const useTransformControl = (
   thisIndex: number,
+  thisContainerId: string,
   draggingState: DraggingState,
   gridLayout: GridLayout,
   unitSize: number
@@ -24,17 +25,41 @@ export const useTransformControl = (
     if (
       draggingState.activeIndex === null ||
       draggingState.overIndex === null ||
-      thisIndex === draggingState.activeIndex
+      thisIndex === draggingState.activeIndex || //正在被拖拽的元素不参与过渡的transform
+      thisContainerId !== draggingState.overContainerId //如果不是同一个容器，则不参与过渡的transform
     )
       return;
 
+    const crossContainer =
+      draggingState.activeContainerId !== draggingState.overContainerId;
+
+    // console.log(
+    //   "handleInterimTransform",
+    //   thisIndex,
+    //   thisContainerId,
+    //   draggingState.overContainerId
+    // );
     try {
-      const transform = getInterimTransform(
-        thisIndex,
-        draggingState,
-        gridLayout,
-        unitSize
-      );
+      const transform = crossContainer
+        ? getInterimTransform(
+            thisIndex,
+            draggingState.activeIndex,
+            draggingState.overIndex,
+            draggingState.direction,
+            gridLayout,
+            unitSize
+          )
+        : getInterimTransform(
+            thisIndex,
+            draggingState.activeIndex,
+            draggingState.overIndex,
+            draggingState.overIndex > draggingState.activeIndex
+              ? "right"
+              : "left",
+            gridLayout,
+            unitSize
+          );
+
       if (!transform) {
         throw new Error("transform is null");
       }
@@ -42,7 +67,15 @@ export const useTransformControl = (
     } catch (e) {
       console.error("error", e);
     }
-  }, [animate, draggingState, gridLayout, scope, thisIndex, unitSize]);
+  }, [
+    animate,
+    draggingState,
+    gridLayout,
+    scope,
+    thisIndex,
+    thisContainerId,
+    unitSize,
+  ]);
 
   const handleFinalTransform = useCallback(
     async (final: Coordinate | null) => {
@@ -82,9 +115,15 @@ export const useTransformControl = (
   );
 
   useEffect(() => {
+    console.log("调用useTransformControl", thisContainerId);
+
     handleInterimTransform();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [draggingState.overIndex]);
+  }, [
+    draggingState.overIndex,
+    draggingState.overContainerId,
+    draggingState.direction,
+  ]);
 
   return [scope, handleFinalTransform, handleResetTransform];
 };

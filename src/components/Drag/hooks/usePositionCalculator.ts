@@ -1,9 +1,9 @@
 import { useCallback, useContext } from "react";
 import { getCoordinate } from "../_utils/getCoordinate";
 import { calculateIndexByCooridnate } from "../_utils/calculateIndexByCooridnate";
-import { GridLayout } from "../../SortableItem/interface";
-import SortableProviderContext from "../../SortableProvider/SortableProviderContext";
 import { Coordinate } from "../../../type";
+import { GridLayout } from "../../SortableContainer/interface";
+import SortableProviderContext from "../../SortableProvider/context/SortableProviderContext";
 
 export function usePositionCalculator(
   gridLayout: GridLayout,
@@ -26,12 +26,15 @@ export function usePositionCalculator(
         y: rect.top,
       };
       // console.log("x,y", x, y);
-      console.log(
-        "thisContainerCoordinate",
-        containerCoordinate,
-        childrenLength
-      );
+      // console.log(
+      //   "thisContainerCoordinate",
+      //   containerCoordinate,
+      //   childrenLength
+      // );
 
+      //TODO：
+      //如果是同一个容器，则index不能超过childrenLength
+      //如果是不同容器，则index不能超过overContainer的childrenLength+1
       return calculateIndexByCooridnate(
         x,
         y,

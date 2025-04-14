@@ -1,7 +1,7 @@
 import { createContext } from "react";
-import { Id } from "../../type";
-import { ContainerInfo, CrossInfo } from "./interface";
-import { noop } from "../../utils/noop";
+import { Id } from "../../../type";
+import { ContainerInfo, CrossInfo } from "../interface";
+import { noop } from "../../../utils/noop";
 
 export interface SortableProviderContextProps {
   sourceContainerId: Id;

@@ -1,4 +1,4 @@
-import { Id } from "../../type";
+import { Direction, Id } from "../../type";
 
 export interface DragItemProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "id" | "translate"> {
@@ -12,5 +12,5 @@ export interface DraggingState {
   activeContainerId: string | null;
   overIndex: number | null;
   overContainerId: string | null;
-  isDragTransitionEnd: boolean;
+  direction: Direction;
 }

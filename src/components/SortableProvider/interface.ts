@@ -1,3 +1,4 @@
+import { DraggingState } from "../Drag/interface";
 import { SortableItems } from "../SortableItem/interface";
 
 export interface CrossInfo {
@@ -21,4 +22,10 @@ export interface ContainerRect {
 export interface ContainerInfo {
   rect: ContainerRect;
   childrenLength: number;
+}
+
+// =============DragContext================
+export interface DragContextProps {
+  draggingState: DraggingState;
+  setDraggingState: React.Dispatch<React.SetStateAction<DraggingState>>;
 }
