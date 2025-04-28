@@ -39,7 +39,7 @@ export const SortableProvider = ({
     (id: Id, containerInfo: ContainerInfo) => {
       // console.warn("[DEBUG] enter updateContainerMap");
 
-      const { rect, childrenLength } = containerInfo;
+      const { rect, childrenLength, gridLayout } = containerInfo;
       // console.log("rect", rect, "childrenLength", childrenLength);
 
       setContainerMap((prev) => {
@@ -52,6 +52,7 @@ export const SortableProvider = ({
             width: rect.width,
             height: rect.height,
           },
+          gridLayout,
         });
         return newMap;
       });
@@ -71,9 +72,9 @@ export const SortableProvider = ({
     [containerMap]
   );
 
-  useEffect(() => {
-    console.log("containerMap", containerMap);
-  }, [containerMap]);
+  // useEffect(() => {
+  //   console.log("containerMap", containerMap);
+  // }, [containerMap]);
 
   const value = useMemo(() => {
     return {

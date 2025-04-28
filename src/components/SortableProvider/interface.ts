@@ -1,4 +1,5 @@
 import { DraggingState } from "../Drag/interface";
+import { GridLayout } from "../SortableContainer/interface";
 import { SortableItems } from "../SortableItem/interface";
 
 export interface CrossInfo {
@@ -22,6 +23,7 @@ export interface ContainerRect {
 export interface ContainerInfo {
   rect: ContainerRect;
   childrenLength: number;
+  gridLayout: GridLayout;
 }
 
 // =============DragContext================

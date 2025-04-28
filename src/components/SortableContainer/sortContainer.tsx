@@ -34,14 +34,6 @@ const SortContainerInternal = (
     onOrderChange
   );
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const refInContext = useContainerRegister(id, sortedChildren.length);
-  const composedRef = useComposeRef(
-    refInContext,
-    containerRef,
-    ref
-  ) as React.RefObject<HTMLDivElement>;
-
   const containerCoordinate = useObserveContainer(containerRef);
 
   const { internalWidth, internalHeight } = useInternalSize(
@@ -58,6 +50,17 @@ const SortContainerInternal = (
       gridTemplateColumns,
       sortedChildren.length
     );
+  const refInContext = useContainerRegister(id, sortedChildren.length, {
+    columns: gridTemplateColumns,
+    rows: computedGridTemplateRows,
+    gap: computedGap,
+    padding: containerPadding,
+  });
+  const composedRef = useComposeRef(
+    refInContext,
+    containerRef,
+    ref
+  ) as React.RefObject<HTMLDivElement>;
 
   const renderedChildren = useRenderedChildren(sortedChildren, id);
   // const renderCount = useRef(0);

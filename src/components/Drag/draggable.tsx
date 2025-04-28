@@ -29,7 +29,10 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   const { unitSize, gridLayout } = useContext(LayoutContext);
   const { draggingState, setDraggingState } = useContext(DragContext);
 
-  const { calculateNewIndex } = usePositionCalculator(gridLayout, unitSize);
+  const { calculateNewIndex } = usePositionCalculator(
+    unitSize,
+    thisContainerId
+  );
 
   const thisRef = useRef<HTMLDivElement>(null);
 
@@ -106,10 +109,9 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
 
       const newIndex = calculateNewIndex(
         e.target as HTMLElement,
-        newContainerId,
-        containerCoordinate
+        newContainerId
       );
-      console.log("new", newContainerId, newIndex);
+      console.log("[onDrag] 组件新的位置信息", newContainerId, newIndex);
 
       setDraggingState((prev) => ({
         ...prev,
@@ -155,8 +157,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
 
       const newIndex = calculateNewIndex(
         e.target as HTMLElement,
-        newContainerId,
-        containerCoordinate
+        newContainerId
       );
 
       const finalTransform = getFinalTransform(
@@ -168,10 +169,14 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       );
 
       console.log(
-        "final state",
+        "[Drag End] ",
+        "新容器：",
         newContainerId,
+        "原先的容器：",
         thisContainerId,
+        "新的index：",
         newIndex,
+        "原先的index：",
         thisIndex
       );
       setDraggingState((prev) => ({
@@ -190,6 +195,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
             index: newIndex,
           }
         );
+        await eventBus.publish("resetTransform");
       } else {
         if (newIndex !== thisIndex) {
           //进入同一容器的其他网格

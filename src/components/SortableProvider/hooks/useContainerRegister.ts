@@ -1,10 +1,12 @@
 import { useContext, useEffect, useRef } from "react";
 import { ContainerRect } from "../interface";
 import SortableProviderContext from "../context/SortableProviderContext";
+import { GridLayout } from "../../SortableContainer/interface";
 
 export const useContainerRegister = (
   containerId: string,
-  childrenLength: number
+  childrenLength: number,
+  gridLayout: GridLayout
 ) => {
   const { updateContainerMap } = useContext(SortableProviderContext);
   // console.log(`[DEBUG] Component mounted with containerId: ${containerId}`);
@@ -15,11 +17,11 @@ export const useContainerRegister = (
   });
 
   const updateInfo = () => {
-    
     prevInfo.current.childrenLength = childrenLength;
     updateContainerMap(containerId, {
       rect: prevInfo.current.rect,
       childrenLength: childrenLength,
+      gridLayout: gridLayout,
     });
     return;
   };
@@ -35,6 +37,7 @@ export const useContainerRegister = (
       updateContainerMap(containerId, {
         rect,
         childrenLength: prevInfo.current.childrenLength,
+        gridLayout: gridLayout,
       });
     });
 

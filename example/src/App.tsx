@@ -20,8 +20,6 @@ function App() {
     { id: "1", children: "app1" },
     { id: "2", children: "app2" },
     { id: "3", children: "component3" },
-    { id: "4", children: "test4" },
-    { id: "5", children: "test5" },
   ]);
 
   const [storedItems, setStoredItems] = useState<SortableItems>(

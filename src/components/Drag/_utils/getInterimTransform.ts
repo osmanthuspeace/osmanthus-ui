@@ -17,8 +17,8 @@ const getInterimTransform = (
 
   if (
     originIndex === null ||
-    targetIndex === null ||
-    thisIndex === originIndex
+    targetIndex === null
+    // thisIndex === originIndex
   ) {
     return transform;
   }

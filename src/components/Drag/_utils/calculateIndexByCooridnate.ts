@@ -8,6 +8,7 @@ export const calculateIndexByCooridnate = (
   gridLayout: GridLayout,
   unitSize: number,
   containerCoordinate: Coordinate,
+  isCrossContainer: boolean,
   childrenLength: number
 ) => {
   const { gap, padding } = gridLayout;
@@ -43,6 +44,10 @@ export const calculateIndexByCooridnate = (
   let index = row * gridCol + col;
   // console.log("origin index", index);
   index = index < 0 ? 0 : index;
+  if (isCrossContainer) {
+    index = index > childrenLength ? childrenLength : index;
+    return index;
+  }
   index = index > childrenLength - 1 ? childrenLength - 1 : index;
   // console.log("index", index);
   return index;
