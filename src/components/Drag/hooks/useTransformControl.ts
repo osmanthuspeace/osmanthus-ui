@@ -24,68 +24,90 @@ export const useTransformControl = (
   const handleInterimTransform = useCallback(async () => {
     if (!scope.current) return;
 
-    if (
-      draggingState.activeIndex === null ||
-      draggingState.overIndex === null ||
-      (thisContainerId === draggingState.activeContainerId &&
-        thisIndex === draggingState.activeIndex) || //在被拖拽的元素的容器中，并且index相等时，不参与过渡的transform
-      thisContainerId !== draggingState.overContainerId //如果不是同一个容器，则不参与过渡的transform
-    ) {
-      // console.log(
-      //   "不参与过渡transform的理由：thisContainerId",
-      //   thisContainerId,
-      //   "draggingState.overContainerId",
-      //   draggingState.overContainerId,
-      //   "thisIndex",
-      //   thisIndex,
-      //   "draggingState.activeIndex",
-      //   draggingState.activeIndex,
-      //   "draggingState.overIndex",
-      //   draggingState.overIndex
-      // );
+    const notDragging =
+      draggingState.activeIndex === null || draggingState.overIndex === null;
 
+    const isSamePosotion = thisIndex === draggingState.activeIndex;
+    const isActiveInThisContainer =
+      thisContainerId === draggingState.activeContainerId;
+    if (
+      notDragging ||
+      (isSamePosotion && isActiveInThisContainer) //在被拖拽的元素的容器中，并且index相等时，不参与过渡的transform
+      // thisContainerId !== draggingState.overContainerId //如果不是同一个容器，则不参与过渡的transform
+    ) {
       return;
     }
 
-    const crossContainer =
+    const isCrossContainer =
       draggingState.activeContainerId !== draggingState.overContainerId;
 
+    const isOverInThisContainer =
+      thisContainerId === draggingState.overContainerId;
+
     try {
-      const { childrenLength } = context.getContainerInfoById(
-        draggingState.overContainerId!
-      )!;
-      const transform = crossContainer
-        ? getInterimTransform(
+      const { childrenLength: overChildrenLength } =
+        context.getContainerInfoById(draggingState.overContainerId);
+      const { childrenLength: activeChildrenLength } =
+        context.getContainerInfoById(draggingState.activeContainerId);
+
+      let transform: {
+        x: number;
+        y: number;
+      };
+
+      if (!isCrossContainer) {
+        if (isActiveInThisContainer) {
+          const direction =
+            thisIndex > draggingState.activeIndex! ? "right" : "left";
+          transform = getInterimTransform(
             thisIndex,
-            childrenLength,
-            draggingState.overIndex,
-            draggingState.direction,
-            gridLayout,
-            unitSize
-          )
-        : getInterimTransform(
-            thisIndex,
-            draggingState.activeIndex,
-            draggingState.overIndex,
-            draggingState.overIndex > draggingState.activeIndex
-              ? "right"
-              : "left",
+            draggingState.activeIndex!,
+            draggingState.overIndex!,
+            direction,
             gridLayout,
             unitSize
           );
+        } else {
+          transform = {
+            x: 0,
+            y: 0,
+          };
+        }
+      } else {
+        if (isActiveInThisContainer) {
+          transform = getInterimTransform(
+            thisIndex,
+            draggingState.activeIndex!,
+            activeChildrenLength,
+            "right",
+            gridLayout,
+            unitSize
+          );
+        } else if (isOverInThisContainer) {
+          transform = getInterimTransform(
+            thisIndex,
+            overChildrenLength,
+            draggingState.overIndex!,
+            draggingState.direction,
+            gridLayout,
+            unitSize
+          );
+        } else {
+          transform = {
+            x: 0,
+            y: 0,
+          };
+        }
+      }
 
       console.log(
         "handleInterimTransform",
-        "原先容器id",
+        "这个容器id",
         thisContainerId,
-        " 此元素index",
+        " 这个元素index",
         thisIndex,
-        " 结束容器id",
-        draggingState.overContainerId,
-        " 正在拖拽元素index",
-        childrenLength,
-        " 过渡到index",
-        draggingState.overIndex,
+        ` 正在拖拽 ${draggingState.activeContainerId} 容器中的第 ${draggingState.activeIndex} 个元素`,
+        ` 过渡到 ${draggingState.overContainerId} 容器的第${draggingState.overIndex}位`,
         "过渡动画值",
         transform
       );
@@ -146,7 +168,6 @@ export const useTransformControl = (
 
   useEffect(() => {
     // console.log("组件位于", thisContainerId, "容器中");
-
     handleInterimTransform();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [

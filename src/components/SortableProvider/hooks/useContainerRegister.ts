@@ -13,11 +13,13 @@ export const useContainerRegister = (
   const containerRef = useRef<HTMLDivElement>(null);
   const prevInfo = useRef({
     childrenLength: childrenLength,
+    gridLayout: gridLayout,
     rect: null as unknown as ContainerRect,
   });
 
   const updateInfo = () => {
     prevInfo.current.childrenLength = childrenLength;
+    prevInfo.current.gridLayout = gridLayout;
     updateContainerMap(containerId, {
       rect: prevInfo.current.rect,
       childrenLength: childrenLength,
@@ -26,6 +28,7 @@ export const useContainerRegister = (
     return;
   };
 
+  // 当容器的rect发生变化时，更新containerMap
   useEffect(() => {
     const container = containerRef.current;
     // console.log("[DEBUG] Effect triggered");
@@ -37,7 +40,7 @@ export const useContainerRegister = (
       updateContainerMap(containerId, {
         rect,
         childrenLength: prevInfo.current.childrenLength,
-        gridLayout: gridLayout,
+        gridLayout: prevInfo.current.gridLayout,
       });
     });
 
@@ -47,6 +50,7 @@ export const useContainerRegister = (
     };
   }, [containerId, updateContainerMap]);
 
+  // 当初次渲染和childrenLength发生变化时，更新containerMap
   useEffect(() => {
     if (childrenLength > 0) {
       updateInfo();

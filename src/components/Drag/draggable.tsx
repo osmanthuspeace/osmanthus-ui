@@ -58,10 +58,10 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   const enableCross = onCross !== noop;
 
   useEffect(() => {
-    eventBus.subscribe(
-      "resetTransform",
-      async () => await handleResetTransform(false)
-    );
+    eventBus.subscribe("resetTransform", async () => {
+      console.log(thisIndex, "resetTransform");
+      await handleResetTransform(false);
+    });
     return () => {
       eventBus.unsubscribe("resetTransform");
     };
@@ -103,7 +103,6 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         : thisContainerId;
 
       if (newContainerId === null) {
-        await handleResetTransform(true);
         return;
       }
 
@@ -186,7 +185,10 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         overIndex: null,
         overContainerId: null,
       }));
-      if (newContainerId !== thisContainerId && enableCross) {
+
+      const isSameContainer = newContainerId === thisContainerId;
+
+      if (!isSameContainer && enableCross) {
         // 进入其他容器
         onCross(
           { containerId: thisContainerId, index: thisIndex },
@@ -195,11 +197,13 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
             index: newIndex,
           }
         );
+        console.log("发送resetTransform信号");
         await eventBus.publish("resetTransform");
       } else {
         if (newIndex !== thisIndex) {
           //进入同一容器的其他网格
           await handleFinalTransform(finalTransform);
+          console.log("发送resetTransform信号");
           await eventBus.publish("resetTransform");
           onReorder(thisIndex, newIndex, draggingState.activeIndex as number);
         } else {

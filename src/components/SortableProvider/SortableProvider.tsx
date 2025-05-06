@@ -63,6 +63,7 @@ export const SortableProvider = ({
   const getContainerInfoById = useCallback(
     (id: Id) => {
       const containerInfo = containerMap.get(id);
+      // console.log("通过id获取container的信息", id, containerInfo);
       if (containerInfo) {
         return containerInfo;
       } else {
