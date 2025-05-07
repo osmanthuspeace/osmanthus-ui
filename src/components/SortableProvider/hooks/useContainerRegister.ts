@@ -9,12 +9,20 @@ export const useContainerRegister = (
   gridLayout: GridLayout
 ) => {
   const { updateContainerMap } = useContext(SortableProviderContext);
-  // console.log(`[DEBUG] Component mounted with containerId: ${containerId}`);
+  // console.log(
+  //   `[DEBUG] Component mounted with containerId: ${containerId}`,
+  //   gridLayout
+  // );
   const containerRef = useRef<HTMLDivElement>(null);
   const prevInfo = useRef({
     childrenLength: childrenLength,
     gridLayout: gridLayout,
-    rect: null as unknown as ContainerRect,
+    rect: {
+      top: 0,
+      left: 0,
+      width: 0,
+      height: 0,
+    } as ContainerRect,
   });
 
   const updateInfo = () => {
@@ -31,9 +39,7 @@ export const useContainerRegister = (
   // 当容器的rect发生变化时，更新containerMap
   useEffect(() => {
     const container = containerRef.current;
-    // console.log("[DEBUG] Effect triggered");
     if (!container) return;
-
     const observer = new ResizeObserver(() => {
       const rect = container.getBoundingClientRect();
       prevInfo.current.rect = rect;
@@ -56,6 +62,12 @@ export const useContainerRegister = (
       updateInfo();
     }
   }, [childrenLength]);
+
+  useEffect(() => {
+    if (gridLayout) {
+      updateInfo();
+    }
+  }, [gridLayout]);
 
   return containerRef;
 };

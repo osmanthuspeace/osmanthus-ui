@@ -13,7 +13,6 @@ const getInterimTransform = (
   unitSize: number
 ) => {
   let transform = { x: 0, y: 0 };
-  // console.log("direction", draggingState.direction);
 
   if (
     originIndex === null ||

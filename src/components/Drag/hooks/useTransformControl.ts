@@ -54,9 +54,19 @@ export const useTransformControl = (
         x: number;
         y: number;
       };
+      // console.log(
+      //   "[Info] isCrossContainer",
+      //   isCrossContainer,
+      //   "isActiveInThisContainer",
+      //   isActiveInThisContainer,
+      //   "isOverInThisContainer",
+      //   isOverInThisContainer
+      // );
 
       if (!isCrossContainer) {
+        //如果在同一容器中
         if (isActiveInThisContainer) {
+          //如果当前容器就是开始拖拽时的容器
           const direction =
             thisIndex > draggingState.activeIndex! ? "right" : "left";
           transform = getInterimTransform(
@@ -68,13 +78,16 @@ export const useTransformControl = (
             unitSize
           );
         } else {
+          //如果当前容器不是开始拖拽时的容器，说明被拖拽的元素没有进入这个容器，所以不需要过渡
           transform = {
             x: 0,
             y: 0,
           };
         }
       } else {
+        // 如果跨容器了
         if (isActiveInThisContainer) {
+          //如果当前容器就是开始拖拽时的容器，因为少了一个元素（元素被拖到其他容器中了），所以要向左移动
           transform = getInterimTransform(
             thisIndex,
             draggingState.activeIndex!,
@@ -84,33 +97,31 @@ export const useTransformControl = (
             unitSize
           );
         } else if (isOverInThisContainer) {
+          //如果当前容器是结束拖拽时的容器，因为多了一个元素，所以要向右移动
           transform = getInterimTransform(
             thisIndex,
             overChildrenLength,
             draggingState.overIndex!,
-            draggingState.direction,
+            "left",
             gridLayout,
             unitSize
           );
         } else {
+          // 其他容器，与当前被拖拽的元素无关
           transform = {
             x: 0,
             y: 0,
           };
         }
       }
-
-      console.log(
-        "handleInterimTransform",
-        "这个容器id",
-        thisContainerId,
-        " 这个元素index",
-        thisIndex,
-        ` 正在拖拽 ${draggingState.activeContainerId} 容器中的第 ${draggingState.activeIndex} 个元素`,
-        ` 过渡到 ${draggingState.overContainerId} 容器的第${draggingState.overIndex}位`,
-        "过渡动画值",
-        transform
-      );
+      // console.log(
+      //   "handleInterimTransform",
+      //   `这是容器${thisContainerId}中的第${thisIndex}个元素`,
+      //   ` 正在拖拽 ${draggingState.activeContainerId} 容器中的第 ${draggingState.activeIndex} 个元素`,
+      //   ` 过渡到 ${draggingState.overContainerId} 容器的第${draggingState.overIndex}位`,
+      //   "过渡动画值",
+      //   transform
+      // );
 
       if (!transform) {
         throw new Error("transform is null");

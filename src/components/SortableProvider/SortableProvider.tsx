@@ -40,7 +40,6 @@ export const SortableProvider = ({
       // console.warn("[DEBUG] enter updateContainerMap");
 
       const { rect, childrenLength, gridLayout } = containerInfo;
-      // console.log("rect", rect, "childrenLength", childrenLength);
 
       setContainerMap((prev) => {
         const newMap = new Map(prev);

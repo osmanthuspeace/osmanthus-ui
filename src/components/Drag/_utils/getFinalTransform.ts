@@ -1,30 +1,35 @@
-import { GridLayout } from "../../SortableItem/interface";
+import { GridLayout } from "../../SortableContainer/interface";
 import { ContainerInfo } from "../../SortableProvider/interface";
 import { calculateCoordianteByIndex } from "./calculateCoordianteByIndex";
 
 export const getFinalTransform = (
   originIndex: number,
+  originContainerInfo: ContainerInfo,
   newIndex: number,
-  containerInfo: ContainerInfo,
+  newContainerInfo: ContainerInfo,
   gridLayout: GridLayout,
   unitSize: number
 ): { x: number; y: number } => {
-  const containerCoordinate = {
-    x: containerInfo.rect.left,
-    y: containerInfo.rect.top,
+  const originContainerCoordinate = {
+    x: originContainerInfo.rect.left,
+    y: originContainerInfo.rect.top,
+  };
+  const newContainerCoordinate = {
+    x: newContainerInfo.rect.left,
+    y: newContainerInfo.rect.top,
   };
   const originCoord = calculateCoordianteByIndex(
     originIndex,
     gridLayout,
     unitSize,
-    containerCoordinate
+    originContainerCoordinate
   );
 
   const newCoord = calculateCoordianteByIndex(
     newIndex,
     gridLayout,
     unitSize,
-    containerCoordinate
+    newContainerCoordinate
   );
   const x = newCoord.x - originCoord.x;
   const y = newCoord.y - originCoord.y;

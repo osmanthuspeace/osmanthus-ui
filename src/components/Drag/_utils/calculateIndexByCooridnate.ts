@@ -18,9 +18,11 @@ export const calculateIndexByCooridnate = (
   const maxRowIndex = gridRow - 1;
   const maxColIndex = gridCol - 1;
 
-  // console.log('max', maxRowIndex, maxColIndex);
+  // console.log("max", maxRowIndex, maxColIndex);
 
   let row = Math.round((y - containerY - padding) / (unitSize + gap));
+  // console.log("origin row", row, y,containerY, padding, unitSize, gap);
+
   row = row < 0 ? 0 : row;
   row = row > maxRowIndex ? maxRowIndex : row;
 

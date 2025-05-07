@@ -12,6 +12,7 @@ export function usePositionCalculator(
   const calculateNewIndex = useCallback(
     (element: HTMLElement, containerId: string) => {
       const { x, y } = getCoordinate(element);
+      //TODO: 此处的gridLayout未更新
       const { rect, childrenLength, gridLayout } =
         context?.getContainerInfoById(containerId);
 
@@ -19,14 +20,6 @@ export function usePositionCalculator(
         x: rect.left,
         y: rect.top,
       };
-      // console.log("x,y", x, y);
-      // console.log(
-      //   "thisContainerCoordinate",
-      //   containerCoordinate,
-      //   childrenLength
-      // );
-
-      //TODO: 此处的gridLayout应该用target的
       return calculateIndexByCooridnate(
         x,
         y,

@@ -3,7 +3,7 @@ import { useComposeRef } from "../../hooks/useComposeRef";
 import { useObserveContainer } from "./hooks/useObserveContainer";
 import { useChildrenArray } from "./hooks/useChildrenArray";
 import { useGridLayout } from "./hooks/useGridLayout";
-import { forwardRef, useRef } from "react";
+import { forwardRef, useMemo, useRef } from "react";
 import { useRenderedChildren } from "./hooks/useRenderedChildren";
 import { useContainerRegister } from "../SortableProvider/hooks/useContainerRegister";
 import "./sortContainer.css";
@@ -50,12 +50,25 @@ const SortContainerInternal = (
       gridTemplateColumns,
       sortedChildren.length
     );
-  const refInContext = useContainerRegister(id, sortedChildren.length, {
-    columns: gridTemplateColumns,
-    rows: computedGridTemplateRows,
-    gap: computedGap,
-    padding: containerPadding,
-  });
+  const gridLayout = useMemo(
+    () => ({
+      columns: gridTemplateColumns,
+      rows: computedGridTemplateRows,
+      gap: computedGap,
+      padding: containerPadding,
+    }),
+    [
+      gridTemplateColumns,
+      computedGridTemplateRows,
+      computedGap,
+      containerPadding,
+    ]
+  );
+  const refInContext = useContainerRegister(
+    id,
+    sortedChildren.length,
+    gridLayout
+  );
   const composedRef = useComposeRef(
     refInContext,
     containerRef,

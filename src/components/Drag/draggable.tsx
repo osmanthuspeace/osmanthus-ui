@@ -59,11 +59,12 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
 
   useEffect(() => {
     eventBus.subscribe("resetTransform", async () => {
-      console.log(thisIndex, "resetTransform");
       await handleResetTransform(false);
     });
     return () => {
-      eventBus.unsubscribe("resetTransform");
+      eventBus.unsubscribe("resetTransform", async () => {
+        await handleResetTransform(false);
+      });
     };
   }, [handleResetTransform]);
 
@@ -97,7 +98,8 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
 
       const direction = info.delta.x > 0 ? "right" : "left";
 
-      // console.log("e", e.clientX, e.clientY);
+      // console.log("实时位置：", e.clientX, e.clientY, "方向：", direction);
+
       const newContainerId = enableCross
         ? inWhichContainer(e.clientX, e.clientY)
         : thisContainerId;
@@ -105,13 +107,11 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       if (newContainerId === null) {
         return;
       }
-
       const newIndex = calculateNewIndex(
         e.target as HTMLElement,
         newContainerId
       );
       console.log("[onDrag] 组件新的位置信息", newContainerId, newIndex);
-
       setDraggingState((prev) => ({
         ...prev,
         overIndex: newIndex,
@@ -161,23 +161,24 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
 
       const finalTransform = getFinalTransform(
         thisIndex,
+        getContainerInfoById(draggingState.activeContainerId),
         newIndex,
         getContainerInfoById(newContainerId),
         gridLayout,
         unitSize
       );
 
-      console.log(
-        "[Drag End] ",
-        "新容器：",
-        newContainerId,
-        "原先的容器：",
-        thisContainerId,
-        "新的index：",
-        newIndex,
-        "原先的index：",
-        thisIndex
-      );
+      // console.log(
+      //   "[Drag End] ",
+      //   "新容器：",
+      //   newContainerId,
+      //   "原先的容器：",
+      //   thisContainerId,
+      //   "新的index：",
+      //   newIndex,
+      //   "原先的index：",
+      //   thisIndex
+      // );
       setDraggingState((prev) => ({
         ...prev,
         activeIndex: null,
@@ -190,6 +191,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
 
       if (!isSameContainer && enableCross) {
         // 进入其他容器
+        await handleFinalTransform(finalTransform);
         onCross(
           { containerId: thisContainerId, index: thisIndex },
           {
@@ -197,13 +199,11 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
             index: newIndex,
           }
         );
-        console.log("发送resetTransform信号");
         await eventBus.publish("resetTransform");
       } else {
         if (newIndex !== thisIndex) {
           //进入同一容器的其他网格
           await handleFinalTransform(finalTransform);
-          console.log("发送resetTransform信号");
           await eventBus.publish("resetTransform");
           onReorder(thisIndex, newIndex, draggingState.activeIndex as number);
         } else {
@@ -222,7 +222,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   };
 
   //将handleOnDrag函数节流
-  const throttledHandleOnDrag = useThrottle(handleOnDrag, 100);
+  const throttledHandleOnDrag = useThrottle(handleOnDrag, 10);
   return (
     <>
       <motion.div
