@@ -32,7 +32,7 @@ export default defineConfig({
       fileName: (format) => `osmanthus-ui.${format}.js`,
     },
     rollupOptions: {
-      external: ["react", "react-dom"],
+      external: ["react", "react-dom", "motion"],
       output: {
         compact: true,
         globals: {

@@ -74,6 +74,9 @@ const getInterimTransform = (
   //   transform
   // );
 
-  return transform;
+  return {
+    x: Math.round(transform.x),
+    y: Math.round(transform.y),
+  };
 };
 export default getInterimTransform;

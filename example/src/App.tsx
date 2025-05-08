@@ -46,7 +46,6 @@ function App() {
     setSortableItems(orderedItems);
   };
   const handleCrossContainer = (source: CrossInfo, target: CrossInfo) => {
-    console.log("handleCrossContainer");
 
     const [sourceItems, setSourceItems] = crossMap[source.containerId];
     const [targetItems, setTargetItems] = crossMap[target.containerId];
@@ -67,7 +66,7 @@ function App() {
     <>
       <section className="main-container">
         <button onClick={handleClick}>编辑</button>
-        <SortableProvider onCross={handleCrossContainer} crossMap={crossMap}>
+        <SortableProvider onCross={handleCrossContainer}>
           <SortContainer
             id="sort-container111"
             enableDnd={isEditing}

@@ -1,15 +1,10 @@
 import { createContext } from "react";
 import { DragContextProps } from "../interface";
+import { initialDraggingState } from "../util/reducer";
 
 const defaultContext: DragContextProps = {
-  draggingState: {
-    activeIndex: null,
-    activeContainerId: null,
-    overIndex: null,
-    overContainerId: null,
-    direction: null,
-  },
-  setDraggingState: () => {},
+  draggingState: initialDraggingState,
+  dispatch: () => {},
 };
 
 const DragContext = createContext(defaultContext);

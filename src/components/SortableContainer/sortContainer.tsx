@@ -87,12 +87,7 @@ const SortContainerInternal = (
     width: internalWidth,
     height: internalHeight,
     unitSize: unitSize,
-    gridLayout: {
-      columns: gridTemplateColumns,
-      rows: computedGridTemplateRows,
-      gap: computedGap,
-      padding: containerPadding,
-    },
+    gridLayout: gridLayout,
   };
 
   const sortValue = {

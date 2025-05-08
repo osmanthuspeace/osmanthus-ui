@@ -28,16 +28,9 @@ class EventBus {
     }
     this.events[event] = this.events[event].filter((cb) => cb !== callback);
   }
-  
+
   public async publish(event: string): Promise<void> {
     if (!this.events[event]) return;
-    console.log(
-      "[DEBUG] publish event: ",
-      event,
-      " with length: ",
-      this.events[event].length,
-    );
-
     await Promise.all(this.events[event].map((cb) => cb()));
     // this.events[event].forEach((cb) => cb());
   }

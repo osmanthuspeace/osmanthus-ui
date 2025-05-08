@@ -4,11 +4,11 @@ import SortableProviderContext from "../../SortableProvider/context/SortableProv
 export const useWhichContainer = () => {
   const context = useContext(SortableProviderContext);
 
-  const inWhichContainer = useCallback(
+  const getContainerIdByCoordinate = useCallback(
     (itemX: number, itemY: number) => {
       if (!context.containerRegister) {
         console.log("no container register");
-        return context.sourceContainerId || null;
+        return null;
       }
       for (const [id, containerInfo] of context.containerRegister) {
         const containerRect = containerInfo.rect;
@@ -25,7 +25,7 @@ export const useWhichContainer = () => {
       }
       return null;
     },
-    [context?.containerRegister, context?.sourceContainerId]
+    [context?.containerRegister]
   );
-  return { inWhichContainer };
+  return getContainerIdByCoordinate ;
 };

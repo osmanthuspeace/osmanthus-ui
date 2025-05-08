@@ -1,4 +1,4 @@
-import { ComposedEvent, DraggingState } from "../Drag/interface";
+import { ComposedEvent } from "../Draggable/interface";
 
 export interface GridLayout {
   columns: number;

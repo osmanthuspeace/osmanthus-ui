@@ -3,15 +3,13 @@ import getInterimTransform from "../_utils/getInterimTransform";
 import { AnimationScope, useAnimate } from "motion/react";
 import { DraggingState } from "../interface";
 import { Coordinate } from "../../../type";
-import { GridLayout } from "../../SortableContainer/interface";
 import SortableProviderContext from "../../SortableProvider/context/SortableProviderContext";
+import LayoutContext from "../../SortableContainer/context/LayoutContext";
 
 export const useTransformControl = (
   thisIndex: number,
   thisContainerId: string,
-  draggingState: DraggingState,
-  gridLayout: GridLayout,
-  unitSize: number
+  draggingState: DraggingState
 ): [
   AnimationScope<HTMLDivElement> | null,
   (final: Coordinate | null) => Promise<void>,
@@ -19,6 +17,7 @@ export const useTransformControl = (
 ] => {
   const [scope, animate] = useAnimate<HTMLDivElement>();
   const context = useContext(SortableProviderContext);
+  const { unitSize, gridLayout } = useContext(LayoutContext);
 
   //拖拽过程中，实时更新transform
   const handleInterimTransform = useCallback(async () => {
@@ -33,11 +32,9 @@ export const useTransformControl = (
     if (
       notDragging ||
       (isSamePosotion && isActiveInThisContainer) //在被拖拽的元素的容器中，并且index相等时，不参与过渡的transform
-      // thisContainerId !== draggingState.overContainerId //如果不是同一个容器，则不参与过渡的transform
     ) {
       return;
     }
-
     const isCrossContainer =
       draggingState.activeContainerId !== draggingState.overContainerId;
 
@@ -54,15 +51,6 @@ export const useTransformControl = (
         x: number;
         y: number;
       };
-      // console.log(
-      //   "[Info] isCrossContainer",
-      //   isCrossContainer,
-      //   "isActiveInThisContainer",
-      //   isActiveInThisContainer,
-      //   "isOverInThisContainer",
-      //   isOverInThisContainer
-      // );
-
       if (!isCrossContainer) {
         //如果在同一容器中
         if (isActiveInThisContainer) {
@@ -143,9 +131,6 @@ export const useTransformControl = (
   const handleFinalTransform = useCallback(
     async (final: Coordinate | null) => {
       if (!scope.current) return;
-
-      console.log("final", final);
-
       if (final) {
         await animate(
           scope.current,
@@ -153,7 +138,7 @@ export const useTransformControl = (
             x: final.x,
             y: final.y,
           },
-          { duration: 0.3 }
+          { duration: 0.2 }
         );
         return;
       } else {

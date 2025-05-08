@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 stats.html
-src/motion/
+motion/

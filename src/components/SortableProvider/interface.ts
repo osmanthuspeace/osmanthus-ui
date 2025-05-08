@@ -1,6 +1,7 @@
-import { DraggingState } from "../Drag/interface";
+import { DraggingState } from "../Draggable/interface";
 import { GridLayout } from "../SortableContainer/interface";
 import { SortableItems } from "../SortableItem/interface";
+import { DragAction } from "./util/reducer";
 
 export interface CrossInfo {
   containerId: string;
@@ -29,5 +30,5 @@ export interface ContainerInfo {
 // =============DragContext================
 export interface DragContextProps {
   draggingState: DraggingState;
-  setDraggingState: React.Dispatch<React.SetStateAction<DraggingState>>;
+  dispatch: React.Dispatch<DragAction>;
 }

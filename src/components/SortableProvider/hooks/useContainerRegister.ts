@@ -1,5 +1,4 @@
 import { useContext, useEffect, useRef } from "react";
-import { ContainerRect } from "../interface";
 import SortableProviderContext from "../context/SortableProviderContext";
 import { GridLayout } from "../../SortableContainer/interface";
 
@@ -22,7 +21,7 @@ export const useContainerRegister = (
       left: 0,
       width: 0,
       height: 0,
-    } as ContainerRect,
+    },
   });
 
   const updateInfo = () => {

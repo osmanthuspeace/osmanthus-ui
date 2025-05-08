@@ -27,7 +27,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   } = useContext(SortableContext);
 
   const { unitSize, gridLayout } = useContext(LayoutContext);
-  const { draggingState, setDraggingState } = useContext(DragContext);
+  const { draggingState, dispatch } = useContext(DragContext);
 
   const { calculateNewIndex } = usePositionCalculator(
     unitSize,
@@ -37,23 +37,13 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   const thisRef = useRef<HTMLDivElement>(null);
 
   const [scope, handleFinalTransform, handleResetTransform] =
-    useTransformControl(
-      thisIndex,
-      thisContainerId,
-      draggingState,
-      gridLayout,
-      unitSize
-    );
+    useTransformControl(thisIndex, thisContainerId, draggingState);
   const composedRef = useComposeRef(scope, thisRef, ref);
 
-  const { inWhichContainer } = useWhichContainer();
+  const getContainerIdByCoordinate = useWhichContainer();
 
-  const {
-    onCross,
-    getContainerInfoById,
-    sourceContainerId,
-    setSourceContainerId,
-  } = useContext(SortableProviderContext) || {};
+  const { onCross, getContainerInfoById } =
+    useContext(SortableProviderContext) || {};
 
   const enableCross = onCross !== noop;
 
@@ -71,39 +61,37 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   //开始拖拽
   const handleDragStart = (e: ComposedEvent) => {
     console.log("handleDragStart");
-
     onDragStart?.(e);
-    setDraggingState((prev) => ({
-      ...prev,
-      activeIndex: thisIndex,
-      activeContainerId: thisContainerId,
-    }));
-    setSourceContainerId(thisContainerId);
+    dispatch({
+      type: "DragStart",
+      payload: {
+        activeIndex: thisIndex,
+        activeContainerId: thisContainerId,
+      },
+    });
+  };
+
+  const getNewContainerId = (e: ComposedEvent) => {
+    const { clientX, clientY } =
+      e instanceof TouchEvent ? e.touches[0] || { clientX: 0, clientY: 0 } : e;
+    const newContainerId = enableCross
+      ? getContainerIdByCoordinate(clientX, clientY)
+      : thisContainerId;
+    return newContainerId;
   };
 
   //拖拽过程中
   const handleOnDrag = useCallback(
     async (e: ComposedEvent, info: PanInfo) => {
       onDrag?.(e);
-      //TODO: 如果拖动距离小于一定值，不应该触发onDragEnd，或者至少不应该触发getBoundingClientRect
       if (info.delta.x === 0 && info.delta.y === 0) {
         return;
       }
-      // console.log("handleOnDrag", info);
-
-      //暂时不支持移动端
-      if (e instanceof TouchEvent) {
-        return;
-      }
-
       const direction = info.delta.x > 0 ? "right" : "left";
 
       // console.log("实时位置：", e.clientX, e.clientY, "方向：", direction);
 
-      const newContainerId = enableCross
-        ? inWhichContainer(e.clientX, e.clientY)
-        : thisContainerId;
-
+      const newContainerId = getNewContainerId(e);
       if (newContainerId === null) {
         return;
       }
@@ -111,28 +99,25 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         e.target as HTMLElement,
         newContainerId
       );
-      console.log("[onDrag] 组件新的位置信息", newContainerId, newIndex);
-      setDraggingState((prev) => ({
-        ...prev,
-        overIndex: newIndex,
-        overContainerId: newContainerId,
-        direction,
-      }));
+      // console.log("[onDrag] 组件新的位置信息", newContainerId, newIndex);
+      dispatch({
+        type: "Dragging",
+        payload: {
+          overIndex: newIndex,
+          overContainerId: newContainerId,
+          direction,
+        },
+      });
     },
     [
       calculateNewIndex,
       handleResetTransform,
-      inWhichContainer,
+      getNewContainerId,
       onDrag,
-      setDraggingState,
+      dispatch,
       containerCoordinate,
     ]
   );
-
-  // useEffect(() => {
-  //   console.log("draggingState", draggingState);
-  //   console.log("thisIndex", thisIndex);
-  // }, [draggingState]);
 
   //结束拖拽
   const handleDragEnd = async (e: ComposedEvent) => {
@@ -140,15 +125,8 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
     try {
       if (!thisRef.current) return;
 
-      if (e instanceof TouchEvent) {
-        return;
-      }
-      // console.log("e", e.clientX, e.clientY);
+      const newContainerId = getNewContainerId(e);
 
-      const newContainerId = enableCross
-        ? inWhichContainer(e.clientX, e.clientY)
-        : thisContainerId;
-      // console.log("inThisContainerId", inThisContainerId);
       if (newContainerId === null) {
         await handleResetTransform(true);
         return;
@@ -168,24 +146,10 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         unitSize
       );
 
-      // console.log(
-      //   "[Drag End] ",
-      //   "新容器：",
-      //   newContainerId,
-      //   "原先的容器：",
-      //   thisContainerId,
-      //   "新的index：",
-      //   newIndex,
-      //   "原先的index：",
-      //   thisIndex
-      // );
-      setDraggingState((prev) => ({
-        ...prev,
-        activeIndex: null,
-        activeContainerId: null,
-        overIndex: null,
-        overContainerId: null,
-      }));
+      dispatch({
+        type: "DragEnd",
+        payload: null,
+      });
 
       const isSameContainer = newContainerId === thisContainerId;
 
@@ -216,11 +180,6 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
     }
   };
 
-  const handleDragTransitionEnd = () => {
-    //防止过渡动画没有结束就开始了新的拖拽
-    console.log("handleDragTransitionEnd");
-  };
-
   //将handleOnDrag函数节流
   const throttledHandleOnDrag = useThrottle(handleOnDrag, 10);
   return (
@@ -237,7 +196,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         onDragStart={(e) => handleDragStart(e)}
         onDrag={(e, info) => throttledHandleOnDrag(e, info)}
         onDragEnd={(e) => handleDragEnd(e)}
-        onDragTransitionEnd={() => handleDragTransitionEnd()}
+        // onDragTransitionEnd={() => handleDragTransitionEnd()}
         style={
           {
             width: `${unitSize}px`,
