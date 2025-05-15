@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./App.css";
 
 import { SortableItem } from "../../src/components/SortableItem/sortableItem";
-import { SortContainer } from "../../src/components/SortableContainer/sortContainer";
+import { SortableContainer } from "../../src/components/SortableContainer/sortableContainer.tsx";
 import { SortableItems } from "../../src/components/SortableItem/interface";
 import {
   CrossInfo,
@@ -67,7 +67,7 @@ function App() {
       <section className="main-container">
         <button onClick={handleClick}>编辑</button>
         <SortableProvider onCross={handleCrossContainer}>
-          <SortContainer
+          <SortableContainer
             id="sort-container111"
             enableDnd={isEditing}
             className="drag-container-user"
@@ -86,8 +86,8 @@ function App() {
                 </SortableItem>
               );
             })}
-          </SortContainer>
-          <SortContainer
+          </SortableContainer>
+          <SortableContainer
             className="drag-container"
             id="222"
             // width={600}
@@ -102,7 +102,7 @@ function App() {
                 </SortableItem>
               );
             })}
-          </SortContainer>
+          </SortableContainer>
         </SortableProvider>
       </section>
     </>

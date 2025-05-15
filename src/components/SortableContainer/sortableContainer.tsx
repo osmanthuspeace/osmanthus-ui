@@ -6,11 +6,11 @@ import { useGridLayout } from "./hooks/useGridLayout";
 import { forwardRef, useMemo, useRef } from "react";
 import { useRenderedChildren } from "./hooks/useRenderedChildren";
 import { useContainerRegister } from "../SortableProvider/hooks/useContainerRegister";
-import "./sortContainer.css";
+import "./sortableContainer.css";
 import { useInternalSize } from "./hooks/useInternalSize";
 import LayoutContext from "./context/LayoutContext";
 import { SortContainerProps } from "./interface";
-const SortContainerInternal = (
+const SortableContainerInternal = (
   props: SortContainerProps,
   ref: React.Ref<HTMLDivElement>
 ) => {
@@ -129,7 +129,7 @@ const SortContainerInternal = (
     </>
   );
 };
-const SortContainer = forwardRef<HTMLDivElement, SortContainerProps>(
-  SortContainerInternal
+const SortableContainer = forwardRef<HTMLDivElement, SortContainerProps>(
+  SortableContainerInternal
 );
-export { SortContainer };
+export { SortableContainer };

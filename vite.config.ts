@@ -7,8 +7,11 @@ export default defineConfig({
   plugins: [
     react(),
     dts({
+      outDir: "dist",
       insertTypesEntry: true,
-      include: ["src/components/**/*"],
+      rollupTypes: true, //将所有的类型合并到一个文件中
+      tsconfigPath: "./tsconfig.app.json", //如果从vite模版开始则需要指定tsconfig路径
+      include: ["src/**/*"],
     }),
     visualizer({
       gzipSize: true,
@@ -32,7 +35,7 @@ export default defineConfig({
       fileName: (format) => `osmanthus-ui.${format}.js`,
     },
     rollupOptions: {
-      external: ["react", "react-dom", "motion"],
+      external: ["react", "react-dom"],
       output: {
         compact: true,
         globals: {
