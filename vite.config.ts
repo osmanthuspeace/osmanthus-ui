@@ -34,8 +34,10 @@ export default defineConfig({
       formats: ["es"],
       fileName: (format) => `osmanthus-ui.${format}.js`,
     },
+    sourcemap: true,
+    minify: "terser",
     rollupOptions: {
-      external: ["react", "react-dom"],
+      external: ["react", "react-dom", "react/jsx-runtime"],
       output: {
         compact: true,
         globals: {
