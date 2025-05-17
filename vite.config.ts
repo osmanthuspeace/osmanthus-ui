@@ -20,14 +20,6 @@ export default defineConfig({
     }),
   ],
   build: {
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-        dead_code: true,
-        unused: true,
-      },
-    },
     lib: {
       entry: "src/index.ts",
       name: "OsmanthusUI",
@@ -35,7 +27,7 @@ export default defineConfig({
       fileName: (format) => `osmanthus-ui.${format}.js`,
     },
     sourcemap: true,
-    minify: "terser",
+    minify: "esbuild",
     rollupOptions: {
       external: ["react", "react-dom", "react/jsx-runtime"],
       output: {
