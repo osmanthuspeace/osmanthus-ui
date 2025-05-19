@@ -26,7 +26,7 @@ export default defineConfig({
       formats: ["es"],
       fileName: (format) => `osmanthus-ui.${format}.js`,
     },
-    sourcemap: true,
+    // sourcemap: true,
     minify: "esbuild",
     rollupOptions: {
       external: ["react", "react-dom", "react/jsx-runtime"],

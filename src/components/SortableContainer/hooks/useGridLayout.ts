@@ -11,16 +11,7 @@ export const useGridLayout = (
   computedGridTemplateRows: number;
   containerPadding: number;
 } => {
-  // console.log(
-  //   "width",
-  //   width,
-  //   "height",
-  //   height,
-  //   "unitSize",
-  //   unitSize,
-  //   "gridTemplateColumns",
-  //   gridTemplateColumns
-  // );
+  // console.log("width", width, "height", height);
   return useMemo(() => {
     const gap = Math.max(
       0,

@@ -6,7 +6,7 @@ import { resolve } from 'path';
 const config = {
   watchDir: './src', // 监听的目录（可修改为其他路径）
   buildCmd: 'pnpm build', // 触发的构建命令
-  debounceTime: 1000, // 防抖时间（1000ms内多次修改只触发一次构建）
+  debounceTime: 10000, // 防抖时间（10s内多次修改只触发一次构建）
   ignored: ['**/node_modules/**', '**/.git/**'], // 忽略的文件/目录（可选）
 };
 

@@ -12,10 +12,10 @@
   ],
   "author": "Osmanthuspeace",
   "repository": {
-    "type": "git",
+    "type": "https",
     "url": "https://github.com/osmanthuspeace/osmanthus-ui"
   },
-  "module": "dist/osmanthus-ui.es.js",
+  "module": "src/index.ts",
   "types": "dist/osmanthus-ui.es.d.ts",
   "license": "MIT",
   "files": [

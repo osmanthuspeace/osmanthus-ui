@@ -1,10 +1,4 @@
-import {
-  ReactNode,
-  useCallback,
-  useMemo,
-  useReducer,
-  useState,
-} from "react";
+import { ReactNode, useCallback, useMemo, useReducer, useState } from "react";
 import { Id } from "../../type";
 import { ContainerInfo, CrossInfo } from "./interface";
 import SortableProviderContext from "./context/SortableProviderContext";
@@ -19,9 +13,11 @@ export const SortableProvider = ({
   children: ReactNode;
   onCross: (source: CrossInfo, target: CrossInfo) => void;
 }) => {
+  
   const [containerMap, setContainerMap] = useState<Map<Id, ContainerInfo>>(
     new Map()
   );
+
   const [draggingState, dispatch] = useReducer(
     dragReducer,
     initialDraggingState
@@ -32,7 +28,6 @@ export const SortableProvider = ({
   };
   const updateContainerMap = useCallback(
     (id: Id, containerInfo: ContainerInfo) => {
-
       const { rect, childrenLength, gridLayout } = containerInfo;
       setContainerMap((prev) => {
         const newMap = new Map(prev);
@@ -73,6 +68,7 @@ export const SortableProvider = ({
       getContainerInfoById,
     };
   }, [containerMap, getContainerInfoById, onCross, updateContainerMap]);
+
   return (
     <SortableProviderContext.Provider value={value}>
       <DragContext.Provider value={dragValue}>{children}</DragContext.Provider>

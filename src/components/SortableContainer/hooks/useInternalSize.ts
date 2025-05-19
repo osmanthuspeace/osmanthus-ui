@@ -1,4 +1,5 @@
 import { RefObject, useEffect, useState } from "react";
+import { debounce } from "../../../utils/debounce";
 
 //初始化时计算容器大小，如果有传入的width和height，则使用传入的值，否则使用auto的宽高
 export const useInternalSize = (
@@ -6,7 +7,6 @@ export const useInternalSize = (
   height: number | undefined,
   containerRef: RefObject<HTMLDivElement>
 ) => {
-
   const [containerSize, setContainerSize] = useState({
     width: width ?? 0,
     height: height ?? 0,
@@ -22,22 +22,23 @@ export const useInternalSize = (
 
     const updateSize = () => {
       const rect = parent.getBoundingClientRect();
+      const newWidth = width ?? rect.width;
+      const newHeight = height ?? rect.height;
 
-      setContainerSize(() => {
-        const newWidth = width ?? rect.width;
-        const newHeight = height ?? rect.height;
-
-        // console.log("触发了internalSize中的updateSize", newWidth, newHeight);
-
-        return { width: newWidth, height: newHeight };
-      });
+      console.log("触发了internalSize中的updateSize", newWidth, newHeight);
+      if (
+        newWidth !== containerSize.width ||
+        newHeight !== containerSize.height
+      ) {
+        setContainerSize({ width: newWidth, height: newHeight });
+      }
     };
 
     const observer = new ResizeObserver(() => {
-      // console.log("触发了internalSize中的resizeObserver");
+      // debounce(updateSize, 100);
       updateSize();
     });
-    observer.observe(container);
+    observer.observe(parent);
 
     updateSize();
     return () => {
