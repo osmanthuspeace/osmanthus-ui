@@ -39,6 +39,8 @@ interface GetMaskStyleInput {
 export function getMaskStyle(input: GetMaskStyleInput): CSSProperties {
   const { width, height, enableBorder } = input;
 
+  console.log("enableBorder", enableBorder);
+
   const maxBorderRadius = Math.min(width, height) / 2;
   const { radius = maxBorderRadius, roundness = DEFAULT_RATIO } = input;
 
@@ -63,6 +65,7 @@ export function getMaskStyle(input: GetMaskStyleInput): CSSProperties {
   };
 }
 export const cachedGetMaskStyle = createCache(getMaskStyle, (input) => {
-  const { width, height, radius, roundness } = input;
-  return `${width}-${height}-${radius}-${roundness}`;
+  const { width, height, radius, roundness, enableBorder } = input;
+  // 生成缓存的键
+  return `${width}-${height}-${radius}-${roundness}-${enableBorder}`;
 });

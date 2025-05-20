@@ -17,12 +17,12 @@ export const calculateCoordianteByIndex = (
   // console.log("targetRow", targetRow, "targetCol", targetCol);
   const targetX =
     targetCol * (unitSize + gridLayout.gap) +
-    gridLayout.gap +
+    gridLayout.paddingX +
     // unitSize / 2 +
     containerCoordinate.x;
   const targetY =
     targetRow * (unitSize + gridLayout.gap) +
-    gridLayout.gap +
+    gridLayout.paddingY +
     // unitSize / 2 +
     containerCoordinate.y;
   return { x: targetX, y: targetY };

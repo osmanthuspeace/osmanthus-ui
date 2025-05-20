@@ -1,5 +1,4 @@
-import { RefObject, useEffect, useState } from "react";
-import { debounce } from "../../../utils/debounce";
+import { RefObject, useEffect, useRef, useState } from "react";
 
 //初始化时计算容器大小，如果有传入的width和height，则使用传入的值，否则使用auto的宽高
 export const useInternalSize = (
@@ -11,6 +10,7 @@ export const useInternalSize = (
     width: width ?? 0,
     height: height ?? 0,
   });
+  const containerSizeRef = useRef(containerSize);
 
   useEffect(() => {
     if (width !== undefined && height !== undefined) return;
@@ -25,17 +25,22 @@ export const useInternalSize = (
       const newWidth = width ?? rect.width;
       const newHeight = height ?? rect.height;
 
-      console.log("触发了internalSize中的updateSize", newWidth, newHeight);
-      if (
-        newWidth !== containerSize.width ||
-        newHeight !== containerSize.height
-      ) {
-        setContainerSize({ width: newWidth, height: newHeight });
-      }
+      console.log(
+        "触发了internalSize中的updateSize",
+        newWidth,
+        newHeight,
+        containerSizeRef.current
+      );
+      const widthDelta = Math.abs(newWidth - containerSizeRef.current.width);
+      const heightDelta = Math.abs(newHeight - containerSizeRef.current.height);
+      //如果宽度和高度的变化小于10像素，则不更新，避免频繁更新，导致性能问题
+      if (widthDelta < 5 && heightDelta < 5) return;
+
+      setContainerSize({ width: newWidth, height: newHeight });
+      containerSizeRef.current = { width: newWidth, height: newHeight };
     };
 
     const observer = new ResizeObserver(() => {
-      // debounce(updateSize, 100);
       updateSize();
     });
     observer.observe(parent);

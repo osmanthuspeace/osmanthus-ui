@@ -42,26 +42,32 @@ const SortableContainerInternal = (
     containerRef
   );
 
-  const { computedGap, computedGridTemplateRows, containerPadding } =
-    useGridLayout(
-      internalWidth,
-      internalHeight,
-      unitSize,
-      gridTemplateColumns,
-      sortedChildren.length
-    );
+  const {
+    computedGap,
+    computedGridTemplateRows,
+    containerPaddingX,
+    containerPaddingY,
+  } = useGridLayout(
+    internalWidth,
+    internalHeight,
+    unitSize,
+    gridTemplateColumns,
+    sortedChildren.length
+  );
   const gridLayout = useMemo(
     () => ({
       columns: gridTemplateColumns,
       rows: computedGridTemplateRows,
       gap: computedGap,
-      padding: containerPadding,
+      paddingX: containerPaddingX,
+      paddingY: containerPaddingY,
     }),
     [
       gridTemplateColumns,
       computedGridTemplateRows,
       computedGap,
-      containerPadding,
+      containerPaddingX,
+      containerPaddingY,
     ]
   );
   const refInContext = useContainerRegister(
@@ -109,12 +115,12 @@ const SortableContainerInternal = (
           <div
             style={{
               display: "grid",
-              width: width ? `${width}px` : `100%`,
-              height: height ? `${height}px` : `100%`,
+              width: width ? `${width}px` : `${internalWidth}px`,
+              height: height ? `${height}px` : `${internalHeight}px`,
               gridTemplateRows: `repeat(${computedGridTemplateRows}, 1fr)`,
               gridTemplateColumns: `repeat(${gridTemplateColumns}, 1fr)`,
               gridGap: `${computedGap}px`,
-              padding: `${computedGap}px`,
+              padding: `${containerPaddingY}px ${containerPaddingX}px`,
               border: "1px solid red",
               boxSizing: "border-box",
             }}

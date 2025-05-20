@@ -33,7 +33,7 @@ export const getFinalTransform = (
   );
   const x = newCoord.x - originCoord.x;
   const y = newCoord.y - originCoord.y;
-  // console.log("x", x, "y", y);
+  console.log("x", x, "y", y);
 
   return {
     x: x,

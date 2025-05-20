@@ -88,7 +88,7 @@ function App() {
             className="drag-container-user"
             onOrderChange={handleOrderChange}
             // width={600}
-            // height={320}
+            height={600}
             gridTemplateColumns={4}
             // onDragStart={() => console.log("drag start")}
             // onAnyDrag={() => console.log("drag")}
@@ -106,13 +106,33 @@ function App() {
             className="drag-container"
             id="222"
             // width={600}
-            // height={300}
+            height={300}
             onOrderChange={handleOrderChange2}
             gridTemplateColumns={4}
           >
             {sortableItems.map((item) => {
               return (
-                <SortableItem key={item.id} id={item.id} enableBorder={false}>
+                <SortableItem
+                  key={item.id}
+                  id={item.id}
+                  enableBorder={false}
+                  // enableFlip
+                  // flipBack={
+                  //   <>
+                  //     <div
+                  //       style={{
+                  //         backgroundColor: "red",
+                  //         width: "100%",
+                  //         height: "100%",
+                  //         fontSize: "10px",
+                  //       }}
+                  //     >
+                  //       <div>111</div>
+                  //       <div>222</div>
+                  //     </div>
+                  //   </>
+                  // }
+                >
                   {item.children}
                 </SortableItem>
               );

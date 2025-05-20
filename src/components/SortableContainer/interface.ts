@@ -4,7 +4,8 @@ export interface GridLayout {
   columns: number;
   rows: number;
   gap: number;
-  padding: number;
+  paddingX: number;
+  paddingY: number;
 }
 // =============LayoutContext================
 export interface LayoutContextProps {

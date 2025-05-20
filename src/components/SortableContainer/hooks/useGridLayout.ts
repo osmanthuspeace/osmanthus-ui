@@ -9,7 +9,8 @@ export const useGridLayout = (
 ): {
   computedGap: number;
   computedGridTemplateRows: number;
-  containerPadding: number;
+  containerPaddingX: number;
+  containerPaddingY: number;
 } => {
   // console.log("width", width, "height", height);
   return useMemo(() => {
@@ -21,10 +22,15 @@ export const useGridLayout = (
     //从1开始的rows
     const rows = Math.ceil(childrenLength / gridTemplateColumns);
     // console.log("rows", rows, "column", gridTemplateColumns);
+    const paddingY = Math.max(
+      0,
+      (height - rows * unitSize - gap * (rows - 1)) / 2
+    );
     return {
       computedGap: gap,
       computedGridTemplateRows: rows,
-      containerPadding: gap,
+      containerPaddingX: gap,
+      containerPaddingY: paddingY,
     };
   }, [gridTemplateColumns, height, unitSize, width]);
 };

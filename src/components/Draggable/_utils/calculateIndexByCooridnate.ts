@@ -11,7 +11,7 @@ export const calculateIndexByCooridnate = (
   isCrossContainer: boolean,
   childrenLength: number
 ) => {
-  const { gap, padding } = gridLayout;
+  const { gap, paddingX, paddingY } = gridLayout;
   const { x: containerX, y: containerY } = containerCoordinate;
   const { columns: gridCol, rows: gridRow } = gridLayout;
 
@@ -20,13 +20,13 @@ export const calculateIndexByCooridnate = (
 
   // console.log("max", maxRowIndex, maxColIndex);
 
-  let row = Math.round((y - containerY - padding) / (unitSize + gap));
+  let row = Math.round((y - containerY - paddingY) / (unitSize + gap));
   // console.log("origin row", row, y,containerY, padding, unitSize, gap);
 
   row = row < 0 ? 0 : row;
   row = row > maxRowIndex ? maxRowIndex : row;
 
-  let col = Math.round((x - containerX - padding) / (unitSize + gap));
+  let col = Math.round((x - containerX - paddingX) / (unitSize + gap));
   col = col < 0 ? 0 : col;
   col = col > maxColIndex ? maxColIndex : col;
 
@@ -40,7 +40,8 @@ export const calculateIndexByCooridnate = (
   //   "containerY",
   //   containerY,
   //   "padding",
-  //   padding
+  //   paddingX,
+  //   paddingY
   // );
   // console.log("row", row, "col", col);
   let index = row * gridCol + col;

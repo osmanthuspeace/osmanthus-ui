@@ -8,24 +8,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  border-radius: 8px;
-}
-.front {
-  background: #4caf50;
-  color: white;
 }
 
 .back {
-  background: #2196f3;
-  color: white;
   transform: rotateY(180deg) scale(1.2);
 }
 .flipper-container {
-  width: 200px;
-  height: 200px;
+  width: 100%;
+  height: 100%;
   perspective: 1000px;
-  margin: 100px auto;
   z-index: 1000; /* 确保在遮罩层上方 */
 }
 /*
@@ -38,11 +29,11 @@
   position: relative;
   width: 100%;
   height: 100%;
-  transition: transform 0.8s;
+  transition: transform 0.5s;
   transform-style: preserve-3d;
 }
 .flipper-container:hover .flipper {
-  transform: rotateY(180deg) scale(1.8) ;
+  transform: rotateY(180deg) scale(1.8);
 }
 /* 显示遮罩层 */
 .flipper-container:hover .modal-overlay {
