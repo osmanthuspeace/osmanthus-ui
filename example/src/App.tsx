@@ -65,11 +65,12 @@ function App() {
     <div
       style={{
         display: "flex",
+        width: "100%",
       }}
     >
       <div
         style={{
-          width: "100px",
+          minWidth: "100px",
         }}
       >
         sider
@@ -78,18 +79,25 @@ function App() {
         className="main-container"
         style={{
           flex: 1,
+          border: "1px solid red",
+          // maxWidth: "calc(100vw - 100px)",
+          padding: "10px",
         }}
       >
-        <button onClick={handleClick}>编辑</button>
+        {/* <button onClick={handleClick}>编辑</button> */}
         <SortableProvider onCross={handleCrossContainer}>
           <SortableContainer
             id="sort-container111"
             enableDnd={isEditing}
             className="drag-container-user"
             onOrderChange={handleOrderChange}
+            unitSize={100}
             // width={600}
             height={600}
             gridTemplateColumns={4}
+            style={{
+              border: "1px solid red",
+            }}
             // onDragStart={() => console.log("drag start")}
             // onAnyDrag={() => console.log("drag")}
             // onDragEnd={() => console.log("drag end")}
@@ -107,6 +115,7 @@ function App() {
             id="222"
             // width={600}
             height={300}
+            unitSize={100}
             onOrderChange={handleOrderChange2}
             gridTemplateColumns={4}
           >

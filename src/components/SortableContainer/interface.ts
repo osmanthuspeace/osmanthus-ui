@@ -37,9 +37,9 @@ export interface SortContainerProps
   id: string;
   width?: number;
   height?: number;
-  unitSize?: number;
+  unitSize: number;
   gridTemplateRows?: number;
-  gridTemplateColumns?: number;
+  gridTemplateColumns: number;
   gridGap?: number;
   enableDnd?: boolean;
   onOrderChange?: (newOrderIds: string[]) => void;

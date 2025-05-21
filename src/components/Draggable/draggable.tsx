@@ -142,7 +142,6 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         getContainerInfoById(draggingState.activeContainerId),
         newIndex,
         getContainerInfoById(newContainerId),
-        gridLayout,
         unitSize
       );
 

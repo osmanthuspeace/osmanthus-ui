@@ -39,8 +39,6 @@ interface GetMaskStyleInput {
 export function getMaskStyle(input: GetMaskStyleInput): CSSProperties {
   const { width, height, enableBorder } = input;
 
-  console.log("enableBorder", enableBorder);
-
   const maxBorderRadius = Math.min(width, height) / 2;
   const { radius = maxBorderRadius, roundness = DEFAULT_RATIO } = input;
 

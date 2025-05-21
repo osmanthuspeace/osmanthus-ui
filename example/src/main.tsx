@@ -10,7 +10,7 @@ import App from "./App.tsx";
   document.addEventListener("mousemove", function (e) {
     tooltip.style.display = "block";
     tooltip.innerHTML = `X: ${e.clientX}<br>Y: ${e.clientY}`;
-    tooltip.style.left = e.clientX + 15 + "px";
+    tooltip.style.left = e.clientX + 10 + "px";
     tooltip.style.top = e.clientY + 15 + "px";
   });
 

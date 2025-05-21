@@ -13,7 +13,6 @@ export const SortableProvider = ({
   children: ReactNode;
   onCross: (source: CrossInfo, target: CrossInfo) => void;
 }) => {
-  
   const [containerMap, setContainerMap] = useState<Map<Id, ContainerInfo>>(
     new Map()
   );
@@ -71,7 +70,9 @@ export const SortableProvider = ({
 
   return (
     <SortableProviderContext.Provider value={value}>
-      <DragContext.Provider value={dragValue}>{children}</DragContext.Provider>
+      <DragContext.Provider value={dragValue}>
+        <div>{children}</div>
+      </DragContext.Provider>
     </SortableProviderContext.Provider>
   );
 };

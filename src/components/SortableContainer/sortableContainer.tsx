@@ -26,6 +26,7 @@ const SortableContainerInternal = (
     onDragStart,
     onAnyDrag: onDrag,
     onDragEnd,
+    style,
     ...rest
   } = props;
 
@@ -115,14 +116,14 @@ const SortableContainerInternal = (
           <div
             style={{
               display: "grid",
-              width: width ? `${width}px` : `${internalWidth}px`,
-              height: height ? `${height}px` : `${internalHeight}px`,
+              width: width ? `${width}px` : `100%`,
+              height: height ? `${height}px` : `100%`,
               gridTemplateRows: `repeat(${computedGridTemplateRows}, 1fr)`,
               gridTemplateColumns: `repeat(${gridTemplateColumns}, 1fr)`,
               gridGap: `${computedGap}px`,
               padding: `${containerPaddingY}px ${containerPaddingX}px`,
-              border: "1px solid red",
               boxSizing: "border-box",
+              ...style
             }}
             {...rest}
             ref={composedRef}
