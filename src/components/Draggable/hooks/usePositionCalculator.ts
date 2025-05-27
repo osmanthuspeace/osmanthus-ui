@@ -12,7 +12,6 @@ export function usePositionCalculator(
   const calculateNewIndex = useCallback(
     (element: HTMLElement, containerId: string) => {
       const { x, y } = getCoordinate(element);
-      //TODO: 此处的gridLayout未更新
       const { rect, childrenLength, gridLayout } =
         context?.getContainerInfoById(containerId);
 

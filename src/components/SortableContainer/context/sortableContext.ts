@@ -7,7 +7,7 @@ const defaultContext: SortableContextProps = {
   enableDnd: false,
   onReorder: () => {},
   registerItemRef: () => {},
-
+  duration: 0,
   containerCoordinate: { x: 0, y: 0 },
 
   containerRef: null,

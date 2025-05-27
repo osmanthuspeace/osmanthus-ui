@@ -4,12 +4,13 @@ import { AnimationScope, useAnimate } from "motion/react";
 import { DraggingState } from "../interface";
 import { Coordinate } from "../../../type";
 import SortableProviderContext from "../../SortableProvider/context/SortableProviderContext";
-import LayoutContext from "../../SortableContainer/context/LayoutContext";
+import LayoutContext from "../../SortableContainer/context/layoutContext";
 
 export const useTransformControl = (
   thisIndex: number,
   thisContainerId: string,
-  draggingState: DraggingState
+  draggingState: DraggingState,
+  duration?: number
 ): [
   AnimationScope<HTMLDivElement> | null,
   (final: Coordinate | null) => Promise<void>,
@@ -114,7 +115,7 @@ export const useTransformControl = (
       if (!transform) {
         throw new Error("transform is null");
       }
-      await animate(scope.current, transform, { duration: 0.25 });
+      await animate(scope.current, transform, { duration: duration ?? 0.25 });
     } catch (e) {
       console.error("error", e);
     }

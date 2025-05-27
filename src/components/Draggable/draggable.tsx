@@ -1,4 +1,4 @@
-import { motion, PanInfo } from "motion/react";
+import { motion, PanInfo, useDragControls } from "motion/react";
 import { forwardRef, Ref, useCallback, useContext, useEffect } from "react";
 import SortableContext from "../SortableContainer/context/sortableContext";
 import { useRef } from "react";
@@ -12,7 +12,7 @@ import { getFinalTransform } from "./_utils/getFinalTransform";
 import "./draggable.css";
 import { eventBus } from "./_utils/eventBus";
 import { noop } from "../../utils/noop";
-import LayoutContext from "../SortableContainer/context/LayoutContext";
+import LayoutContext from "../SortableContainer/context/layoutContext";
 import DragContext from "../SortableProvider/context/DragContext";
 import SortableProviderContext from "../SortableProvider/context/SortableProviderContext";
 const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
@@ -24,10 +24,12 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
     onDrag,
     onDragEnd,
     containerCoordinate,
+    duration,
   } = useContext(SortableContext);
 
-  const { unitSize, gridLayout } = useContext(LayoutContext);
-  const { draggingState, dispatch } = useContext(DragContext);
+  const { unitSize } = useContext(LayoutContext);
+  const { draggingState, dispatch, isDragEnded, setIsDragEnded } =
+    useContext(DragContext);
 
   const { calculateNewIndex } = usePositionCalculator(
     unitSize,
@@ -37,7 +39,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   const thisRef = useRef<HTMLDivElement>(null);
 
   const [scope, handleFinalTransform, handleResetTransform] =
-    useTransformControl(thisIndex, thisContainerId, draggingState);
+    useTransformControl(thisIndex, thisContainerId, draggingState, duration);
   const composedRef = useComposeRef(scope, thisRef, ref);
 
   const getContainerIdByCoordinate = useWhichContainer();
@@ -59,8 +61,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   }, [handleResetTransform]);
 
   //开始拖拽
-  const handleDragStart = (e: ComposedEvent) => {
-    console.log("handleDragStart");
+  const handleDragStart = async (e: ComposedEvent) => {
     onDragStart?.(e);
     dispatch({
       type: "DragStart",
@@ -72,8 +73,11 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   };
 
   const getNewContainerId = (e: ComposedEvent) => {
-    const { clientX, clientY } =
-      e instanceof TouchEvent ? e.touches[0] || { clientX: 0, clientY: 0 } : e;
+    // Safari不支持TouchEvent
+    const isTouchEvent = "touches" in e && e.touches?.length > 0;
+    const { clientX, clientY } = isTouchEvent
+      ? e.touches[0] || { clientX: 0, clientY: 0 }
+      : (e as MouseEvent | PointerEvent);
     const newContainerId = enableCross
       ? getContainerIdByCoordinate(clientX, clientY)
       : thisContainerId;
@@ -122,6 +126,8 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
   //结束拖拽
   const handleDragEnd = async (e: ComposedEvent) => {
     onDragEnd?.(e);
+    setIsDragEnded(false);
+
     try {
       if (!thisRef.current) return;
 
@@ -155,6 +161,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       if (!isSameContainer && enableCross) {
         // 进入其他容器
         await handleFinalTransform(finalTransform);
+        await eventBus.publish("resetTransform");
         onCross(
           { containerId: thisContainerId, index: thisIndex },
           {
@@ -162,7 +169,6 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
             index: newIndex,
           }
         );
-        await eventBus.publish("resetTransform");
       } else {
         if (newIndex !== thisIndex) {
           //进入同一容器的其他网格
@@ -176,6 +182,8 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       }
     } catch (error) {
       console.error("拖拽结束处理出错:", error);
+    } finally {
+      setIsDragEnded(true);
     }
   };
 
@@ -186,10 +194,10 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
       <motion.div
         className="drag-item"
         ref={composedRef}
-        drag
+        drag={isDragEnded}
         dragMomentum={false}
         dragElastic={0.1}
-        whileDrag={{ scale: 1.05, zIndex: 100 }}
+        whileDrag={{ scale: 1.1, zIndex: 100 }}
         // dragTransition={{ bounceStiffness: 100, bounceDamping: 10 }} //回弹效果
         transition={{ type: "spring", stiffness: 300, damping: 30 }} //速度，减速度
         onDragStart={(e) => handleDragStart(e)}
@@ -203,6 +211,7 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
             willChange: "transform",
             transformStyle: "preserve-3d",
             backfaceVisibility: "hidden",
+            userSelect: "none",
             ...style,
           } as React.CSSProperties
         }

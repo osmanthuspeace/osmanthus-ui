@@ -1,7 +1,7 @@
 import { motion, Transition } from "motion/react";
 import { useContext, useMemo } from "react";
 import SortableContext from "../SortableContainer/context/sortableContext";
-import LayoutContext from "../SortableContainer/context/LayoutContext";
+import LayoutContext from "../SortableContainer/context/layoutContext";
 
 interface WaggleProps extends React.HTMLAttributes<HTMLDivElement> {
   rotateAngle?: number;

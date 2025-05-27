@@ -8,7 +8,7 @@ import { useRenderedChildren } from "./hooks/useRenderedChildren";
 import { useContainerRegister } from "../SortableProvider/hooks/useContainerRegister";
 import "./sortableContainer.css";
 import { useInternalSize } from "./hooks/useInternalSize";
-import LayoutContext from "./context/LayoutContext";
+import LayoutContext from "./context/layoutContext";
 import { SortContainerProps } from "./interface";
 const SortableContainerInternal = (
   props: SortContainerProps,
@@ -26,6 +26,7 @@ const SortableContainerInternal = (
     onDragStart,
     onAnyDrag: onDrag,
     onDragEnd,
+    duration,
     style,
     ...rest
   } = props;
@@ -101,6 +102,7 @@ const SortableContainerInternal = (
     containerId: id,
     enableDnd,
     containerCoordinate,
+    duration,
     onReorder: handleReorder,
     registerItemRef,
     containerRef,

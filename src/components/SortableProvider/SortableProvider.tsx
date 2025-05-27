@@ -21,9 +21,12 @@ export const SortableProvider = ({
     dragReducer,
     initialDraggingState
   );
+  const [isDragEnded, setIsDragEnded] = useState(true);
   const dragValue = {
     draggingState,
     dispatch,
+    isDragEnded,
+    setIsDragEnded,
   };
   const updateContainerMap = useCallback(
     (id: Id, containerInfo: ContainerInfo) => {

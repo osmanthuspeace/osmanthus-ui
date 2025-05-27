@@ -5,6 +5,8 @@ import { initialDraggingState } from "../util/reducer";
 const defaultContext: DragContextProps = {
   draggingState: initialDraggingState,
   dispatch: () => {},
+  isDragEnded:true,
+  setIsDragEnded: () => {}
 };
 
 const DragContext = createContext(defaultContext);

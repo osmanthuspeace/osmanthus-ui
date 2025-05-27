@@ -31,4 +31,6 @@ export interface ContainerInfo {
 export interface DragContextProps {
   draggingState: DraggingState;
   dispatch: React.Dispatch<DragAction>;
+  isDragEnded: boolean;
+  setIsDragEnded: React.Dispatch<React.SetStateAction<boolean>>;
 }

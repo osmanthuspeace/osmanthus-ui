@@ -81,7 +81,10 @@ function App() {
           flex: 1,
           border: "1px solid red",
           // maxWidth: "calc(100vw - 100px)",
+          // height: "200px",
+          // minHeight: "200px",
           padding: "10px",
+          // overflow: "scroll",
         }}
       >
         {/* <button onClick={handleClick}>编辑</button> */}
@@ -124,7 +127,6 @@ function App() {
                 <SortableItem
                   key={item.id}
                   id={item.id}
-                  enableBorder={false}
                   // enableFlip
                   // flipBack={
                   //   <>

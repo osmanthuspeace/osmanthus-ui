@@ -19,6 +19,7 @@ export interface LayoutContextProps {
 export interface SortableContextProps {
   containerId: string;
   enableDnd: boolean;
+  duration?: number;
   onReorder: (oldIndex: number, newIndex: number, activeIndex?: number) => void;
   registerItemRef: (index: number, ref: HTMLElement | null) => void;
   containerCoordinate: { x: number; y: number };
@@ -42,6 +43,7 @@ export interface SortContainerProps
   gridTemplateColumns: number;
   gridGap?: number;
   enableDnd?: boolean;
+  duration?: number;
   onOrderChange?: (newOrderIds: string[]) => void;
   onDragStart?: (e: ComposedEvent) => void;
   onDragEnd?: (e: ComposedEvent) => void;

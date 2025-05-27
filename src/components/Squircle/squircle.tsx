@@ -3,7 +3,7 @@ import { cachedGetMaskStyle } from "./_utils/getMaskStyle";
 import { Badge } from "../Badge/badge";
 import SortableContext from "../SortableContainer/context/sortableContext";
 import clsx from "../../utils/clsx";
-import LayoutContext from "../SortableContainer/context/LayoutContext";
+import LayoutContext from "../SortableContainer/context/layoutContext";
 interface SquircleInternalProps extends React.HTMLAttributes<HTMLDivElement> {
   width: number;
   height: number;

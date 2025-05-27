@@ -9,7 +9,8 @@ const defaultContext: LayoutContextProps = {
     columns: 2,
     rows: 4,
     gap: 50,
-    padding: 0,
+    paddingX: 0,
+    paddingY: 0,
   },
 };
 
