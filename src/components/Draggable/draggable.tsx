@@ -1,4 +1,4 @@
-import { motion, PanInfo, useDragControls } from "motion/react";
+import { motion, PanInfo } from "motion/react";
 import { forwardRef, Ref, useCallback, useContext, useEffect } from "react";
 import SortableContext from "../SortableContainer/context/sortableContext";
 import { useRef } from "react";
