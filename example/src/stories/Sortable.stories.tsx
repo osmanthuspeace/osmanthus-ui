@@ -1,23 +1,64 @@
+import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import "./App.css";
+import { SortableItems } from "../../../src/components/SortableItem/interface";
+import { SortableProvider } from "../../../src/components/SortableProvider/SortableProvider";
+import { SortableContainer } from "../../../src/components/SortableContainer/sortableContainer";
+import { SortableItem } from "../../../src/components/SortableItem/sortableItem";
+import { CrossInfo, CrossMap } from "../../../src/components/SortableProvider/interface";
 
-import { SortableItem } from "../../src/components/SortableItem/sortableItem";
-import { SortableContainer } from "../../src/components/SortableContainer/sortableContainer.tsx";
-import { SortableItems } from "../../src/components/SortableItem/interface";
-import {
-  CrossInfo,
-  CrossMap,
-} from "../../src/components/SortableProvider/interface.ts";
-import { SortableProvider } from "../../src/components/SortableProvider/SortableProvider.tsx";
-function App() {
-  const [isEditing, setIsActive] = useState(false);
+// 基础元数据定义
+const meta: Meta<{ children: React.ReactNode }> = {
+  title: "Components/Sortable", // 故事分类路径
+  component: SortableProvider, // 主组件
+  tags: ["autodocs"],
+};
+export default meta;
 
-  const handleClick = () => {
-    setIsActive(!isEditing);
-  };
+type Story = StoryObj<typeof meta>;
+
+export const BasicSort: Story = {
+  render: () => {
+    const [items, setItems] = useState<SortableItems>(
+      Array.from({ length: 5 }, (_, i) => ({
+        id: `item-${i}`,
+        children: `Item ${i}`,
+      }))
+    );
+
+    const handleOrderChange = (newOrderIds: string[]) => {
+      const newItems = newOrderIds.map(
+        (id) => items.find((item) => item.id === id)!
+      );
+      setItems(newItems);
+    };
+
+    return (
+      <SortableProvider>
+        <SortableContainer
+          id="basic-container"
+          onOrderChange={handleOrderChange}
+          unitSize={100}
+          height={400}
+          gridTemplateColumns={3}
+        >
+          {items.map((item) => (
+            <SortableItem key={item.id} id={item.id}>
+              {item.children}
+            </SortableItem>
+          ))}
+        </SortableContainer>
+      </SortableProvider>
+    );
+  },
+};
+
+// 跨容器拖拽场景
+export const CrossContainerSort: Story = {
+  render: () => {
+    const [isEditing, setIsActive] = useState(false);
 
   const [sortableItems, setSortableItems] = useState<SortableItems>(
-    Array.from({ length: 7 }).map((_, index) => {
+    Array.from({ length: 100 }).map((_, index) => {
       return { id: `store2-${index}`, children: "test" + index };
     })
   );
@@ -127,22 +168,6 @@ function App() {
                 <SortableItem
                   key={item.id}
                   id={item.id}
-                  // enableFlip
-                  // flipBack={
-                  //   <>
-                  //     <div
-                  //       style={{
-                  //         backgroundColor: "red",
-                  //         width: "100%",
-                  //         height: "100%",
-                  //         fontSize: "10px",
-                  //       }}
-                  //     >
-                  //       <div>111</div>
-                  //       <div>222</div>
-                  //     </div>
-                  //   </>
-                  // }
                 >
                   {item.children}
                 </SortableItem>
@@ -153,6 +178,5 @@ function App() {
       </section>
     </div>
   );
-}
-
-export default App;
+  },
+};

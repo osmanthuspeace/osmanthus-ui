@@ -162,6 +162,10 @@ const DraggableInternal = (props: DragItemProps, ref: Ref<HTMLDivElement>) => {
         // 进入其他容器
         await handleFinalTransform(finalTransform);
         await eventBus.publish("resetTransform");
+        if (!onCross)
+          throw new Error(
+            "onCross function is required when using mutiple containers"
+          );
         onCross(
           { containerId: thisContainerId, index: thisIndex },
           {

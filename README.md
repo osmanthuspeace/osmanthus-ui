@@ -22,32 +22,32 @@ import { SortableProvider, SortableContainer, SortableItem } from "osmanthus-ui"
 import type { SortableItems, CrossMap, CrossInfo } from "osmanthus-ui";
 
 function App() {
-  // 管理当前显示的组件列表
+  // manage the main container's component list
   const [sortableItems, setSortableItems] = useState<SortableItems>([
     { id: "1", children: "组件1" },
     { id: "2", children: "组件2" },
   ]);
 
-  // 管理存储区的组件列表
+  // manage the storage container's component list
   const [storedItems, setStoredItems] = useState<SortableItems>([
     { id: "store-1", children: "存储项1" },
     { id: "store-2", children: "存储项2" },
   ]);
 
-  // 跨容器映射配置（key为容器ID，value为[状态, 状态更新函数]）
+  // configure cross-container mapping
   const crossMap: CrossMap = {
     "main-container": [sortableItems, setSortableItems],
     "storage-container": [storedItems, setStoredItems],
   };
 
-  // 处理同容器内排序变化
+  // handle order changes
   const handleOrderChange = (newOrderIds: string[], containerId: string) => {
     const [items, setItems] = crossMap[containerId];
     const newItems = newOrderIds.map(id => items.find(item => item.id === id)!);
     setItems(newItems);
   };
 
-  // 处理跨容器拖拽
+  // handle cross-container interactions
   const handleCrossContainer = (source: CrossInfo, target: CrossInfo) => {
     const [sourceItems, setSourceItems] = crossMap[source.containerId];
     const [targetItems, setTargetItems] = crossMap[target.containerId];
@@ -60,14 +60,13 @@ function App() {
 
   return (
     <SortableProvider onCross={handleCrossContainer}>
-      {/* 主容器 */}
       <SortableContainer
         id="main-container"
         className="main-container"
         onOrderChange={(ids) => handleOrderChange(ids, "main-container")}
-        unitSize={100}  {/* 单个组件尺寸（px） */}
-        gridTemplateColumns={4}  {/* 网格列数 */}
-        height={600}  {/* 容器高度 */}
+        unitSize={100}  
+        gridTemplateColumns={4}  
+        height={600}  
       >
         {sortableItems.map(item => (
           <SortableItem key={item.id} id={item.id}>
@@ -76,7 +75,6 @@ function App() {
         ))}
       </SortableContainer>
 
-      {/* 存储容器 */}
       <SortableContainer
         id="storage-container"
         className="storage-container"

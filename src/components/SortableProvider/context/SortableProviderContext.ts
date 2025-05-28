@@ -7,7 +7,7 @@ export interface SortableProviderContextProps {
   containerRegister: Map<Id, ContainerInfo>;
   updateContainerMap: (id: Id, info: ContainerInfo) => void;
   getContainerInfoById: (id: Id) => ContainerInfo;
-  onCross: (source: CrossInfo, target: CrossInfo) => void;
+  onCross?: (source: CrossInfo, target: CrossInfo) => void;
 }
 
 const defaultContext: SortableProviderContextProps = {

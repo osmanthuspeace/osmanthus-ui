@@ -11,7 +11,7 @@ export const SortableProvider = ({
   onCross,
 }: {
   children: ReactNode;
-  onCross: (source: CrossInfo, target: CrossInfo) => void;
+  onCross?: (source: CrossInfo, target: CrossInfo) => void;
 }) => {
   const [containerMap, setContainerMap] = useState<Map<Id, ContainerInfo>>(
     new Map()
